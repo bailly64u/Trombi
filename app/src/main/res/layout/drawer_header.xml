@@ -6,11 +6,12 @@
     android:padding="16dp"
     android:theme="@style/ThemeOverlay.AppCompat.Dark"
     android:orientation="vertical"
-    android:gravity="bottom">
+    android:gravity="bottom" >
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/DRAWERH_item1"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
+        android:textColor="#FEFEF2"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 </LinearLayout>
