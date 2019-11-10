@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.navigation.NavigationView;
 
-public class MainActivity extends AppCompatActivity {
+public class ActivityMain extends AppCompatActivity {
 
     private NavigationView mNavigationView;
 
@@ -36,19 +36,19 @@ public class MainActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item){
                 switch(item.getItemId()){
                     case R.id.NAV_item1:
-                        Toast.makeText(MainActivity.this, "Salut1", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ActivityMain.this, "Salut1", Toast.LENGTH_SHORT).show();
                         break;
 
                     case R.id.NAV_item2:
-                        Toast.makeText(MainActivity.this, "Salut2", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ActivityMain.this, "Salut2", Toast.LENGTH_SHORT).show();
                         break;
 
                     case R.id.NAV_item3:
-                        Toast.makeText(MainActivity.this, "Salut3", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ActivityMain.this, "Salut3", Toast.LENGTH_SHORT).show();
                         break;
                 }
 
-                return true; // true to display the item as the selected item [android dev]
+                return false;
             }
         });
     }
