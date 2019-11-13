@@ -1,17 +1,24 @@
 package com.ufrst.app.trombi;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
 public class ActivityMain extends AppCompatActivity {
 
+    public static final int REQUETE_AJOUT_TROMBI = 1;
+
     private NavigationView mNavigationView;
+    private RecyclerView mRecyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -49,6 +56,16 @@ public class ActivityMain extends AppCompatActivity {
                 }
 
                 return false;
+            }
+        });
+
+        // Floating Action Button, désérialisation ici car on s'en servira que ici
+        FloatingActionButton fab = findViewById(R.id.MAIN_fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //Intent intent = new Intent(ActivityMain.this, bruh);
+                //startActivityForResult(intent, REQUETE_AJOUT_TROMBI)
             }
         });
     }

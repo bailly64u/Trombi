@@ -6,4 +6,6 @@
     <string name="DRAWER_item3">Item 3</string>
     <string name="DRAWERH_item1">Item 1</string>
     <string name="title_activity_main2">Main2Activity</string>
+
+    <string name="MAIN_emptyRecyclerView">Vous n\'avez aucun trombinoscope :( .</string>
 </resources>

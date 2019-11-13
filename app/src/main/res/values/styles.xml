@@ -1,12 +1,33 @@
 <resources>
 
-    <!-- Theme.AppCompat.Light.DarkActionBar. -->
+    <!-- Theme clair -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="backgroundApp">@color/background</item>
+
+        <item name="textMediumEmphasis">@color/textMediumEmphasis</item>
     </style>
+
+    <!-- Theme sombre -->
+    <style name="AppThemeDark" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="backgroundApp">@color/backgroundDark</item>
+
+        <item name="textMediumEmphasis">@color/textMediumEmphasisDark</item>
+    </style>
+
+
+
+
+
+
+
 
     <!-- Tout ce qu'il y a en dessous ne semble pas nécessaire comme on a enlevé les appBar dans le XML-->
     <style name="AppTheme.NoActionBar">

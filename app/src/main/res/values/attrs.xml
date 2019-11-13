@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fichier permettant de déclarer des attributs stylisable, pratique pour un thème sombre -->
+<resources>
+    <declare-styleable name="TrombiAppTheme">
+        <attr name="backgroundApp" format="color"/>
+        <attr name="textMediumEmphasis" format="color"/>
+    </declare-styleable>
+</resources>
