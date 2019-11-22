@@ -30,6 +30,8 @@ public class TrombiRepository {
 
     // Trombinoscope________________________________________________________________________________
     public void insert(Trombinoscope trombi) {new InsertTrombiAsyncTask(trombiDao).execute(trombi);}
+    public void update(Trombinoscope trombi) {new UpdateTrombiAsyncTask(trombiDao).execute(trombi);}
+    public void delete(Trombinoscope trombi) {new DeleteTrombiAsyncTask(trombiDao).execute(trombi);}
 
 
 
@@ -43,7 +45,31 @@ public class TrombiRepository {
 
         @Override
         protected Void doInBackground(Trombinoscope... trombinoscopes) {
+            trombiDao.insert(trombinoscopes[0]);
+            return null;
+        }
+    }
+
+    private static class UpdateTrombiAsyncTask extends AsyncTask<Trombinoscope, Void, Void>{
+        private TrombinoscopeDao trombiDao;
+
+        UpdateTrombiAsyncTask(TrombinoscopeDao trombiDao){ this.trombiDao = trombiDao; }
+
+        @Override
+        protected Void doInBackground(Trombinoscope... trombinoscopes) {
             trombiDao.update(trombinoscopes[0]);
+            return null;
+        }
+    }
+
+    private static class DeleteTrombiAsyncTask extends AsyncTask<Trombinoscope, Void, Void>{
+        private TrombinoscopeDao trombiDao;
+
+        DeleteTrombiAsyncTask(TrombinoscopeDao trombiDao){ this.trombiDao = trombiDao; }
+
+        @Override
+        protected Void doInBackground(Trombinoscope... trombinoscopes) {
+            trombiDao.delete(trombinoscopes[0]);
             return null;
         }
     }
