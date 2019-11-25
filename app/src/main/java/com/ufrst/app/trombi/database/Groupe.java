@@ -8,18 +8,18 @@ import androidx.room.PrimaryKey;
 
 // POJO
 // Indexe la table idTrombi pour éviter un scan de toutes la table lors de la recherche de la clef primaire
-@Entity(indices = {@Index("idTrombi")},
-        tableName = "table_groupe",
+@Entity(tableName = "table_groupe",
         foreignKeys = @ForeignKey(entity = Trombinoscope.class,
-                                    parentColumns = "idGroupe",
-                                    childColumns = "idTrombi"))
+                                    parentColumns = "id_trombi",
+                                    childColumns = "id_groupe"))
 public class Groupe {
 
     // Champs présents dans la BD
     @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "id_groupe")
     private long idGroupe;
 
-    @ColumnInfo(name = "nom_groupe") private String nomGroupe;
+    @ColumnInfo(name = "nom_groupe")
+    private String nomGroupe;
 
     public Groupe(String nomGroupe) {
         this.nomGroupe = nomGroupe;

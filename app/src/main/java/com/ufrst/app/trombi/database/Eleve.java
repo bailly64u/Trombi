@@ -12,7 +12,8 @@ public class Eleve {
     @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "id_eleve")
     private long idEleve;
 
-    @ColumnInfo(name = "nom_prenom") private String nomPrenom;
+    @ColumnInfo(name = "nom_prenom")
+    private String nomPrenom;
     private String photo;
 
     public Eleve(String nomPrenom, String photo) {

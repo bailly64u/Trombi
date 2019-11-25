@@ -5,7 +5,11 @@
     <string name="DRAWER_item2">Item 2</string>
     <string name="DRAWER_item3">Item 3</string>
     <string name="DRAWERH_item1">Item 1</string>
-    <string name="title_activity_main2">Main2Activity</string>
 
     <string name="MAIN_emptyRecyclerView">Vous n\'avez aucun trombinoscope :( .</string>
+
+    <string name="AJOUTTROMBI_btnValider">Valider</string>
+    <string name="AJOUTTROMBI_hint1">Nom</string>
+    <string name="AJOUTTROMBI_hint2">Description</string>
+    <string name="AJOUTTROMBI_hint3">Importer liste (optionnel)</string>
 </resources>

@@ -2,10 +2,11 @@ package com.ufrst.app.trombi.database;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 // POJO
-@Entity(tableName = "table_trombi")
+@Entity(indices = {@Index("id_trombi")}, tableName = "table_trombi")
 public class Trombinoscope {
 
     // Champs présents dans la BD

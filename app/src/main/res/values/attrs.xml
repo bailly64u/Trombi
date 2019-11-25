@@ -3,6 +3,9 @@
 <resources>
     <declare-styleable name="TrombiAppTheme">
         <attr name="backgroundApp" format="color"/>
+        <attr name="onBackground" format="color"/>
         <attr name="textMediumEmphasis" format="color"/>
+        <attr name="textDisabled" format="color"/>
+        <attr name="boxBackground" format="color"/>
     </declare-styleable>
 </resources>

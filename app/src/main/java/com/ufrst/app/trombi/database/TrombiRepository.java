@@ -22,16 +22,22 @@ public class TrombiRepository {
 
     public TrombiRepository(Application application) {
         TrombiDatabase db = TrombiDatabase.getInstance(application);
+
+        // Récupération des DAOs
         trombiDao = db.trombiDao();
         groupeDao = db.groupeDao();
         eleveDao = db.eleveDao();
         joinDao = db.eleveGroupeJoinDao();
+
+        //
+        allTrombis = trombiDao.getAllTrombis();
     }
 
     // Trombinoscope________________________________________________________________________________
     public void insert(Trombinoscope trombi) {new InsertTrombiAsyncTask(trombiDao).execute(trombi);}
     public void update(Trombinoscope trombi) {new UpdateTrombiAsyncTask(trombiDao).execute(trombi);}
     public void delete(Trombinoscope trombi) {new DeleteTrombiAsyncTask(trombiDao).execute(trombi);}
+    public LiveData<List<Trombinoscope>> getAllTrombis() {return allTrombis;}
 
 
 
@@ -73,4 +79,16 @@ public class TrombiRepository {
             return null;
         }
     }
+
+    /*private static class GetAllTrombisAsyncTask extends AsyncTask<Void, Void, Void>{
+        private TrombinoscopeDao trombiDao;
+
+        GetAllTrombisAsyncTask(TrombinoscopeDao trombiDao){ this.trombiDao = trombiDao; }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            trombiDao.getAllTrombis();
+            return null;
+        }
+    }*/
 }

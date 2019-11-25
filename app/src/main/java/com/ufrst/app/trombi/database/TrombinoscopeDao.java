@@ -23,5 +23,5 @@ public interface TrombinoscopeDao {
 
     // Récupère tous les trombinoscopes dans l'ordre alphabétique
     @Query("SELECT * FROM table_trombi ORDER BY nomTrombi")
-    LiveData<List<Trombinoscope>> getAllTrombi();
+    LiveData<List<Trombinoscope>> getAllTrombis();
 }

@@ -6,7 +6,8 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDarker">#00574B</color>
     <color name="colorAccent">#D81B60</color>
-    <color name="background">#FEFEF2</color>
+    <color name="background">#FEFEFE</color>
+    <color name="onBackground">#000000</color>
     <color name="onPrimary"></color>
     <color name="onSecondary"></color>
     <color name="onError">#B00020</color>
@@ -16,12 +17,14 @@
     <color name="textMediumEmphasis">#60000000</color>
     <color name="textDisabled">#38000000</color>
 
+    <color name="boxBackground">#10000000</color>
+
     <!-- Thème sombre -->
     <color name="colorPrimaryDark"></color>
     <color name="colorPrimaryDarkDark"></color>
     <color name="colorAccentDark"></color>
     <color name="backgroundDark">#121212</color>
-    <color name="onBackgroundDark"></color>
+    <color name="onBackgroundDark">#FFFFFF</color>
     <color name="onSurface"></color>
     <color name="onPrimaryDark"></color>
     <color name="onSecondaryDark"></color>
@@ -30,4 +33,6 @@
     <color name="textHighEmphasisDark">#87FFFFFF</color>
     <color name="textMediumEmphasisDark">#60FFFFFF</color>
     <color name="textDisabledDark">#38FFFFFF</color>
+
+    <color name="boxBackgroundDark">#10FFFFFF</color>
 </resources>
