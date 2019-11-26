@@ -34,6 +34,11 @@ public class AdapteurTrombi extends RecyclerView.Adapter<AdapteurTrombi.TrombiHo
         holder.mTextViewNombre.setText("8"); //A changer
     }
 
+    // Retourne le Trombinoscope d'une certaine position
+    public Trombinoscope getTrombiAt(int pos){
+        return trombis.get(pos);
+    }
+
     @Override
     public int getItemCount(){
         return trombis.size();

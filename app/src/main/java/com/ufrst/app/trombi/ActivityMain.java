@@ -10,13 +10,16 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.snackbar.Snackbar;
 import com.ufrst.app.trombi.database.TrombiViewModel;
 import com.ufrst.app.trombi.database.Trombinoscope;
 
@@ -26,6 +29,7 @@ public class ActivityMain extends AppCompatActivity {
 
     public static final int REQUETE_AJOUT_TROMBI = 1;
 
+    private CoordinatorLayout mCoordinatorLayout;
     private TrombiViewModel mTrombiViewModel;
     //private NavigationView mNavigationView;
     private RecyclerView mRecyclerView;
@@ -44,6 +48,7 @@ public class ActivityMain extends AppCompatActivity {
     // Désérialise les vues dont on aura besoin depuis le XML
     private void findViews(){
         //mNavigationView = findViewById(R.id.NAV_navigationView);
+        mCoordinatorLayout = findViewById(R.id.MAIN_coordinator);
         tvEmpty = findViewById(R.id.MAIN_emptyRecyclerView);
     }
 
@@ -108,6 +113,32 @@ public class ActivityMain extends AppCompatActivity {
                 }
             }
         });
+
+        // Gestion des swipes sur le RecyclerView
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,
+                ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target){
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction){
+                final Trombinoscope trombiSuppr = adapteur.getTrombiAt(viewHolder.getAdapterPosition());
+                mTrombiViewModel.delete(trombiSuppr);
+
+                // Snackbar avec possibilité d'annuler
+                Snackbar.make(mCoordinatorLayout, R.string.MAIN_trombiSuppr, Snackbar.LENGTH_INDEFINITE)
+                        .setAction(R.string.U_annuler, new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v){
+                                Toast.makeText(ActivityMain.this, "bruh", Toast.LENGTH_SHORT).show(); //A changer
+                            }
+                        })
+                        .setDuration(8000)
+                        .show();
+            }
+        }).attachToRecyclerView(mRecyclerView);
     }
 
     @Override
