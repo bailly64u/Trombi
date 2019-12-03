@@ -20,6 +20,7 @@
             android:layout_alignParentBottom="true">
 
             <Button
+                android:id="@+id/AJOUTTROMBI_btnValider"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:layout_marginStart="4dp"
@@ -38,13 +39,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:layout_margin="8dp">
+                android:layout_margin="16dp" >
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
                     app:boxBackgroundColor="?attr/boxBackground"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
                     android:hint="@string/AJOUTTROMBI_hint1">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -62,6 +64,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
                     app:boxBackgroundColor="?attr/boxBackground"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
                     android:hint="@string/AJOUTTROMBI_hint2">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -70,28 +73,38 @@
                         android:layout_height="wrap_content"
                         android:inputType="textCapSentences"
                         android:maxLines="1"
-                        android:imeOptions="actionNext" />
+                        android:imeOptions="actionDone" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <com.google.android.material.textfield.TextInputLayout
+                <!--<com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
                     app:boxBackgroundColor="?attr/boxBackground"
                     android:hint="@string/AJOUTTROMBI_hint3">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/AJOUTTROMBI_entrerTexteImport"
                         android:layout_width="match_parent"
-                        android:layout_height="100dp"
-                        android:inputType="textCapSentences"
+                        android:layout_height="wrap_content"
+                        android:inputType="textCapSentences|textMultiLine"
                         android:imeOptions="actionDone" />
 
-                </com.google.android.material.textfield.TextInputLayout>
+                </com.google.android.material.textfield.TextInputLayout>-->
+
+                <!--<Button
+                    android:id="@+id/AJOUTTROMBI_btnImporter"
+                    android:text="Importer"
+                    android:textColor="#D81B60"
+                    android:textSize="14sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:layout_gravity="bottom|end"
+                    android:background="?attr/selectableItemBackground" />-->
+
             </LinearLayout>
         </ScrollView>
     </RelativeLayout>
-
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

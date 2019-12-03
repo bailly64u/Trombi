@@ -2,6 +2,7 @@ package com.ufrst.app.trombi;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -28,6 +29,11 @@ import java.util.List;
 public class ActivityMain extends AppCompatActivity {
 
     public static final int REQUETE_AJOUT_TROMBI = 1;
+    public static final int REQUETE_EDITE_TROMBI = 2;
+
+    public static final String EXTRA_ID = "com.ufrst.app.trombi.EXTRA_ID";
+    public static final String EXTRA_NOM = "com.ufrst.app.trombi.EXTRA_NOM";
+    public static final String EXTRA_DESC = "com.ufrst.app.trombi.EXTRA_DESC";
 
     private CoordinatorLayout mCoordinatorLayout;
     private TrombiViewModel mTrombiViewModel;
@@ -39,6 +45,8 @@ public class ActivityMain extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        setTitle(R.string.MAIN_title);
 
         findViews();
         setListeners();
@@ -139,12 +147,72 @@ public class ActivityMain extends AppCompatActivity {
                         .show();
             }
         }).attachToRecyclerView(mRecyclerView);
+
+        // Implémentation de notre interface (voire AdapteurTrombi)
+        // On peut gérer le clique tout en ayent le contexte de l'activité principale,
+        // en particulier le ViewModel pour modifier la base de données
+        adapteur.setOnItemClickListener(new AdapteurTrombi.OnItemClickListener() {
+            @Override
+            public void onItemClick(Trombinoscope trombi){
+                /*Intent intent = new Intent(ActivityMain.this, ActivityVueTrombi.class);
+
+                intent.putExtra(EXTRA_ID, trombi.getIdTrombi());
+                intent.putExtra(EXTRA_NOM, trombi.getNomTrombi());  // On passe le nom pour le mettre en titre de l'activité déclenchée
+                intent.putExtra(EXTRA_DESC, trombi.getDescription());*/
+            }
+
+            @Override
+            public void onItemLongClick(Trombinoscope trombi){
+                Intent intent = new Intent(ActivityMain.this, ActivityAjoutTrombi.class);
+
+                // On passe les infos, à remettre dans les champs sujets à modifications
+                Log.v("____________________", String.valueOf(trombi.getIdTrombi()));
+                intent.putExtra(EXTRA_ID, trombi.getIdTrombi());
+                intent.putExtra(EXTRA_NOM, trombi.getNomTrombi());
+                intent.putExtra(EXTRA_DESC, trombi.getDescription());
+
+                startActivityForResult(intent, REQUETE_EDITE_TROMBI);
+            }
+        });
     }
 
     @Override
+    // Déclenchée au retour de l'activité d'ajout de trombinoscope
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data){
         super.onActivityResult(requestCode, resultCode, data);
 
+        if(requestCode == REQUETE_AJOUT_TROMBI && resultCode == RESULT_OK){
+            if(data != null){
+                String nom = data.getStringExtra(EXTRA_NOM);
+                String desc = data.getStringExtra(EXTRA_DESC);
 
+                Trombinoscope trombi = new Trombinoscope(nom, desc);
+                mTrombiViewModel.insert(trombi);
+
+                Snackbar.make(mCoordinatorLayout, R.string.MAIN_trombiAjoute, Snackbar.LENGTH_LONG).show();
+            } else{
+                Snackbar.make(mCoordinatorLayout, R.string.U_erreur, Snackbar.LENGTH_LONG).show();
+            }
+        } else if(requestCode == REQUETE_EDITE_TROMBI && resultCode == RESULT_OK){
+            if(data != null){
+                // On précise l'id afin d'updater la bonne valeur dans la BD
+                long id = data.getLongExtra(EXTRA_ID, -1);
+
+                // Un problème est survenu. Ne peut normalement pas se dérouler
+                if(id == -1){
+                    Snackbar.make(mCoordinatorLayout, R.string.U_erreur, Snackbar.LENGTH_LONG).show();
+                    return;
+                }
+
+                String nom = data.getStringExtra(EXTRA_NOM);
+                String desc = data.getStringExtra(EXTRA_DESC);
+
+                Trombinoscope trombi = new Trombinoscope(nom, desc);
+                trombi.setIdTrombi(id);
+                mTrombiViewModel.update(trombi);
+
+                Snackbar.make(mCoordinatorLayout, R.string.MAIN_trombiModifie, Snackbar.LENGTH_LONG).show();
+            }
+        }
     }
 }

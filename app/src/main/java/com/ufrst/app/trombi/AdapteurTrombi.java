@@ -16,6 +16,7 @@ import java.util.List;
 public class AdapteurTrombi extends RecyclerView.Adapter<AdapteurTrombi.TrombiHolder> {
 
     private List<Trombinoscope> trombis = new ArrayList<>();
+    private OnItemClickListener listener;                   // Interface
 
     @NonNull
     @Override
@@ -55,14 +56,48 @@ public class AdapteurTrombi extends RecyclerView.Adapter<AdapteurTrombi.TrombiHo
         private TextView mTextViewDesc;         // Description du trombi
         private TextView mTextViewNombre;       // Nb d'élèves dans le trombi
 
-        public TrombiHolder(View itemView){
+        TrombiHolder(View itemView){
             super(itemView);
 
+            // Gestion des vues
             mTextViewNom = itemView.findViewById(R.id.TROMBIITEM_nom);
             mTextViewDesc = itemView.findViewById(R.id.TROMBIITEM_description);
             mTextViewNombre = itemView.findViewById(R.id.TROMBIITEM_nombre);
 
+            // Gestion des listeners
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v){
+                    int pos = getAdapterPosition();             // Récupération position item cliqué
 
+                    if(listener != null && pos != RecyclerView.NO_POSITION){
+                        listener.onItemClick(trombis.get(pos)); // Récupération objet dans la liste
+                    }
+                }
+            });
+
+            itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v){
+                    int pos = getAdapterPosition();
+
+                    if(listener != null && pos != RecyclerView.NO_POSITION){
+                        listener.onItemLongClick(trombis.get(pos));
+                    }
+
+                    return false;
+                }
+            });
         }
+    }
+
+    // Interface permettant de gérer le clique dans l'activité principale et son contexte
+    public interface OnItemClickListener{
+        void onItemClick(Trombinoscope trombi);
+        void onItemLongClick(Trombinoscope trombi);
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener){
+        this.listener = listener;
     }
 }

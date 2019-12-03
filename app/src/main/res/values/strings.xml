@@ -1,18 +1,27 @@
 <resources>
     <string name="app_name">Trombi</string>
 
-    <string name="U_annuler">Le trombinoscope a été supprimé</string>
+    <string name="U_annuler">Annuler</string>
+    <string name="U_erreur">Une erreur est survenue</string>
 
     <string name="DRAWER_item1">Item 1</string>
     <string name="DRAWER_item2">Item 2</string>
     <string name="DRAWER_item3">Item 3</string>
     <string name="DRAWERH_item1">Item 1</string>
 
+    <string name="MAIN_title">Mes trombinoscopes</string>
     <string name="MAIN_emptyRecyclerView">Vous n\'avez aucun trombinoscope :( .</string>
     <string name="MAIN_trombiSuppr">Le trombinoscope a été supprimé</string>
+    <string name="MAIN_trombiAjoute">Le trombinoscope a été ajouté</string>
+    <string name="MAIN_trombiModifie">Le trombinoscope a été modifié</string>
 
+    <string name="AJOUTTROMBI_title">Ajouter un trombinoscope</string>
+    <string name="AJOUTTROMBI_titleVar">Modifier un trombinoscope</string>
     <string name="AJOUTTROMBI_btnValider">Valider</string>
+    <string name="AJOUTTROMBI_importer">Importer</string>
     <string name="AJOUTTROMBI_hint1">Nom</string>
     <string name="AJOUTTROMBI_hint2">Description</string>
     <string name="AJOUTTROMBI_hint3">Importer liste (optionnel)</string>
+    <string name="AJOUTTROMBI_menu1">Saisir un texte</string>
+    <string name="AJOUTTROMBI_menu2">Choisir un fichier</string>
 </resources>

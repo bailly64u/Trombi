@@ -23,7 +23,7 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:textSize="17sp"
         android:ellipsize="end"
-        android:maxLines="2" />
+        android:maxLines="1" />
 
     <TextView
         android:id="@+id/TROMBIITEM_description"

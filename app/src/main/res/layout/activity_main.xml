@@ -7,6 +7,13 @@
     android:layout_width="match_parent"
     android:background="?attr/backgroundApp">
 
+    <TextView
+        android:id="@+id/MAIN_emptyRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:text="@string/MAIN_emptyRecyclerView" />
+
     <!--
     <androidx.drawerlayout.widget.DrawerLayout
         android:id="@+id/MAIN_drawer_layout"
@@ -46,13 +53,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             tools:listitem="@layout/trombi_item" />
-
-        <TextView
-            android:id="@+id/MAIN_emptyRecyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:text="@string/MAIN_emptyRecyclerView" />
 
     </LinearLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
