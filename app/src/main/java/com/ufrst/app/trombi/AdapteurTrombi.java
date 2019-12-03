@@ -6,6 +6,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ufrst.app.trombi.database.Trombinoscope;
@@ -13,10 +15,30 @@ import com.ufrst.app.trombi.database.Trombinoscope;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AdapteurTrombi extends RecyclerView.Adapter<AdapteurTrombi.TrombiHolder> {
+// ListeAdapter s'apparente à un RecyclerView, mais avec des méthodes pour gére les animations
+// d'insertions, suppresion etc aux bons endroits dans la liste
+public class AdapteurTrombi extends ListAdapter<Trombinoscope, AdapteurTrombi.TrombiHolder> {
 
-    private List<Trombinoscope> trombis = new ArrayList<>();
     private OnItemClickListener listener;                   // Interface
+
+    public AdapteurTrombi(){
+        super(DIFF_CALLBACK);
+    }
+
+    // Création de la logique de comparaison des items de la liste pour application des animations
+    private static final DiffUtil.ItemCallback<Trombinoscope> DIFF_CALLBACK =
+            new DiffUtil.ItemCallback<Trombinoscope>() {
+        @Override
+        public boolean areItemsTheSame(@NonNull Trombinoscope oldItem, @NonNull Trombinoscope newItem){
+            return oldItem.getIdTrombi() == newItem.getIdTrombi();
+        }
+
+        @Override
+        public boolean areContentsTheSame(@NonNull Trombinoscope oldItem, @NonNull Trombinoscope newItem){
+            return oldItem.getNomTrombi().equals(newItem.getNomTrombi()) &&
+                    oldItem.getDescription().equals(newItem.getDescription());
+        }
+    };
 
     @NonNull
     @Override
@@ -29,7 +51,7 @@ public class AdapteurTrombi extends RecyclerView.Adapter<AdapteurTrombi.TrombiHo
 
     @Override
     public void onBindViewHolder(@NonNull TrombiHolder holder, int position){
-        Trombinoscope currentTrombi = trombis.get(position);
+        Trombinoscope currentTrombi = getItem(position);
         holder.mTextViewNom.setText(currentTrombi.getNomTrombi());
         holder.mTextViewDesc.setText(currentTrombi.getDescription());
         holder.mTextViewNombre.setText("8"); //A changer
@@ -37,17 +59,7 @@ public class AdapteurTrombi extends RecyclerView.Adapter<AdapteurTrombi.TrombiHo
 
     // Retourne le Trombinoscope d'une certaine position
     public Trombinoscope getTrombiAt(int pos){
-        return trombis.get(pos);
-    }
-
-    @Override
-    public int getItemCount(){
-        return trombis.size();
-    }
-
-    public void setTrombis(List<Trombinoscope> trombis){
-        this.trombis = trombis;
-        notifyDataSetChanged();
+        return getItem(pos);
     }
 
     // Classe interne permettant de contenir les informations à afficher dans la liste
@@ -71,7 +83,7 @@ public class AdapteurTrombi extends RecyclerView.Adapter<AdapteurTrombi.TrombiHo
                     int pos = getAdapterPosition();             // Récupération position item cliqué
 
                     if(listener != null && pos != RecyclerView.NO_POSITION){
-                        listener.onItemClick(trombis.get(pos)); // Récupération objet dans la liste
+                        listener.onItemClick(getItem(pos)); // Récupération objet dans la liste
                     }
                 }
             });
@@ -82,7 +94,7 @@ public class AdapteurTrombi extends RecyclerView.Adapter<AdapteurTrombi.TrombiHo
                     int pos = getAdapterPosition();
 
                     if(listener != null && pos != RecyclerView.NO_POSITION){
-                        listener.onItemLongClick(trombis.get(pos));
+                        listener.onItemLongClick(getItem(pos));
                     }
 
                     return false;

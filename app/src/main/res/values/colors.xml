@@ -3,13 +3,14 @@
     <!-- Couleurs respactant les conventions du Material Design, voire https://material.io/design/color/dark-theme.html#anatomy -->
 
     <!-- Thème clair -->
-    <color name="colorPrimary">#008577</color>
-    <color name="colorPrimaryDarker">#00574B</color>
-    <color name="colorAccent">#D81B60</color>
+    <color name="colorPrimary">#3D2622</color>
+    <color name="colorPrimaryDarker">#1A0000</color>
+    <color name="colorPrimaryLighter">#694E4A</color>
+    <color name="colorAccent">#FFB74D</color>
     <color name="background">#FEFEFE</color>
     <color name="onBackground">#000000</color>
-    <color name="onPrimary"></color>
-    <color name="onSecondary"></color>
+    <color name="onPrimary">#FFFFFF</color>
+    <color name="onSecondary">#000000</color>
     <color name="onError">#B00020</color>
     <color name="lightWhite">#FCFCFC</color>
 
@@ -22,6 +23,7 @@
     <!-- Thème sombre -->
     <color name="colorPrimaryDark"></color>
     <color name="colorPrimaryDarkDark"></color>
+    <color name="colorPrimaryLighterDark"></color>
     <color name="colorAccentDark"></color>
     <color name="backgroundDark">#121212</color>
     <color name="onBackgroundDark">#FFFFFF</color>

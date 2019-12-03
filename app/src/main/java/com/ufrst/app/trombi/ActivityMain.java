@@ -111,7 +111,7 @@ public class ActivityMain extends AppCompatActivity {
         mTrombiViewModel.getAllTrombis().observe(this, new Observer<List<Trombinoscope>>() {
             @Override
             public void onChanged(List<Trombinoscope> trombis){
-                adapteur.setTrombis(trombis);
+                adapteur.submitList(trombis);
 
                 // Afficher le placeholder en cas de liste vide
                 if(trombis.isEmpty()){
