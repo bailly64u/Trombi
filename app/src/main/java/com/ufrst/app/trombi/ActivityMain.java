@@ -1,6 +1,7 @@
 package com.ufrst.app.trombi;
 
 import android.content.Intent;
+import android.graphics.Canvas;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -11,6 +12,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
@@ -39,6 +41,7 @@ public class ActivityMain extends AppCompatActivity {
     private TrombiViewModel mTrombiViewModel;
     //private NavigationView mNavigationView;
     private RecyclerView mRecyclerView;
+    private Toolbar mToolbar;
     private TextView tvEmpty;
 
     @Override
@@ -51,6 +54,9 @@ public class ActivityMain extends AppCompatActivity {
         findViews();
         setListeners();
         setRecyclerViewAndViewModel();
+
+        // Toolbar
+        setSupportActionBar(mToolbar);
     }
 
     // Désérialise les vues dont on aura besoin depuis le XML
@@ -58,6 +64,7 @@ public class ActivityMain extends AppCompatActivity {
         //mNavigationView = findViewById(R.id.NAV_navigationView);
         mCoordinatorLayout = findViewById(R.id.MAIN_coordinator);
         tvEmpty = findViewById(R.id.MAIN_emptyRecyclerView);
+        mToolbar = findViewById(R.id.MAIN_toolbar);
     }
 
     // Applique des listeners sur certains éléments
@@ -126,8 +133,25 @@ public class ActivityMain extends AppCompatActivity {
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,
                 ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
-            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target){
+            public boolean onMove(@NonNull RecyclerView recyclerView,
+                                  @NonNull RecyclerView.ViewHolder viewHolder,
+                                  @NonNull RecyclerView.ViewHolder target){
                 return false;
+            }
+
+            @Override
+            // Animation de transaparence lors du swipe
+            public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView,
+                                    @NonNull RecyclerView.ViewHolder viewHolder,
+                                    float dX, float dY, int actionState, boolean isCurrentlyActive){
+                if(actionState == ItemTouchHelper.ACTION_STATE_SWIPE){
+                    float width = (float) viewHolder.itemView.getWidth();
+                    float alpha = 1.0f - Math.abs(dX) / width;
+                    viewHolder.itemView.setAlpha(alpha);
+                    viewHolder.itemView.setTranslationX(dX);
+                } else{
+                    super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+                }
             }
 
             @Override
@@ -154,11 +178,13 @@ public class ActivityMain extends AppCompatActivity {
         adapteur.setOnItemClickListener(new AdapteurTrombi.OnItemClickListener() {
             @Override
             public void onItemClick(Trombinoscope trombi){
-                /*Intent intent = new Intent(ActivityMain.this, ActivityVueTrombi.class);
+                Intent intent = new Intent(ActivityMain.this, ActivityVueTrombi.class);
 
                 intent.putExtra(EXTRA_ID, trombi.getIdTrombi());
                 intent.putExtra(EXTRA_NOM, trombi.getNomTrombi());  // On passe le nom pour le mettre en titre de l'activité déclenchée
-                intent.putExtra(EXTRA_DESC, trombi.getDescription());*/
+                intent.putExtra(EXTRA_DESC, trombi.getDescription());
+
+                startActivity(intent);
             }
 
             @Override
@@ -166,7 +192,6 @@ public class ActivityMain extends AppCompatActivity {
                 Intent intent = new Intent(ActivityMain.this, ActivityAjoutTrombi.class);
 
                 // On passe les infos, à remettre dans les champs sujets à modifications
-                Log.v("____________________", String.valueOf(trombi.getIdTrombi()));
                 intent.putExtra(EXTRA_ID, trombi.getIdTrombi());
                 intent.putExtra(EXTRA_NOM, trombi.getNomTrombi());
                 intent.putExtra(EXTRA_DESC, trombi.getDescription());

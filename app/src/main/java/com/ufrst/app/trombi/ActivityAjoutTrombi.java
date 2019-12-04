@@ -3,6 +3,8 @@ package com.ufrst.app.trombi;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,7 +16,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
 import static com.ufrst.app.trombi.ActivityMain.EXTRA_DESC;
 import static com.ufrst.app.trombi.ActivityMain.EXTRA_ID;
@@ -23,6 +27,8 @@ import static com.ufrst.app.trombi.ActivityMain.EXTRA_NOM;
 public class ActivityAjoutTrombi extends AppCompatActivity {
 
     private TextInputEditText etNom, etDesc;
+    private CoordinatorLayout mCoordinatorLayout;
+    private Toolbar mToolbar;
     private Button mButton;
 
     @Override
@@ -30,16 +36,20 @@ public class ActivityAjoutTrombi extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ajout_trombi);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
         findViews();
         updateData();
         setListeners();
+
+        // Toolbar
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     private void findViews(){
+        mCoordinatorLayout = findViewById(R.id.AJOUTTROMBI_coordinator);
         etDesc = findViewById(R.id.AJOUTTROMBI_entrerDescription);
         mButton = findViewById(R.id.AJOUTTROMBI_btnValider);
+        mToolbar = findViewById(R.id.AJOUTTROMBI_toolbar);
         etNom = findViewById(R.id.AJOUTTROMBI_entrerNom);
     }
 
@@ -74,6 +84,7 @@ public class ActivityAjoutTrombi extends AppCompatActivity {
         String desc = etDesc.getText().toString();
 
         if(nom.trim().isEmpty() || desc.trim().isEmpty()){ //A changer
+            Snackbar.make(mCoordinatorLayout, R.string.AJOUTTROMBI_empty, Snackbar.LENGTH_LONG).show();
             return;
         }
 
@@ -86,8 +97,6 @@ public class ActivityAjoutTrombi extends AppCompatActivity {
         // a été lancée dans le but d'ajouter un trombi.
         // Si on a un EXTRA_ID, alors on modifie un trombi et nous changerons la bonne entrée dans la BD en conséquence
         long id = getIntent().getLongExtra(EXTRA_ID, -1);
-
-        Log.v("____________________", String.valueOf(id));
 
         // On édite un trombi
         if(id != -1){

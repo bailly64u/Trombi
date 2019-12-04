@@ -1,13 +1,17 @@
 <resources>
 
     <!-- Theme clair -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
 
+        <item name="colorPrimaryLighter">@color/colorPrimaryLighter</item>
+
         <item name="backgroundApp">@color/background</item>
         <item name="onBackground">@color/onBackground</item>
+
+        <item name="onSecondary">@color/onSecondary</item>
 
         <item name="textMediumEmphasis">@color/textMediumEmphasis</item>
         <item name="textDisabled">@color/textDisabled</item>
@@ -21,8 +25,12 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
 
+        <item name="colorPrimaryLighter">@color/colorPrimaryLightDark</item>
+
         <item name="backgroundApp">@color/backgroundDark</item>
         <item name="onBackground">@color/onBackgroundDark</item>
+
+        <item name="onSecondary">@color/onSecondaryDark</item>
 
         <item name="textMediumEmphasis">@color/textMediumEmphasisDark</item>
         <item name="textDisabled">@color/textDisabledDark</item>
@@ -31,11 +39,14 @@
     </style>
 
 
-
-
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
     <style name="Widget.MaterialComponents.FloatingActionButton" parent="Widget.Design.FloatingActionButton" />
+
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
 </resources>

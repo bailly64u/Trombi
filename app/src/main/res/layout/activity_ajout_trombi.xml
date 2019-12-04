@@ -8,10 +8,25 @@
     android:background="?attr/backgroundApp"
     tools:context=".ActivityAjoutTrombi">
 
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/AJOUTTROMBI_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_behavior="com.ufrst.app.trombi.FABBehavior">
+        android:layout_marginTop="80dp"
+        app:layout_behavior="com.ufrst.app.trombi.FABBehavior" >
 
         <LinearLayout
             android:id="@+id/AJOUTTROMBI_btnWrapper"
@@ -25,6 +40,8 @@
                 android:layout_height="60dp"
                 android:layout_marginStart="4dp"
                 android:layout_marginEnd="4dp"
+                android:backgroundTint="?attr/colorAccent"
+                android:textColor="?attr/onSecondary"
                 android:text="@string/AJOUTTROMBI_btnValider" />
 
         </LinearLayout>
@@ -38,72 +55,83 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_margin="16dp" >
+                android:layout_margin="16dp"
+                android:orientation="vertical">
 
-                <com.google.android.material.textfield.TextInputLayout
+                <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    app:boxBackgroundColor="?attr/boxBackground"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
-                    android:hint="@string/AJOUTTROMBI_hint1">
+                    android:layout_height="wrap_content" >
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/AJOUTTROMBI_entrerNom"
+                    <ImageView
+                        android:id="@+id/AJOUTTROMBI_ivIcon1"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:layout_alignParentStart="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginEnd="8dp"
+                        android:paddingBottom="8dp"
+                        android:contentDescription="@string/AJOUTTROMBI_contentDesc1"
+                        android:src="@drawable/ic_grid"
+                        android:tint="?attr/colorAccent" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/AJOUTTROMBI_tilNom"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_toEndOf="@+id/AJOUTTROMBI_ivIcon1"
+                        app:boxBackgroundColor="?attr/boxBackground"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                        android:hint="@string/AJOUTTROMBI_hint1">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/AJOUTTROMBI_entrerNom"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="textCapSentences"
+                            android:maxLines="1"
+                            android:imeOptions="actionNext" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:id="@+id/AJOUTTROMBI_ivIcon2"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:layout_alignParentStart="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginEnd="8dp"
+                        android:paddingBottom="8dp"
+                        android:contentDescription="@string/AJOUTTROMBI_contentDesc2"
+                        android:src="@drawable/ic_desc"
+                        android:tint="?attr/colorAccent" />
+
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="textCapSentences"
-                        android:maxLines="1"
-                        android:imeOptions="actionNext" />
+                        android:layout_marginBottom="16dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_toEndOf="@+id/AJOUTTROMBI_ivIcon2"
+                        app:boxBackgroundColor="?attr/boxBackground"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                        android:hint="@string/AJOUTTROMBI_hint2">
 
-                </com.google.android.material.textfield.TextInputLayout>
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/AJOUTTROMBI_entrerDescription"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="textCapSentences"
+                            android:maxLines="1"
+                            android:imeOptions="actionDone" />
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    app:boxBackgroundColor="?attr/boxBackground"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
-                    android:hint="@string/AJOUTTROMBI_hint2">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/AJOUTTROMBI_entrerDescription"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="textCapSentences"
-                        android:maxLines="1"
-                        android:imeOptions="actionDone" />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <!--<com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
-                    app:boxBackgroundColor="?attr/boxBackground"
-                    android:hint="@string/AJOUTTROMBI_hint3">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/AJOUTTROMBI_entrerTexteImport"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="textCapSentences|textMultiLine"
-                        android:imeOptions="actionDone" />
-
-                </com.google.android.material.textfield.TextInputLayout>-->
-
-                <!--<Button
-                    android:id="@+id/AJOUTTROMBI_btnImporter"
-                    android:text="Importer"
-                    android:textColor="#D81B60"
-                    android:textSize="14sp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp"
-                    android:layout_gravity="bottom|end"
-                    android:background="?attr/selectableItemBackground" />-->
-
+                    </com.google.android.material.textfield.TextInputLayout>
+                </RelativeLayout>
             </LinearLayout>
         </ScrollView>
     </RelativeLayout>

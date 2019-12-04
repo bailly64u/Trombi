@@ -6,8 +6,7 @@
     android:focusable="true"
     android:clickable="true"
     android:background="?attr/backgroundApp"
-    android:foreground="?android:attr/selectableItemBackground"
-    android:orientation="horizontal" >
+    android:foreground="?android:attr/selectableItemBackground" >
 
     <TextView
         android:id="@+id/TROMBIITEM_nom"

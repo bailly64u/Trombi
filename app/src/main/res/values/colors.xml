@@ -23,7 +23,7 @@
     <!-- Thème sombre -->
     <color name="colorPrimaryDark"></color>
     <color name="colorPrimaryDarkDark"></color>
-    <color name="colorPrimaryLighterDark"></color>
+    <color name="colorPrimaryLightDark"></color>
     <color name="colorAccentDark"></color>
     <color name="backgroundDark">#121212</color>
     <color name="onBackgroundDark">#FFFFFF</color>

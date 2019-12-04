@@ -24,4 +24,9 @@
     <string name="AJOUTTROMBI_hint3">Importer liste (optionnel)</string>
     <string name="AJOUTTROMBI_menu1">Saisir un texte</string>
     <string name="AJOUTTROMBI_menu2">Choisir un fichier</string>
+    <string name="AJOUTTROMBI_contentDesc1">Nom du trombinoscope</string>
+    <string name="AJOUTTROMBI_contentDesc2">Description du trombinoscope</string>
+    <string name="AJOUTTROMBI_empty">Veuillez saisir toutes les informations</string>
+
+    <string name="title_activity_vue_trombi">ActivityVueTrombi</string>
 </resources>
