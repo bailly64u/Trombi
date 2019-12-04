@@ -83,8 +83,8 @@ public class ActivityAjoutTrombi extends AppCompatActivity {
         String nom = etNom.getText().toString();
         String desc = etDesc.getText().toString();
 
-        if(nom.trim().isEmpty() || desc.trim().isEmpty()){ //A changer
-            Snackbar.make(mCoordinatorLayout, R.string.AJOUTTROMBI_empty, Snackbar.LENGTH_LONG).show();
+        if(nom.trim().isEmpty()){
+            etNom.setError(getResources().getString(R.string.AJOUTTROMBI_empty));
             return;
         }
 

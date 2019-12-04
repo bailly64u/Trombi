@@ -22,6 +22,11 @@ public class EleveGroupeJoin {
     @ColumnInfo(name = "join_id_eleve") private long joinIdEleve;
     @ColumnInfo(name = "join_id_groupe") private long joinIdGroupe;
 
+    public EleveGroupeJoin(long joinIdEleve, long joinIdGroupe){
+        this.joinIdEleve = joinIdEleve;
+        this.joinIdGroupe = joinIdGroupe;
+    }
+
     public long getJoinIdEleve(){ return joinIdEleve; }
     public void setJoinIdEleve(long joinIdEleve){ this.joinIdEleve = joinIdEleve;}
     public long getJoinIdGroupe(){ return joinIdGroupe; }

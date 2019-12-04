@@ -57,9 +57,18 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_marginBottom="20dp"
                 android:padding="16dp"
                 style="@style/TextAppearance.AppCompat.Large"
-                android:text="Filtres" />
+                android:text="@string/VUETROMBI_filtre" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginBottom="8dp"
+                android:text="@string/VUETROMBI_choixGroupe"
+                android:textColor="?attr/textMediumEmphasis" />
 
             <HorizontalScrollView
                 android:layout_width="match_parent"
@@ -73,10 +82,36 @@
                     android:layout_marginStart="4dp"
                     android:layout_marginEnd="4dp"
                     app:singleSelection="true"
-                    app:singleLine="true" >
+                    app:singleLine="true" />
 
-                </com.google.android.material.chip.ChipGroup>
             </HorizontalScrollView>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="24dp"
+                android:background="?attr/dividerColor" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginBottom="8dp"
+                android:text="@string/VUETROMBI_nbColonnes"
+                android:textColor="?attr/textMediumEmphasis" />
+
+            <SeekBar
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="24dp"
+                android:background="?attr/dividerColor" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

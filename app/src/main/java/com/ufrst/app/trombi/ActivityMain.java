@@ -41,6 +41,7 @@ public class ActivityMain extends AppCompatActivity {
     private TrombiViewModel mTrombiViewModel;
     //private NavigationView mNavigationView;
     private RecyclerView mRecyclerView;
+    private FloatingActionButton fab;
     private Toolbar mToolbar;
     private TextView tvEmpty;
 
@@ -65,6 +66,7 @@ public class ActivityMain extends AppCompatActivity {
         mCoordinatorLayout = findViewById(R.id.MAIN_coordinator);
         tvEmpty = findViewById(R.id.MAIN_emptyRecyclerView);
         mToolbar = findViewById(R.id.MAIN_toolbar);
+        fab = findViewById(R.id.MAIN_fab);
     }
 
     // Applique des listeners sur certains éléments
@@ -91,8 +93,6 @@ public class ActivityMain extends AppCompatActivity {
             }
         });*/
 
-        // Floating Action Button, désérialisation ici car on s'en servira que ici
-        FloatingActionButton fab = findViewById(R.id.MAIN_fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -171,6 +171,20 @@ public class ActivityMain extends AppCompatActivity {
                         .show();
             }
         }).attachToRecyclerView(mRecyclerView);
+
+        // ScrollListener, pour cacher ou révéler le fab en temps voulu
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                if(dy > 0  && fab.isShown()){
+                    fab.hide();
+                }
+
+                if(dy < 0  && !fab.isShown()){
+                    fab.show();
+                }
+            }
+        });
 
         // Implémentation de notre interface (voire AdapteurTrombi)
         // On peut gérer le clique tout en ayent le contexte de l'activité principale,

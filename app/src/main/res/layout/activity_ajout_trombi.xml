@@ -34,7 +34,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true">
 
-            <Button
+            <!--<Button
                 android:id="@+id/AJOUTTROMBI_btnValider"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
@@ -42,7 +42,21 @@
                 android:layout_marginEnd="4dp"
                 android:backgroundTint="?attr/colorAccent"
                 android:textColor="?attr/onSecondary"
-                android:text="@string/AJOUTTROMBI_btnValider" />
+                android:text="@string/AJOUTTROMBI_btnValider" />-->
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/AJOUTTROMBI_btnValider"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="4dp"
+                style="@style/Widget.MaterialComponents.Button.Icon"
+                app:backgroundTint="@color/colorPrimary"
+                app:icon="@drawable/ic_valid"
+                android:textAppearance="@style/TextAppearance.AppCompat"
+                android:textSize="18sp"
+                android:letterSpacing="0.05"
+                android:text="@string/AJOUTTROMBI_btnEnregistrer" />
 
         </LinearLayout>
 

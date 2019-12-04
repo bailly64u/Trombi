@@ -13,14 +13,16 @@
 
         <item name="onSecondary">@color/onSecondary</item>
 
+        <item name="textHighEmphasis">@color/textHighEmphasis</item>
         <item name="textMediumEmphasis">@color/textMediumEmphasis</item>
         <item name="textDisabled">@color/textDisabled</item>
 
         <item name="boxBackground">@color/boxBackground</item>
+        <item name="dividerColor">@color/divider</item>
     </style>
 
     <!-- Theme sombre -->
-    <style name="AppThemeDark" parent="Theme.MaterialComponents.Light.Bridge">
+    <style name="AppThemeDark" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
@@ -32,10 +34,12 @@
 
         <item name="onSecondary">@color/onSecondaryDark</item>
 
+        <item name="textHighEmphasis">@color/textHighEmphasisDark</item>
         <item name="textMediumEmphasis">@color/textMediumEmphasisDark</item>
         <item name="textDisabled">@color/textDisabledDark</item>
 
         <item name="boxBackground">@color/boxBackgroundDark</item>
+        <item name="dividerColor">@color/dividerDark</item>
     </style>
 
 
@@ -48,5 +52,16 @@
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+    </style>
+
+    <!-- Theme pour les chips -->
+    <style name="CustomChipChoice" parent="@style/Widget.MaterialComponents.Chip.Choice">
+        <item name="chipBackgroundColor">@color/chip_bg_state</item>
+        <item name="android:textColor">@color/chip_text_state</item>
+    </style>
+
+    <!-- Text Appearance personnalisé pour les chips (requis) -->
+    <style name="CustomTextChips" parent="TextAppearance.AppCompat">
+        <item name="android:textColor">?attr/colorAccent</item>
     </style>
 </resources>

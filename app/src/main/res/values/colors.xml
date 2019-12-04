@@ -3,14 +3,14 @@
     <!-- Couleurs respactant les conventions du Material Design, voire https://material.io/design/color/dark-theme.html#anatomy -->
 
     <!-- Thème clair -->
-    <color name="colorPrimary">#3D2622</color>
-    <color name="colorPrimaryDarker">#1A0000</color>
-    <color name="colorPrimaryLighter">#694E4A</color>
-    <color name="colorAccent">#FFB74D</color>
+    <color name="colorPrimary">#263238</color>
+    <color name="colorPrimaryDarker">#000A12</color>
+    <color name="colorPrimaryLighter">#4F5B62</color>
+    <color name="colorAccent">#26A69A</color>
     <color name="background">#FEFEFE</color>
     <color name="onBackground">#000000</color>
     <color name="onPrimary">#FFFFFF</color>
-    <color name="onSecondary">#000000</color>
+    <color name="onSecondary">#FFFFFF</color>
     <color name="onError">#B00020</color>
     <color name="lightWhite">#FCFCFC</color>
 
@@ -18,23 +18,25 @@
     <color name="textMediumEmphasis">#60000000</color>
     <color name="textDisabled">#38000000</color>
 
-    <color name="boxBackground">#10000000</color>
+    <color name="boxBackground">#15000000</color>
+    <color name="divider">#15000000</color>
 
     <!-- Thème sombre -->
-    <color name="colorPrimaryDark"></color>
-    <color name="colorPrimaryDarkDark"></color>
-    <color name="colorPrimaryLightDark"></color>
-    <color name="colorAccentDark"></color>
+    <color name="colorPrimaryDark">#353535</color>
+    <color name="colorPrimaryDarkDark">#000000</color>
+    <color name="colorPrimaryLightDark">#505050</color>
+    <color name="colorAccentDark">#80CBC4</color>
     <color name="backgroundDark">#121212</color>
     <color name="onBackgroundDark">#FFFFFF</color>
-    <color name="onSurface"></color>
-    <color name="onPrimaryDark"></color>
-    <color name="onSecondaryDark"></color>
+    <!--<color name="onSurface"></color>-->
+    <color name="onPrimaryDark">#FFFFFF</color>
+    <color name="onSecondaryDark">#000000</color>
     <color name="onErrorDark">#CF6679</color>
 
     <color name="textHighEmphasisDark">#87FFFFFF</color>
     <color name="textMediumEmphasisDark">#60FFFFFF</color>
     <color name="textDisabledDark">#38FFFFFF</color>
 
-    <color name="boxBackgroundDark">#10FFFFFF</color>
+    <color name="boxBackgroundDark">#15FFFFFF</color>
+    <color name="dividerDark">#15FFFFFF</color>
 </resources>

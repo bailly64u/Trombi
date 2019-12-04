@@ -34,7 +34,7 @@
         </shape>
     </item>
 
-    <item android:top="12dp">
+    <item android:top="16dp">
 
         <shape
             android:shape="rectangle">

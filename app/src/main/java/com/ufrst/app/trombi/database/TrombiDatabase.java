@@ -43,9 +43,15 @@ public abstract class TrombiDatabase extends RoomDatabase {
     // Génère des données factices
     private static class PopulateDBAsyncTask extends AsyncTask<Void, Void, Void> {
         private TrombinoscopeDao trombiDao;
+        private EleveDao eleveDao;
+        private GroupeDao groupeDao;
+        private EleveGroupeJoinDao joinDao;
 
         private PopulateDBAsyncTask(TrombiDatabase db){
             trombiDao = db.trombiDao();
+            eleveDao = db.eleveDao();
+            groupeDao = db.groupeDao();
+            joinDao = db.eleveGroupeJoinDao();
         }
 
         @Override
@@ -62,6 +68,33 @@ public abstract class TrombiDatabase extends RoomDatabase {
             trombiDao.insert(new Trombinoscope("Mon trombinoscope 2", "Mon premier trombinoscope 2"));
             trombiDao.insert(new Trombinoscope("Mon trombinoscope 3", "Mon premier trombinoscope 3"));
             trombiDao.insert(new Trombinoscope("Mon trombinoscope 4", "Mon premier trombinoscope 4"));
+
+            /*Groupe g1 = new Groupe("Mon groupe - TP1");
+            Groupe g2 = new Groupe("Mon groupe - TD1");
+            Groupe g3 = new Groupe("Mon groupe - TP2");
+            Groupe g4 = new Groupe("Mon groupe - TD3");
+
+            groupeDao.insert(g1);
+            groupeDao.insert(g2);
+            groupeDao.insert(g3);
+            groupeDao.insert(g4);
+
+            Eleve e1 = new Eleve("Bailly Louis", "Bruh");
+            Eleve e2 = new Eleve("Niclass Maria", "Bruh");
+            Eleve e3 = new Eleve("Nom prénom", "Bruh");
+            Eleve e4 = new Eleve("Jean Jacques", "Bruh");
+            Eleve e5 = new Eleve("Billy the kid", "Bruh");
+
+            eleveDao.insert(e1);
+            eleveDao.insert(e2);
+            eleveDao.insert(e3);
+            eleveDao.insert(e4);
+            eleveDao.insert(e5);
+
+            joinDao.insert(new EleveGroupeJoin(e1.getIdEleve(), g1.getIdGroupe()));
+            joinDao.insert(new EleveGroupeJoin(e2.getIdEleve(), g1.getIdGroupe()));
+            joinDao.insert(new EleveGroupeJoin(e2.getIdEleve(), g2.getIdGroupe()));
+            joinDao.insert(new EleveGroupeJoin(e3.getIdEleve(), g2.getIdGroupe()));*/
 
             return null;
         }

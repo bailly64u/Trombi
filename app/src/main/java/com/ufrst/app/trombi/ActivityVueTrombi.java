@@ -6,7 +6,6 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -14,6 +13,7 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
 import android.view.View;
 import android.webkit.WebView;
+import android.widget.Toast;
 
 public class ActivityVueTrombi extends AppCompatActivity {
 
@@ -80,10 +80,18 @@ public class ActivityVueTrombi extends AppCompatActivity {
             mChipGroup.setOnCheckedChangeListener(new ChipGroup.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(ChipGroup chipGroup, int i){
-
+                    Chip chip = findViewById(i);
+                    if(chip != null){
+                        Toast.makeText(ActivityVueTrombi.this, "Chip text is: " + chip.getText(), Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
         }
     }
 
+    @Override
+    public boolean onSupportNavigateUp(){
+        finish();
+        return super.onSupportNavigateUp();
+    }
 }
