@@ -1,10 +1,13 @@
 package com.ufrst.app.trombi.database;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
+
+import java.util.List;
 
 @Dao
 public interface EleveDao {
@@ -17,4 +20,8 @@ public interface EleveDao {
 
     @Delete
     void delete(Eleve eleve);
+
+    // Récupère tous les trombinoscopes dans l'ordre alphabétique
+    @Query("SELECT * FROM table_eleve ORDER BY nom_prenom")
+    LiveData<List<Eleve>> getAllEleves();
 }

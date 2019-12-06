@@ -6,6 +6,8 @@ import androidx.room.ForeignKey;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
+import static androidx.room.ForeignKey.CASCADE;
+
 // POJO
 // Indexe la table idTrombi pour éviter un scan de toutes la table lors de la recherche de la clef primaire
 @Entity(tableName = "table_groupe",

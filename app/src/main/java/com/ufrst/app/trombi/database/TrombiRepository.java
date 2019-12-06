@@ -17,9 +17,7 @@ public class TrombiRepository {
     private EleveDao eleveDao;
     private EleveGroupeJoinDao joinDao;
 
-    // LiveData (observable, pour plus d'infos: https://developer.android.com/topic/libraries/architecture/livedata
-    private LiveData<List<Trombinoscope>> allTrombis;
-
+    // Utilise des LiveData (observable, pour plus d'infos: https://developer.android.com/topic/libraries/architecture/livedata
     public TrombiRepository(Application application) {
         TrombiDatabase db = TrombiDatabase.getInstance(application);
 
@@ -28,16 +26,16 @@ public class TrombiRepository {
         groupeDao = db.groupeDao();
         eleveDao = db.eleveDao();
         joinDao = db.eleveGroupeJoinDao();
-
-        //
-        allTrombis = trombiDao.getAllTrombis();
     }
 
     // Trombinoscope________________________________________________________________________________
     public void insert(Trombinoscope trombi) {new InsertTrombiAsyncTask(trombiDao).execute(trombi);}
     public void update(Trombinoscope trombi) {new UpdateTrombiAsyncTask(trombiDao).execute(trombi);}
     public void delete(Trombinoscope trombi) {new DeleteTrombiAsyncTask(trombiDao).execute(trombi);}
-    public LiveData<List<Trombinoscope>> getAllTrombis() {return allTrombis;}
+    public LiveData<List<Trombinoscope>> getAllTrombis() {return trombiDao.getAllTrombis();}
+    public LiveData<List<Groupe>> getAllGroupes() {return groupeDao.getAllGroupes();}
+    public LiveData<List<Eleve>> getAllEleves() {return eleveDao.getAllEleves();}
+    public LiveData<List<Eleve>> getEleveForGroupe(long groupeId) {return joinDao.getElevesForGroupe(groupeId);}
 
 
 

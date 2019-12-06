@@ -8,6 +8,7 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -107,8 +108,9 @@ public class ActivityAjoutTrombi extends AppCompatActivity {
         finish();
     }
 
-    private void importTrombiText(){
-
+    private void importTrombiText(){    //A changer
+        Intent intent = new Intent(ActivityAjoutTrombi.this, ActivityBDTest.class);
+        startActivity(intent);
     }
 
     private void importTrombiFile(){

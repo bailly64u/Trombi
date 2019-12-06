@@ -25,7 +25,8 @@ public abstract class TrombiDatabase extends RoomDatabase {
         if(instance == null){
             instance = Room.databaseBuilder(context.getApplicationContext(),
                     TrombiDatabase.class, "trombi_database.db")
-                    .addCallback(roomCallback)                            // Pour ajouter un mock
+                    .addCallback(roomCallback)                              // Pour ajouter un mock
+                    .fallbackToDestructiveMigration()                       // A enlever. SI le schema de la BD change, la BD est détruite :'(
                     .build();
         }
         return instance;
@@ -69,7 +70,7 @@ public abstract class TrombiDatabase extends RoomDatabase {
             trombiDao.insert(new Trombinoscope("Mon trombinoscope 3", "Mon premier trombinoscope 3"));
             trombiDao.insert(new Trombinoscope("Mon trombinoscope 4", "Mon premier trombinoscope 4"));
 
-            /*Groupe g1 = new Groupe("Mon groupe - TP1");
+            Groupe g1 = new Groupe("Mon groupe - TP1");
             Groupe g2 = new Groupe("Mon groupe - TD1");
             Groupe g3 = new Groupe("Mon groupe - TP2");
             Groupe g4 = new Groupe("Mon groupe - TD3");
@@ -91,7 +92,7 @@ public abstract class TrombiDatabase extends RoomDatabase {
             eleveDao.insert(e4);
             eleveDao.insert(e5);
 
-            joinDao.insert(new EleveGroupeJoin(e1.getIdEleve(), g1.getIdGroupe()));
+            /*joinDao.insert(new EleveGroupeJoin(e1.getIdEleve(), g1.getIdGroupe()));
             joinDao.insert(new EleveGroupeJoin(e2.getIdEleve(), g1.getIdGroupe()));
             joinDao.insert(new EleveGroupeJoin(e2.getIdEleve(), g2.getIdGroupe()));
             joinDao.insert(new EleveGroupeJoin(e3.getIdEleve(), g2.getIdGroupe()));*/
