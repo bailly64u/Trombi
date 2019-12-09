@@ -35,6 +35,13 @@ public class TrombiRepository {
     public LiveData<List<Trombinoscope>> getAllTrombis() {return trombiDao.getAllTrombis();}
     public LiveData<List<Groupe>> getAllGroupes() {return groupeDao.getAllGroupes();}
     public LiveData<List<Eleve>> getAllEleves() {return eleveDao.getAllEleves();}
+
+
+    // Groupe_______________________________________________________________________________________
+    public LiveData<List<Groupe>> getGroupesByTrombi(long idTrombi) {return groupeDao.getGroupesByTrombi(idTrombi);}
+
+
+    // Eleve________________________________________________________________________________________
     public LiveData<List<Eleve>> getEleveForGroupe(long groupeId) {return joinDao.getElevesForGroupe(groupeId);}
 
 

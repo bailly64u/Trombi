@@ -21,7 +21,11 @@ public interface GroupeDao {
     @Delete
     void delete(Groupe groupe);
 
-    // Récupère tous les trombinoscopes dans l'ordre alphabétique
+    // Récupère tous les groupes dans l'ordre alphabétique
     @Query("SELECT * FROM table_groupe ORDER BY nom_groupe")
     LiveData<List<Groupe>> getAllGroupes();
+
+    // Récupère tous les groupes pour un certain trombinoscope, dans l'ordre alphabétique
+    @Query("SELECT * FROM table_groupe WHERE id_trombi=:idTrombi ORDER BY nom_groupe")
+    LiveData<List<Groupe>> getGroupesByTrombi(long idTrombi);
 }

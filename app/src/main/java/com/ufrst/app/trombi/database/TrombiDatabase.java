@@ -9,7 +9,7 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
-@Database(entities = {Trombinoscope.class, Groupe.class, Eleve.class, EleveGroupeJoin.class}, exportSchema = false, version = 1)
+@Database(entities = {Trombinoscope.class, Groupe.class, Eleve.class, EleveGroupeJoin.class}, exportSchema = false, version = 2)
 public abstract class TrombiDatabase extends RoomDatabase {
 
     private static TrombiDatabase instance;
@@ -32,7 +32,7 @@ public abstract class TrombiDatabase extends RoomDatabase {
         return instance;
     }
 
-    private  static RoomDatabase.Callback roomCallback = new RoomDatabase.Callback(){
+    private static RoomDatabase.Callback roomCallback = new RoomDatabase.Callback(){
         @Override
         public void onCreate(@NonNull SupportSQLiteDatabase db){
             super.onCreate(db);
@@ -70,10 +70,10 @@ public abstract class TrombiDatabase extends RoomDatabase {
             trombiDao.insert(new Trombinoscope("Mon trombinoscope 3", "Mon premier trombinoscope 3"));
             trombiDao.insert(new Trombinoscope("Mon trombinoscope 4", "Mon premier trombinoscope 4"));
 
-            Groupe g1 = new Groupe("Mon groupe - TP1");
-            Groupe g2 = new Groupe("Mon groupe - TD1");
-            Groupe g3 = new Groupe("Mon groupe - TP2");
-            Groupe g4 = new Groupe("Mon groupe - TD3");
+            Groupe g1 = new Groupe("Mon groupe - TP1", 3);
+            Groupe g2 = new Groupe("Mon groupe - TD1", 3);
+            Groupe g3 = new Groupe("Mon groupe - TP2", 3);
+            Groupe g4 = new Groupe("Mon groupe - TD3", 4);
 
             groupeDao.insert(g1);
             groupeDao.insert(g2);

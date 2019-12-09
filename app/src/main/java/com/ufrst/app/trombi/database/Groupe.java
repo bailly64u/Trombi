@@ -23,12 +23,18 @@ public class Groupe {
     @ColumnInfo(name = "nom_groupe")
     private String nomGroupe;
 
-    public Groupe(String nomGroupe) {
+    @ColumnInfo(name = "id_trombi")
+    private long idTrombi;
+
+    public Groupe(String nomGroupe, long idTrombi) {
         this.nomGroupe = nomGroupe;
+        this.idTrombi = idTrombi;
     }
 
     public long getIdGroupe() { return idGroupe; }
     public void setIdGroupe(long idGroupe) { this.idGroupe = idGroupe; }
     public String getNomGroupe() { return nomGroupe; }
     public void setNomGroupe(String nomGroupe) { this.nomGroupe = nomGroupe; }
+    public long getIdTrombi() { return idTrombi; }
+    public void setIdTrombi(long idTrombi) { this.idTrombi = idTrombi; }
 }

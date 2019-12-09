@@ -65,13 +65,13 @@ public class ActivityBDTest extends AppCompatActivity {
             }
         });
 
-        mTrombiViewModel.getEleveForGroupe(1).observe(this, new Observer<List<Eleve>>() {
+        mTrombiViewModel.getGroupesByTrombi(3).observe(this, new Observer<List<Groupe>>() {
             @Override
-            public void onChanged(List<Eleve> eleves) {
+            public void onChanged(List<Groupe> groupes) {
                 StringBuilder sb = new StringBuilder();
 
-                for(Eleve el : eleves){
-                    sb.append(el.getNomPrenom() + " | ");
+                for(Groupe groupe : groupes){
+                    sb.append(groupe.getNomGroupe() + " | ");
                 }
 
                 TextView tv4 = findViewById(R.id.TEST_tv4);
