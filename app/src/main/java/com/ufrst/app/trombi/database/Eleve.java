@@ -14,6 +14,7 @@ public class Eleve {
 
     @ColumnInfo(name = "nom_prenom")
     private String nomPrenom;
+
     private String photo;
 
     public Eleve(String nomPrenom, String photo) {

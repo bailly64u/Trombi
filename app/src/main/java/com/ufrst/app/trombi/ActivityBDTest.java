@@ -5,11 +5,13 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.os.Bundle;
-import android.view.View;
+import android.util.Log;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.ufrst.app.trombi.database.Eleve;
 import com.ufrst.app.trombi.database.Groupe;
+import com.ufrst.app.trombi.database.GroupeWithEleves;
 import com.ufrst.app.trombi.database.TrombiViewModel;
 import com.ufrst.app.trombi.database.Trombinoscope;
 
@@ -57,7 +59,7 @@ public class ActivityBDTest extends AppCompatActivity {
                 StringBuilder sb = new StringBuilder();
 
                 for(Eleve el : eleves){
-                    sb.append(el.getNomPrenom() + " | ");
+                    sb.append(el.getNomPrenom() + el.getIdEleve() + " | ");
                 }
 
                 TextView tv3 = findViewById(R.id.TEST_tv3);
@@ -76,6 +78,29 @@ public class ActivityBDTest extends AppCompatActivity {
 
                 TextView tv4 = findViewById(R.id.TEST_tv4);
                 tv4.setText(sb);
+            }
+        });
+
+        mTrombiViewModel.getEleveForGroupe().observe(this, new Observer<List<GroupeWithEleves>>() {
+            @Override
+            public void onChanged(List<GroupeWithEleves> groupeWithEleves) {
+                StringBuilder sb = new StringBuilder();
+
+                for(GroupeWithEleves o : groupeWithEleves){
+                    String nomGroupe = o.getGroupe().getNomGroupe();
+                    sb.append("|" + nomGroupe + ": ");
+
+                    Log.v("____________E_____________", "Nb eleve: " + o.getEleves().size());
+
+
+                    for(Eleve eleve : o.getEleves()){
+                        Log.v("_________E_______", "Un élève a été trouvé !");
+                        sb.append(eleve.getNomPrenom() + " ");
+                    }
+                }
+
+                TextView tv5 = findViewById(R.id.TEST_tv5);
+                tv5.setText(sb);
             }
         });
     }

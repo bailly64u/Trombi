@@ -42,7 +42,10 @@ public class TrombiRepository {
 
 
     // Eleve________________________________________________________________________________________
-    public LiveData<List<Eleve>> getEleveForGroupe(long groupeId) {return joinDao.getElevesForGroupe(groupeId);}
+
+
+    // Groupe x Eleve_______________________________________________________________________________
+    public LiveData<List<GroupeWithEleves>> getEleveForGroupe() {return joinDao.getElevesForGroupe();}
 
 
 

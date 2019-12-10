@@ -36,5 +36,5 @@ public class TrombiViewModel extends AndroidViewModel {
 
 
     // Eleve Groupe Join____________________________________________________________________________
-    public LiveData<List<Eleve>> getEleveForGroupe(long groupeID){return repository.getEleveForGroupe(groupeID);}
+    public LiveData<List<GroupeWithEleves>> getEleveForGroupe(){return repository.getEleveForGroupe();}
 }
