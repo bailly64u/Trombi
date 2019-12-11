@@ -22,6 +22,10 @@ public interface TrombinoscopeDao {
     void delete(Trombinoscope trombinoscope);
 
     // Récupère tous les trombinoscopes dans l'ordre alphabétique
-    @Query("SELECT * FROM table_trombi ORDER BY nomTrombi")
+    @Query("SELECT * FROM table_trombi ORDER BY nom_trombi")
     LiveData<List<Trombinoscope>> getAllTrombis();
+
+    // Récupère un trombinoscope selon un id
+    @Query("SELECT * FROM table_trombi WHERE id_trombi=:idTrombi")
+    LiveData<Trombinoscope> getTrombiById(long idTrombi);
 }

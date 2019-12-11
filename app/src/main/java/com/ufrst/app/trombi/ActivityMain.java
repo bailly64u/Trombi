@@ -3,8 +3,6 @@ package com.ufrst.app.trombi;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,7 +19,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.ufrst.app.trombi.database.TrombiViewModel;
 import com.ufrst.app.trombi.database.Trombinoscope;
@@ -37,13 +34,16 @@ public class ActivityMain extends AppCompatActivity {
     public static final String EXTRA_NOM = "com.ufrst.app.trombi.EXTRA_NOM";
     public static final String EXTRA_DESC = "com.ufrst.app.trombi.EXTRA_DESC";
 
-    private CoordinatorLayout mCoordinatorLayout;
-    private TrombiViewModel mTrombiViewModel;
-    //private NavigationView mNavigationView;
-    private RecyclerView mRecyclerView;
+    public static final String PREFS_NBCOLS = "com.ufrst.app.trombi.PREFS_NBCOLS";
+
+    private CoordinatorLayout coordinatorLayout;
+    //private NavigationView navigationView;
+    private RecyclerView recyclerView;
     private FloatingActionButton fab;
-    private Toolbar mToolbar;
+    private Toolbar toolbar;
     private TextView tvEmpty;
+
+    private TrombiViewModel trombiViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -57,15 +57,15 @@ public class ActivityMain extends AppCompatActivity {
         setRecyclerViewAndViewModel();
 
         // Toolbar
-        setSupportActionBar(mToolbar);
+        setSupportActionBar(toolbar);
     }
 
     // Désérialise les vues dont on aura besoin depuis le XML
     private void findViews(){
         //mNavigationView = findViewById(R.id.NAV_navigationView);
-        mCoordinatorLayout = findViewById(R.id.MAIN_coordinator);
+        coordinatorLayout = findViewById(R.id.MAIN_coordinator);
         tvEmpty = findViewById(R.id.MAIN_emptyRecyclerView);
-        mToolbar = findViewById(R.id.MAIN_toolbar);
+        toolbar = findViewById(R.id.MAIN_toolbar);
         fab = findViewById(R.id.MAIN_fab);
     }
 
@@ -105,17 +105,17 @@ public class ActivityMain extends AppCompatActivity {
 
     // Met en place l'observeur et le RecyclerView
     public void setRecyclerViewAndViewModel(){
-        mRecyclerView = findViewById(R.id.MAIN_recyclerView);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));  // Affiche les items les uns en dessous des autres
-        mRecyclerView.setHasFixedSize(true);                                    // Meilleures performances si le RV ne change pas de taille
+        recyclerView = findViewById(R.id.MAIN_recyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));  // Affiche les items les uns en dessous des autres
+        recyclerView.setHasFixedSize(true);                                    // Meilleures performances si le RV ne change pas de taille
 
         // Définir l'adapteur du RecyclerView
         final AdapteurTrombi adapteur = new AdapteurTrombi();
-        mRecyclerView.setAdapter(adapteur);
+        recyclerView.setAdapter(adapteur);
 
         // Récupére le ViewModel et observer la liste de Trombinoscopes
-        mTrombiViewModel = ViewModelProviders.of(this).get(TrombiViewModel.class);
-        mTrombiViewModel.getAllTrombis().observe(this, new Observer<List<Trombinoscope>>() {
+        trombiViewModel = ViewModelProviders.of(this).get(TrombiViewModel.class);
+        trombiViewModel.getAllTrombis().observe(this, new Observer<List<Trombinoscope>>() {
             @Override
             public void onChanged(List<Trombinoscope> trombis){
                 adapteur.submitList(trombis);
@@ -157,10 +157,10 @@ public class ActivityMain extends AppCompatActivity {
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction){
                 final Trombinoscope trombiSuppr = adapteur.getTrombiAt(viewHolder.getAdapterPosition());
-                mTrombiViewModel.delete(trombiSuppr);
+                trombiViewModel.delete(trombiSuppr);
 
                 // Snackbar avec possibilité d'annuler
-                Snackbar.make(mCoordinatorLayout, R.string.MAIN_trombiSuppr, Snackbar.LENGTH_INDEFINITE)
+                Snackbar.make(coordinatorLayout, R.string.MAIN_trombiSuppr, Snackbar.LENGTH_INDEFINITE)
                         .setAction(R.string.U_annuler, new View.OnClickListener() {
                             @Override
                             public void onClick(View v){
@@ -170,10 +170,10 @@ public class ActivityMain extends AppCompatActivity {
                         .setDuration(8000)
                         .show();
             }
-        }).attachToRecyclerView(mRecyclerView);
+        }).attachToRecyclerView(recyclerView);
 
         // ScrollListener, pour cacher ou révéler le fab en temps voulu
-        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 if(dy > 0  && fab.isShown()){
@@ -226,11 +226,11 @@ public class ActivityMain extends AppCompatActivity {
                 String desc = data.getStringExtra(EXTRA_DESC);
 
                 Trombinoscope trombi = new Trombinoscope(nom, desc);
-                mTrombiViewModel.insert(trombi);
+                trombiViewModel.insert(trombi);
 
-                Snackbar.make(mCoordinatorLayout, R.string.MAIN_trombiAjoute, Snackbar.LENGTH_LONG).show();
+                Snackbar.make(coordinatorLayout, R.string.MAIN_trombiAjoute, Snackbar.LENGTH_LONG).show();
             } else{
-                Snackbar.make(mCoordinatorLayout, R.string.U_erreur, Snackbar.LENGTH_LONG).show();
+                Snackbar.make(coordinatorLayout, R.string.U_erreur, Snackbar.LENGTH_LONG).show();
             }
         } else if(requestCode == REQUETE_EDITE_TROMBI && resultCode == RESULT_OK){
             if(data != null){
@@ -239,7 +239,7 @@ public class ActivityMain extends AppCompatActivity {
 
                 // Un problème est survenu. Ne peut normalement pas se dérouler
                 if(id == -1){
-                    Snackbar.make(mCoordinatorLayout, R.string.U_erreur, Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(coordinatorLayout, R.string.U_erreur, Snackbar.LENGTH_LONG).show();
                     return;
                 }
 
@@ -248,9 +248,9 @@ public class ActivityMain extends AppCompatActivity {
 
                 Trombinoscope trombi = new Trombinoscope(nom, desc);
                 trombi.setIdTrombi(id);
-                mTrombiViewModel.update(trombi);
+                trombiViewModel.update(trombi);
 
-                Snackbar.make(mCoordinatorLayout, R.string.MAIN_trombiModifie, Snackbar.LENGTH_LONG).show();
+                Snackbar.make(coordinatorLayout, R.string.MAIN_trombiModifie, Snackbar.LENGTH_LONG).show();
             }
         }
     }

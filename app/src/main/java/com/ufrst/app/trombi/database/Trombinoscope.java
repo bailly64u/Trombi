@@ -13,7 +13,12 @@ public class Trombinoscope {
     @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "id_trombi")
     private long idTrombi;
 
-    private String nomTrombi, description;
+    @ColumnInfo(name = "nom_trombi")
+    private String nomTrombi;
+
+    @ColumnInfo(name = "desc_trombi")
+    private String description;
+
 
     public Trombinoscope(String nomTrombi, String description) {
         this.nomTrombi = nomTrombi;

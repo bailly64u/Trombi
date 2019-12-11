@@ -9,11 +9,14 @@ import androidx.room.PrimaryKey;
 import static androidx.room.ForeignKey.CASCADE;
 
 // POJO
-// Indexe la table idTrombi pour éviter un scan de toutes la table lors de la recherche de la clef primaire
 @Entity(tableName = "table_groupe",
-        foreignKeys = @ForeignKey(entity = Trombinoscope.class,
-                                    parentColumns = "id_trombi",
-                                    childColumns = "id_groupe"))
+        foreignKeys = @ForeignKey(
+                entity = Trombinoscope.class,
+                parentColumns = "id_trombi",
+                childColumns = "id_groupe",
+                onDelete = CASCADE
+        )
+)
 public class Groupe {
 
     // Champs présents dans la BD
@@ -25,6 +28,7 @@ public class Groupe {
 
     @ColumnInfo(name = "id_trombi")
     private long idTrombi;
+
 
     public Groupe(String nomGroupe, long idTrombi) {
         this.nomGroupe = nomGroupe;

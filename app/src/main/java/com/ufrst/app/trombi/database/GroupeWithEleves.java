@@ -6,6 +6,8 @@ import androidx.room.Relation;
 
 import java.util.List;
 
+// Utilise les annotations de Room 2.2.0 pour créer des relations many to many
+// Ces objets contiendront un groupe et sa liste d'élèves.
 public class GroupeWithEleves {
     @Embedded
     Groupe groupe;                                          // Les champs de l'objet groupes sont inclus

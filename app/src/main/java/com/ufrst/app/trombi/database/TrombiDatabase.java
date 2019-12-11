@@ -9,7 +9,7 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
-@Database(entities = {Trombinoscope.class, Groupe.class, Eleve.class, EleveGroupeJoin.class}, exportSchema = false, version = 1)
+@Database(entities = {Trombinoscope.class, Groupe.class, Eleve.class, EleveGroupeJoin.class}, exportSchema = false, version = 3)
 public abstract class TrombiDatabase extends RoomDatabase {
 
     private static TrombiDatabase instance;
@@ -20,7 +20,7 @@ public abstract class TrombiDatabase extends RoomDatabase {
     public abstract EleveDao eleveDao();
     public abstract EleveGroupeJoinDao eleveGroupeJoinDao();
 
-    // Singleton
+    // Singleton représentant la BD
     static synchronized TrombiDatabase getInstance(Context context){
         if(instance == null){
             instance = Room.databaseBuilder(context.getApplicationContext(),
@@ -70,11 +70,11 @@ public abstract class TrombiDatabase extends RoomDatabase {
             trombiDao.insert(new Trombinoscope("Mon trombinoscope 3", "Mon premier trombinoscope 3"));
             trombiDao.insert(new Trombinoscope("Mon trombinoscope 4", "Mon premier trombinoscope 4"));
 
-            Groupe g1 = new Groupe("Mon groupe - TP1", 3);
-            Groupe g2 = new Groupe("Mon groupe - TD1", 3);
-            Groupe g3 = new Groupe("Mon groupe - TP2", 3);
-            Groupe g4 = new Groupe("Mon groupe - TD3", 4);
-            Groupe g5 = new Groupe("Mon groupe - TP3", 5);
+            Groupe g1 = new Groupe("Mon groupe - TP1", 1);
+            Groupe g2 = new Groupe("Mon groupe - TD1", 1);
+            Groupe g3 = new Groupe("Mon groupe - TP2", 1);
+            Groupe g4 = new Groupe("Mon groupe - TD3", 1);
+            Groupe g5 = new Groupe("Mon groupe - TP3", 1);
 
             groupeDao.insert(g1);
             groupeDao.insert(g2);
@@ -82,22 +82,26 @@ public abstract class TrombiDatabase extends RoomDatabase {
             groupeDao.insert(g4);
             groupeDao.insert(g5);
 
-            Eleve e1 = new Eleve("Bailly Louis", "Bruh");
-            Eleve e2 = new Eleve("Niclass Maria", "Bruh");
-            Eleve e3 = new Eleve("Nom prénom", "Bruh");
-            Eleve e4 = new Eleve("Jean Jacques", "Bruh");
-            Eleve e5 = new Eleve("Billy the kid", "Bruh");
+            Eleve e1 = new Eleve("Bailly Louis", 1, "Bruh");
+            Eleve e2 = new Eleve("Niclass Maria", 1, "Bruh");
+            Eleve e3 = new Eleve("Nom prénom", 1, "Bruh");
+            Eleve e4 = new Eleve("Jean Jacques", 1, "Bruh");
+            Eleve e5 = new Eleve("Billy the kid", 1, "Bruh");
+            Eleve e6 = new Eleve("Henry Dupont", 1, "Bruh");
+            Eleve e7 = new Eleve("Marine Lepen", 1, "Bruh");
 
             eleveDao.insert(e1);
             eleveDao.insert(e2);
             eleveDao.insert(e3);
             eleveDao.insert(e4);
             eleveDao.insert(e5);
+            eleveDao.insert(e6);
+            eleveDao.insert(e7);
 
             joinDao.insert(new EleveGroupeJoin(1, 1));
-            //joinDao.insert(new EleveGroupeJoin(e2.getIdEleve(), g1.getIdGroupe()));
-            //joinDao.insert(new EleveGroupeJoin(e2.getIdEleve(), g2.getIdGroupe()));
-            //joinDao.insert(new EleveGroupeJoin(e3.getIdEleve(), g2.getIdGroupe()));
+            joinDao.insert(new EleveGroupeJoin(2, 1));
+            joinDao.insert(new EleveGroupeJoin(3, 2));
+            joinDao.insert(new EleveGroupeJoin(4, 2));
 
             return null;
         }

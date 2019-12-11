@@ -24,8 +24,13 @@ public interface EleveGroupeJoinDao {
     void delete(EleveGroupeJoin eleveGroupeJoin);
 
     // Retourne une liste d'objet contenant un Groupe avec sa liste d'Eleves
-    @Transaction                                        // Comme Room utilisera deux requêtes pour nous dans les coulisses, on annote une Transaction pour s'assurer que cela se passe atomiquement
+    // Comme Room utilisera deux requêtes pour nous dans les coulisses, on annote une Transaction pour s'assurer que cela se passe atomiquement
+    @Transaction
     @Query("SELECT * FROM table_groupe")
-    LiveData<List<GroupeWithEleves>> getElevesForGroupe();
+    LiveData<List<GroupeWithEleves>> getGroupeWithEleves();
 
+    // Retourne un objet GroupeWithEleve avec un groupe d'un certain id
+    @Transaction
+    @Query("SELECT * FROM table_groupe WHERE id_groupe=:idGroupe")
+    LiveData<GroupeWithEleves> getGroupeByIdWithEleves(long idGroupe);
 }

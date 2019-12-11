@@ -24,4 +24,8 @@ public interface EleveDao {
     // Récupère tous les trombinoscopes dans l'ordre alphabétique
     @Query("SELECT * FROM table_eleve ORDER BY nom_prenom")
     LiveData<List<Eleve>> getAllEleves();
+
+    // Récupère les élèves d'un trombinoscope
+    @Query("SELECT * FROM table_eleve WHERE id_trombi=:idTrombi ORDER BY nom_prenom")
+    LiveData<List<Eleve>> getElevesByTrombi(long idTrombi);
 }

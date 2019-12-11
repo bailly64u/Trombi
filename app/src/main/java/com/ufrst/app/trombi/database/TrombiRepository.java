@@ -28,6 +28,7 @@ public class TrombiRepository {
         joinDao = db.eleveGroupeJoinDao();
     }
 
+
     // Trombinoscope________________________________________________________________________________
     public void insert(Trombinoscope trombi) {new InsertTrombiAsyncTask(trombiDao).execute(trombi);}
     public void update(Trombinoscope trombi) {new UpdateTrombiAsyncTask(trombiDao).execute(trombi);}
@@ -35,17 +36,29 @@ public class TrombiRepository {
     public LiveData<List<Trombinoscope>> getAllTrombis() {return trombiDao.getAllTrombis();}
     public LiveData<List<Groupe>> getAllGroupes() {return groupeDao.getAllGroupes();}
     public LiveData<List<Eleve>> getAllEleves() {return eleveDao.getAllEleves();}
+    public LiveData<Trombinoscope> getTrombiById(long idTrombi) {return trombiDao.getTrombiById(idTrombi);}
 
 
     // Groupe_______________________________________________________________________________________
+    public void insert(Groupe groupe) {new InsertGroupeAsyncTask(groupeDao).execute(groupe);}
+    public void update(Groupe groupe) {new UpdateGroupeAsyncTask(groupeDao).execute(groupe);}
+    public void delete(Groupe groupe) {new DeleteGroupeAsyncTask(groupeDao).execute(groupe);}
     public LiveData<List<Groupe>> getGroupesByTrombi(long idTrombi) {return groupeDao.getGroupesByTrombi(idTrombi);}
 
 
     // Eleve________________________________________________________________________________________
+    public void insert(Eleve eleve) {new InsertEleveAsyncTask(eleveDao).execute(eleve);}
+    public void update(Eleve eleve) {new UpdateEleveAsyncTask(eleveDao).execute(eleve);}
+    public void delete(Eleve eleve) {new DeleteEleveAsyncTask(eleveDao).execute(eleve);}
+    public LiveData<List<Eleve>> getElevesByTrombi(long idTrombi) {return eleveDao.getElevesByTrombi(idTrombi);}
 
 
     // Groupe x Eleve_______________________________________________________________________________
-    public LiveData<List<GroupeWithEleves>> getEleveForGroupe() {return joinDao.getElevesForGroupe();}
+    public void insert(EleveGroupeJoin eleveGroupeJoin) {new InsertEleveXGroupeAsyncTask(joinDao).execute(eleveGroupeJoin);}
+    public void update(EleveGroupeJoin eleveGroupeJoin) {new UpdateEleveXGroupeAsyncTask(joinDao).execute(eleveGroupeJoin);}
+    public void delete(EleveGroupeJoin eleveGroupeJoin) {new DeleteEleveXGroupeAsyncTask(joinDao).execute(eleveGroupeJoin);}
+    public LiveData<List<GroupeWithEleves>> getGroupeWithEleves() {return joinDao.getGroupeWithEleves();}
+    public LiveData<GroupeWithEleves> getGroupeByIdWithEleves(long idGroupe) {return joinDao.getGroupeByIdWithEleves(idGroupe);}
 
 
 
@@ -88,15 +101,117 @@ public class TrombiRepository {
         }
     }
 
-    /*private static class GetAllTrombisAsyncTask extends AsyncTask<Void, Void, Void>{
-        private TrombinoscopeDao trombiDao;
 
-        GetAllTrombisAsyncTask(TrombinoscopeDao trombiDao){ this.trombiDao = trombiDao; }
+    // Groupes
+    private static class InsertGroupeAsyncTask extends AsyncTask<Groupe, Void, Void>{
+        private GroupeDao groupeDao;
+
+        InsertGroupeAsyncTask(GroupeDao groupeDao){ this.groupeDao = groupeDao; }
 
         @Override
-        protected Void doInBackground(Void... voids) {
-            trombiDao.getAllTrombis();
+        protected Void doInBackground(Groupe... groupes) {
+            groupeDao.insert(groupes[0]);
             return null;
         }
-    }*/
+    }
+
+    private static class UpdateGroupeAsyncTask extends AsyncTask<Groupe, Void, Void>{
+        private GroupeDao groupeDao;
+
+        UpdateGroupeAsyncTask(GroupeDao groupeDao){ this.groupeDao = groupeDao; }
+
+        @Override
+        protected Void doInBackground(Groupe... groupes) {
+            groupeDao.update(groupes[0]);
+            return null;
+        }
+    }
+
+    private static class DeleteGroupeAsyncTask extends AsyncTask<Groupe, Void, Void>{
+        private GroupeDao groupeDao;
+
+        DeleteGroupeAsyncTask(GroupeDao groupeDao){ this.groupeDao = groupeDao; }
+
+        @Override
+        protected Void doInBackground(Groupe... groupes) {
+            groupeDao.delete(groupes[0]);
+            return null;
+        }
+    }
+
+
+    //Eleve
+    private static class InsertEleveAsyncTask extends AsyncTask<Eleve, Void, Void>{
+        private EleveDao eleveDao;
+
+        InsertEleveAsyncTask(EleveDao eleveDao){ this.eleveDao = eleveDao; }
+
+        @Override
+        protected Void doInBackground(Eleve... eleves) {
+            eleveDao.insert(eleves[0]);
+            return null;
+        }
+    }
+
+    private static class UpdateEleveAsyncTask extends AsyncTask<Eleve, Void, Void>{
+        private EleveDao eleveDao;
+
+        UpdateEleveAsyncTask(EleveDao eleveDao){ this.eleveDao = eleveDao; }
+
+        @Override
+        protected Void doInBackground(Eleve... eleves) {
+            eleveDao.update(eleves[0]);
+            return null;
+        }
+    }
+
+    private static class DeleteEleveAsyncTask extends AsyncTask<Eleve, Void, Void>{
+        private EleveDao eleveDao;
+
+        DeleteEleveAsyncTask(EleveDao eleveDao){ this.eleveDao = eleveDao; }
+
+        @Override
+        protected Void doInBackground(Eleve... eleves) {
+            eleveDao.delete(eleves[0]);
+            return null;
+        }
+    }
+
+
+    // EleveGroupeJoin
+    private static class InsertEleveXGroupeAsyncTask extends AsyncTask<EleveGroupeJoin, Void, Void>{
+        private EleveGroupeJoinDao joinDao;
+
+        InsertEleveXGroupeAsyncTask(EleveGroupeJoinDao joinDao){ this.joinDao = joinDao; }
+
+        @Override
+        protected Void doInBackground(EleveGroupeJoin... eleveGroupeJoins) {
+            joinDao.delete(eleveGroupeJoins[0]);
+            return null;
+        }
+    }
+
+    private static class UpdateEleveXGroupeAsyncTask extends AsyncTask<EleveGroupeJoin, Void, Void>{
+        private EleveGroupeJoinDao joinDao;
+
+        UpdateEleveXGroupeAsyncTask(EleveGroupeJoinDao joinDao){ this.joinDao = joinDao; }
+
+        @Override
+        protected Void doInBackground(EleveGroupeJoin... eleveGroupeJoins) {
+            joinDao.update(eleveGroupeJoins[0]);
+            return null;
+        }
+    }
+
+    private static class DeleteEleveXGroupeAsyncTask extends AsyncTask<EleveGroupeJoin, Void, Void>{
+        private EleveGroupeJoinDao joinDao;
+
+        DeleteEleveXGroupeAsyncTask(EleveGroupeJoinDao joinDao){ this.joinDao = joinDao; }
+
+        @Override
+        protected Void doInBackground(EleveGroupeJoin... eleveGroupeJoins) {
+            joinDao.delete(eleveGroupeJoins[0]);
+            return null;
+        }
+    }
 }
