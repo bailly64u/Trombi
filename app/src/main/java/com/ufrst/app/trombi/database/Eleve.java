@@ -3,7 +3,10 @@ package com.ufrst.app.trombi.database;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
+
+import java.util.List;
 
 import static androidx.room.ForeignKey.CASCADE;
 
@@ -30,7 +33,7 @@ public class Eleve {
 
     private String photo;
 
-
+    
     public Eleve(String nomPrenom, long idTrombi, String photo) {
         this.nomPrenom = nomPrenom;
         this.idTrombi = idTrombi;

@@ -52,7 +52,7 @@ public class AdapteurTrombi extends ListAdapter<Trombinoscope, AdapteurTrombi.Tr
     @Override
     public void onBindViewHolder(@NonNull TrombiHolder holder, int position){
         Trombinoscope currentTrombi = getItem(position);
-        holder.mTextViewNom.setText(currentTrombi.getNomTrombi());
+        holder.mTextViewNom.setText(currentTrombi.getNomTrombi() + " - " + currentTrombi.getIdTrombi());
         holder.mTextViewDesc.setText(currentTrombi.getDescription());
         holder.mTextViewNombre.setText("8"); //A changer
     }

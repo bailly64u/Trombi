@@ -42,21 +42,21 @@ public class TrombiRepository {
     // Groupe_______________________________________________________________________________________
     public void insert(Groupe groupe) {new InsertGroupeAsyncTask(groupeDao).execute(groupe);}
     public void update(Groupe groupe) {new UpdateGroupeAsyncTask(groupeDao).execute(groupe);}
-    public void delete(Groupe groupe) {new DeleteGroupeAsyncTask(groupeDao).execute(groupe);}
+    public void delete(Groupe groupe) {return;}//new DeleteGroupeAsyncTask(groupeDao).execute(groupe);}
     public LiveData<List<Groupe>> getGroupesByTrombi(long idTrombi) {return groupeDao.getGroupesByTrombi(idTrombi);}
 
 
     // Eleve________________________________________________________________________________________
     public void insert(Eleve eleve) {new InsertEleveAsyncTask(eleveDao).execute(eleve);}
     public void update(Eleve eleve) {new UpdateEleveAsyncTask(eleveDao).execute(eleve);}
-    public void delete(Eleve eleve) {new DeleteEleveAsyncTask(eleveDao).execute(eleve);}
+    public void delete(Eleve eleve) {return;}//new DeleteEleveAsyncTask(eleveDao).execute(eleve);}
     public LiveData<List<Eleve>> getElevesByTrombi(long idTrombi) {return eleveDao.getElevesByTrombi(idTrombi);}
 
 
     // Groupe x Eleve_______________________________________________________________________________
     public void insert(EleveGroupeJoin eleveGroupeJoin) {new InsertEleveXGroupeAsyncTask(joinDao).execute(eleveGroupeJoin);}
     public void update(EleveGroupeJoin eleveGroupeJoin) {new UpdateEleveXGroupeAsyncTask(joinDao).execute(eleveGroupeJoin);}
-    public void delete(EleveGroupeJoin eleveGroupeJoin) {new DeleteEleveXGroupeAsyncTask(joinDao).execute(eleveGroupeJoin);}
+    public void delete(EleveGroupeJoin eleveGroupeJoin) {return;}//new DeleteEleveXGroupeAsyncTask(joinDao).execute(eleveGroupeJoin);}
     public LiveData<List<GroupeWithEleves>> getGroupeWithEleves() {return joinDao.getGroupeWithEleves();}
     public LiveData<GroupeWithEleves> getGroupeByIdWithEleves(long idGroupe) {return joinDao.getGroupeByIdWithEleves(idGroupe);}
 
@@ -127,7 +127,7 @@ public class TrombiRepository {
         }
     }
 
-    private static class DeleteGroupeAsyncTask extends AsyncTask<Groupe, Void, Void>{
+    /*private static class DeleteGroupeAsyncTask extends AsyncTask<Groupe, Void, Void>{
         private GroupeDao groupeDao;
 
         DeleteGroupeAsyncTask(GroupeDao groupeDao){ this.groupeDao = groupeDao; }
@@ -137,7 +137,7 @@ public class TrombiRepository {
             groupeDao.delete(groupes[0]);
             return null;
         }
-    }
+    }*/
 
 
     //Eleve
@@ -165,7 +165,7 @@ public class TrombiRepository {
         }
     }
 
-    private static class DeleteEleveAsyncTask extends AsyncTask<Eleve, Void, Void>{
+    /*private static class DeleteEleveAsyncTask extends AsyncTask<Eleve, Void, Void>{
         private EleveDao eleveDao;
 
         DeleteEleveAsyncTask(EleveDao eleveDao){ this.eleveDao = eleveDao; }
@@ -175,7 +175,7 @@ public class TrombiRepository {
             eleveDao.delete(eleves[0]);
             return null;
         }
-    }
+    }*/
 
 
     // EleveGroupeJoin
@@ -186,7 +186,7 @@ public class TrombiRepository {
 
         @Override
         protected Void doInBackground(EleveGroupeJoin... eleveGroupeJoins) {
-            joinDao.delete(eleveGroupeJoins[0]);
+            joinDao.insert(eleveGroupeJoins[0]);
             return null;
         }
     }
@@ -203,7 +203,7 @@ public class TrombiRepository {
         }
     }
 
-    private static class DeleteEleveXGroupeAsyncTask extends AsyncTask<EleveGroupeJoin, Void, Void>{
+    /*private static class DeleteEleveXGroupeAsyncTask extends AsyncTask<EleveGroupeJoin, Void, Void>{
         private EleveGroupeJoinDao joinDao;
 
         DeleteEleveXGroupeAsyncTask(EleveGroupeJoinDao joinDao){ this.joinDao = joinDao; }
@@ -213,5 +213,5 @@ public class TrombiRepository {
             joinDao.delete(eleveGroupeJoins[0]);
             return null;
         }
-    }
+    }*/
 }

@@ -176,15 +176,18 @@ public class ActivityVueTrombi extends AppCompatActivity {
         chipGroup.setOnCheckedChangeListener(new ChipGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(ChipGroup chipGroup, int i){
-                Chip c = findViewById(i);
+                //Chip c = findViewById(chipGroup.getCheckedChipId());
+                Chip c = (Chip) chipGroup.getChildAt(i);
 
                 if(c != null){
-                    long index = listeGroupes.get(i - 1).getIdGroupe();                                 // ID du groupe de la chips sélectionnée
+                    long index = listeGroupes.get(i - 1).getIdGroupe();
+
+                    Log.v("______________________", String.valueOf(chipGroup.getCheckedChipId()));
 
                     // Une des chips est sélectionnée
                     if(chipGroup.getCheckedChipId() != ChipGroup.NO_ID){
-                        trombiViewModel.getElevesByTrombi(idTrombi).removeObserver(observerEleve);      // Suppression de l'observeur qui observe tous les élèves du trombinoscope
-                        trombiViewModel.getGroupeByIdWithEleves(index)                                  // Observation des élèves du Groupe de la chips sélectionnée
+                        // Observation des élèves du Groupe de la chips sélectionnée
+                        trombiViewModel.getGroupeByIdWithEleves(index)
                                 .observe(ActivityVueTrombi.this, new Observer<GroupeWithEleves>() {
                             @Override
                             public void onChanged(GroupeWithEleves groupeWithEleves) {
@@ -194,10 +197,9 @@ public class ActivityVueTrombi extends AppCompatActivity {
                         });
                     }
                 } else{
-                    trombiViewModel.getGroupeByIdWithEleves(0)
-                            .removeObservers(ActivityVueTrombi.this);                           // Suppression des observeurs des groupes avec élèves
+                    // On observe la liste de tous les élèves du trombi à nouveau
                     trombiViewModel.getElevesByTrombi(idTrombi)
-                            .observe(ActivityVueTrombi.this, observerEleve);                    // On observe la liste de tous les élèves du trombi à nouveau
+                            .observe(ActivityVueTrombi.this, observerEleve);
                 }
             }
         });
@@ -210,7 +212,7 @@ public class ActivityVueTrombi extends AppCompatActivity {
                 .getLayoutInflater()
                 .inflate(R.layout.chips_choice, chipGroup, false);
 
-        c.setText(g.getNomGroupe());                                            // Texte de la chips
+        c.setText(g.getNomGroupe() + "-" + g.getIdGroupe());                                            // Texte de la chips
         chipGroup.addView(c);                                                   // Ajout de la chips dans le groupe de chips
         listeChips.add(c);                                                      // Et aussi dans une liste pour traquer le Groupe correspondant
     }

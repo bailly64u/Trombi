@@ -20,6 +20,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.ufrst.app.trombi.database.Eleve;
+import com.ufrst.app.trombi.database.Groupe;
 import com.ufrst.app.trombi.database.TrombiViewModel;
 import com.ufrst.app.trombi.database.Trombinoscope;
 

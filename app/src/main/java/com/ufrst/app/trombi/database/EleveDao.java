@@ -18,8 +18,8 @@ public interface EleveDao {
     @Update
     void update(Eleve eleve);
 
-    @Delete
-    void delete(Eleve eleve);
+    //@Delete
+    //void delete(Eleve eleve);
 
     // Récupère tous les trombinoscopes dans l'ordre alphabétique
     @Query("SELECT * FROM table_eleve ORDER BY nom_prenom")

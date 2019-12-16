@@ -9,7 +9,7 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
-@Database(entities = {Trombinoscope.class, Groupe.class, Eleve.class, EleveGroupeJoin.class}, exportSchema = false, version = 3)
+@Database(entities = {Trombinoscope.class,Groupe.class, Eleve.class, EleveGroupeJoin.class}, exportSchema = false, version = 4)
 public abstract class TrombiDatabase extends RoomDatabase {
 
     private static TrombiDatabase instance;
@@ -102,6 +102,7 @@ public abstract class TrombiDatabase extends RoomDatabase {
             joinDao.insert(new EleveGroupeJoin(2, 1));
             joinDao.insert(new EleveGroupeJoin(3, 2));
             joinDao.insert(new EleveGroupeJoin(4, 2));
+            joinDao.insert(new EleveGroupeJoin(1, 5));
 
             return null;
         }

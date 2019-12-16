@@ -20,8 +20,8 @@ public interface EleveGroupeJoinDao {
     @Update
     void update(EleveGroupeJoin eleveGroupeJoin);
 
-    @Delete
-    void delete(EleveGroupeJoin eleveGroupeJoin);
+    //@Delete
+    //void delete(EleveGroupeJoin eleveGroupeJoin);
 
     // Retourne une liste d'objet contenant un Groupe avec sa liste d'Eleves
     // Comme Room utilisera deux requêtes pour nous dans les coulisses, on annote une Transaction pour s'assurer que cela se passe atomiquement

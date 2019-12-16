@@ -18,8 +18,8 @@ public interface GroupeDao {
     @Update
     void update(Groupe groupe);
 
-    @Delete
-    void delete(Groupe groupe);
+    //@Delete
+    //void delete(Groupe groupe);
 
     // Récupère tous les groupes dans l'ordre alphabétique
     @Query("SELECT * FROM table_groupe ORDER BY nom_groupe")
