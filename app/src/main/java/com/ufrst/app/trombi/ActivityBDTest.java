@@ -81,7 +81,7 @@ public class ActivityBDTest extends AppCompatActivity {
             }
         });
 
-        mTrombiViewModel.getGroupeWithEleves().observe(this, new Observer<List<GroupeWithEleves>>() {
+        mTrombiViewModel.getGroupesWithEleves().observe(this, new Observer<List<GroupeWithEleves>>() {
             @Override
             public void onChanged(List<GroupeWithEleves> groupeWithEleves) {
                 StringBuilder sb = new StringBuilder();

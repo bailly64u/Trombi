@@ -9,7 +9,7 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
-@Database(entities = {Trombinoscope.class,Groupe.class, Eleve.class, EleveGroupeJoin.class}, exportSchema = false, version = 4)
+@Database(entities = {Trombinoscope.class,Groupe.class, Eleve.class, EleveGroupeJoin.class}, exportSchema = false, version = 7)
 public abstract class TrombiDatabase extends RoomDatabase {
 
     private static TrombiDatabase instance;
@@ -26,7 +26,7 @@ public abstract class TrombiDatabase extends RoomDatabase {
             instance = Room.databaseBuilder(context.getApplicationContext(),
                     TrombiDatabase.class, "trombi_database.db")
                     .addCallback(roomCallback)                              // Pour ajouter un mock
-                    .fallbackToDestructiveMigration()                       // A enlever. SI le schema de la BD change, la BD est détruite :'(
+                    .fallbackToDestructiveMigration()                       // A enlever. Si le schema de la BD change, la BD est détruite :'(
                     .build();
         }
         return instance;
@@ -102,7 +102,10 @@ public abstract class TrombiDatabase extends RoomDatabase {
             joinDao.insert(new EleveGroupeJoin(2, 1));
             joinDao.insert(new EleveGroupeJoin(3, 2));
             joinDao.insert(new EleveGroupeJoin(4, 2));
-            joinDao.insert(new EleveGroupeJoin(1, 5));
+            joinDao.insert(new EleveGroupeJoin(1, 4));
+            joinDao.insert(new EleveGroupeJoin(2, 4));
+            joinDao.insert(new EleveGroupeJoin(3, 4));
+            joinDao.insert(new EleveGroupeJoin(4, 4));
 
             return null;
         }

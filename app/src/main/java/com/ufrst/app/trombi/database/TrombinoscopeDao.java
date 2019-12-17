@@ -21,11 +21,19 @@ public interface TrombinoscopeDao {
     @Delete
     void delete(Trombinoscope trombinoscope);
 
-    // Récupère tous les trombinoscopes dans l'ordre alphabétique
-    @Query("SELECT * FROM table_trombi ORDER BY nom_trombi")
+    // Récupère tous les Trombinoscopes dans l'ordre alphabétique
+    @Query("SELECT * FROM table_trombi WHERE is_deleted = 0 ORDER BY nom_trombi")
     LiveData<List<Trombinoscope>> getAllTrombis();
 
     // Récupère un trombinoscope selon un id
     @Query("SELECT * FROM table_trombi WHERE id_trombi=:idTrombi")
     LiveData<Trombinoscope> getTrombiById(long idTrombi);
+
+    // Soft delete - Change la valeur du booleen isDeleted du Trombi
+    @Query("UPDATE table_trombi SET is_deleted = 1 WHERE id_trombi=:idTrombi")
+    void softDeleteEleve(long idTrombi);
+
+    // Supprime réellement les Trombis qui ont étés soft delete
+    @Query("DELETE FROM table_trombi WHERE is_deleted = 1")
+    void deleteSoftDeletedEleves();
 }

@@ -18,14 +18,30 @@ public interface GroupeDao {
     @Update
     void update(Groupe groupe);
 
-    //@Delete
-    //void delete(Groupe groupe);
+    @Delete
+    void delete(Groupe groupe);
 
-    // Récupère tous les groupes dans l'ordre alphabétique
-    @Query("SELECT * FROM table_groupe ORDER BY nom_groupe")
+    // Récupère tous les Groupes dans l'ordre alphabétique
+    @Query("SELECT * FROM table_groupe WHERE is_deleted = 0 ORDER BY nom_groupe")
     LiveData<List<Groupe>> getAllGroupes();
 
     // Récupère tous les groupes pour un certain trombinoscope, dans l'ordre alphabétique
     @Query("SELECT * FROM table_groupe WHERE id_trombi=:idTrombi ORDER BY nom_groupe")
     LiveData<List<Groupe>> getGroupesByTrombi(long idTrombi);
+
+    // Supprime les Groupes appertenant à un certain Trombinoscope
+    @Query("DELETE FROM table_groupe WHERE id_trombi=:idTrombi")
+    void deleteGroupesForTrombi(long idTrombi);
+
+    // Soft delete - Change la valeur du booleen isDeleted du Groupe
+    @Query("UPDATE table_groupe SET is_deleted = 1 WHERE id_groupe=:idGroupe")
+    void softDeleteGroupe(long idGroupe);
+
+    // Soft delete - Change la valeur du booleen isDeleted des Groupes d'un Trombi
+    @Query("UPDATE table_groupe SET is_deleted = 1 WHERE id_trombi=:idTrombi")
+    void softDeleteGroupesForTrombi(long idTrombi);
+
+    // Supprime réellement les Groupes qui ont étés soft delete
+    @Query("DELETE FROM table_groupe WHERE is_deleted = 1")
+    void deleteSoftDeletedGroupes();
 }

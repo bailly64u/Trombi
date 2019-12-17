@@ -10,7 +10,8 @@ import androidx.room.PrimaryKey;
 public class Trombinoscope {
 
     // Champs présents dans la BD
-    @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "id_trombi")
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "id_trombi")
     private long idTrombi;
 
     @ColumnInfo(name = "nom_trombi")
@@ -18,6 +19,9 @@ public class Trombinoscope {
 
     @ColumnInfo(name = "desc_trombi")
     private String description;
+
+    @ColumnInfo(name = "is_deleted")
+    private boolean isDeleted = false;      // Soft delete
 
 
     public Trombinoscope(String nomTrombi, String description) {
@@ -31,4 +35,6 @@ public class Trombinoscope {
     public void setNomTrombi(String nomTrombi) { this.nomTrombi = nomTrombi; }
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
+    public boolean isDeleted() { return isDeleted; }
+    public void setDeleted(boolean deleted) { isDeleted = deleted; }
 }

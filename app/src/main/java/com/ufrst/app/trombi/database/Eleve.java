@@ -11,18 +11,19 @@ import java.util.List;
 import static androidx.room.ForeignKey.CASCADE;
 
 // POJO
-@Entity(tableName = "table_eleve",
-        foreignKeys = @ForeignKey(
+@Entity(tableName = "table_eleve"
+        /*foreignKeys = @ForeignKey(
                 entity = Trombinoscope.class,
                 parentColumns = "id_trombi",
                 childColumns = "id_eleve",
                 onDelete = CASCADE
-        )
+        )*/
 )
 public class Eleve {
 
     // Champs présents dans la BD
-    @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "id_eleve")
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "id_eleve")
     private long idEleve;
 
     @ColumnInfo(name = "nom_prenom")
@@ -30,6 +31,9 @@ public class Eleve {
 
     @ColumnInfo(name = "id_trombi")
     private long idTrombi;
+
+    @ColumnInfo(name = "is_deleted")
+    private boolean isDeleted = false;      // Soft delete
 
     private String photo;
 
@@ -48,4 +52,6 @@ public class Eleve {
     public void setPhoto(String photo) { this.photo = photo; }
     public long getIdTrombi() { return idTrombi; }
     public void setIdTrombi(long idTrombi) { this.idTrombi = idTrombi; }
+    public boolean isDeleted() { return isDeleted; }
+    public void setDeleted(boolean deleted) { isDeleted = deleted; }
 }
