@@ -76,11 +76,18 @@ public abstract class TrombiDatabase extends RoomDatabase {
             Groupe g4 = new Groupe("Mon groupe - TD3", 1);
             Groupe g5 = new Groupe("Mon groupe - TP3", 1);
 
+            Groupe g6 = new Groupe("Mon groupe - TD1", 2);
+            Groupe g7 = new Groupe("Mon groupe - TD2", 2);
+            Groupe g8 = new Groupe("Mon groupe - TP1", 2);
+
             groupeDao.insert(g1);
             groupeDao.insert(g2);
             groupeDao.insert(g3);
             groupeDao.insert(g4);
             groupeDao.insert(g5);
+            groupeDao.insert(g6);
+            groupeDao.insert(g7);
+            groupeDao.insert(g8);
 
             Eleve e1 = new Eleve("Bailly Louis", 1, "Bruh");
             Eleve e2 = new Eleve("Niclass Maria", 1, "Bruh");
@@ -90,6 +97,10 @@ public abstract class TrombiDatabase extends RoomDatabase {
             Eleve e6 = new Eleve("Henry Dupont", 1, "Bruh");
             Eleve e7 = new Eleve("Marine Lepen", 1, "Bruh");
 
+            Eleve e8 = new Eleve("Bailly Louis", 2, "Bruh");
+            Eleve e9 = new Eleve("Niclass Maria", 2, "Bruh");
+            Eleve e10 = new Eleve("Nom prénom", 2, "Bruh");
+
             eleveDao.insert(e1);
             eleveDao.insert(e2);
             eleveDao.insert(e3);
@@ -97,6 +108,9 @@ public abstract class TrombiDatabase extends RoomDatabase {
             eleveDao.insert(e5);
             eleveDao.insert(e6);
             eleveDao.insert(e7);
+            eleveDao.insert(e8);
+            eleveDao.insert(e9);
+            eleveDao.insert(e10);
 
             joinDao.insert(new EleveGroupeJoin(1, 1));
             joinDao.insert(new EleveGroupeJoin(2, 1));
@@ -106,6 +120,13 @@ public abstract class TrombiDatabase extends RoomDatabase {
             joinDao.insert(new EleveGroupeJoin(2, 4));
             joinDao.insert(new EleveGroupeJoin(3, 4));
             joinDao.insert(new EleveGroupeJoin(4, 4));
+
+            joinDao.insert(new EleveGroupeJoin(8, 6));
+            joinDao.insert(new EleveGroupeJoin(9, 6));
+            joinDao.insert(new EleveGroupeJoin(10, 7));
+            joinDao.insert(new EleveGroupeJoin(8, 8));
+            joinDao.insert(new EleveGroupeJoin(9, 8));
+            joinDao.insert(new EleveGroupeJoin(10, 8));
 
             return null;
         }

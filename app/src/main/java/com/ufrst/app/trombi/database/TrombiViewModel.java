@@ -5,6 +5,8 @@ import android.app.Application;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Transformations;
 
 import java.util.List;
 
@@ -12,10 +14,25 @@ public class TrombiViewModel extends AndroidViewModel {
 
     private TrombiRepository repository;
 
+    // Cet attribut va nous permettre de changer les données contenues dans groupesWithEleves
+    // selon sa valeur avant de proposer le contenu aux observeurs. Ainsi nous n'avons besoin que
+    // d'un seul observeur au lieu d'en créer un dynamiquement avec chacun des groupes selon le choix
+    // de l'utilisateur. Pours plus d'informations: https://developer.android.com/topic/libraries/architecture/livedata#transform_livedata
+    private final MutableLiveData<Long> requestedIdGroupe = new MutableLiveData<>();
+    public final LiveData<GroupeWithEleves> groupesWithEleves =
+            Transformations.switchMap(requestedIdGroupe, (idGroupe) ->
+                    repository.getGroupeByIdWithEleves(idGroupe)
+            );
+
     public TrombiViewModel(@NonNull Application application){
         super(application);
 
         repository = new TrombiRepository(application);
+    }
+
+    // Permet de changer l'id du groupe observé : cf groupesWithEleves
+    public void setIdGroup(long idGroupe){
+        requestedIdGroupe.setValue(idGroupe);
     }
 
 

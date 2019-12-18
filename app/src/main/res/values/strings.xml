@@ -32,4 +32,7 @@
     <string name="VUETROMBI_filtre">Réglages</string>
     <string name="VUETROMBI_choixGroupe">Choix du groupe</string>
     <string name="VUETROMBI_nbColonnes">Nombre de colonnes</string>
+
+    <!-- ID pour chips -->
+    <string name="TAG_CHIPS_ID">com.ufrst.app.trombi.TAG_CHIPS_ID</string>
 </resources>

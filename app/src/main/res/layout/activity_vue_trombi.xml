@@ -77,14 +77,15 @@
 
                 <LinearLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="60dp"
                     android:orientation="horizontal"
-                    android:layout_marginEnd="8dp">
+                    android:layout_marginEnd="8dp"
+                    android:paddingTop="12dp" >
 
                     <com.google.android.material.chip.ChipGroup
                         android:id="@+id/VUETROMBI_chipsGroup"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_marginStart="4dp"
                         android:layout_marginEnd="4dp"
                         app:singleSelection="true"
@@ -96,7 +97,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="12dp"
                 android:layout_marginBottom="24dp"
                 android:background="?attr/dividerColor" />
 
@@ -121,8 +122,7 @@
                     android:layout_toStartOf="@+id/VUETROMBI_nbCols"
                     android:layout_centerVertical="true"
                     style="@style/Widget.AppCompat.SeekBar.Discrete"
-                    android:min="1"
-                    android:max="6" />
+                    android:max="5" />
 
                 <TextView
                     android:id="@+id/VUETROMBI_nbCols"

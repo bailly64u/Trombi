@@ -48,11 +48,9 @@ public class ActivityVueTrombi extends AppCompatActivity {
     private Toolbar toolbar;
     private SeekBar seekBar;
 
-    private ArrayList<Chip> listeChips = new ArrayList<>();
     private Observer<List<Eleve>> observerEleve;
     private TrombiViewModel trombiViewModel;
     //private Trombinoscope currentTrombi;
-    private List<Groupe> listeGroupes;
     private List<Eleve> listeEleves;
     private SharedPreferences prefs;
     private String descTrombi;
@@ -82,7 +80,7 @@ public class ActivityVueTrombi extends AppCompatActivity {
 
         // Applique la valeur par défaut de nbCols à la SeekBar
         seekBar.setProgress(nbCols);
-        tvNbCols.setText(String.valueOf(nbCols));
+        tvNbCols.setText(String.valueOf(nbCols + 1));
 
 
     }
@@ -98,7 +96,7 @@ public class ActivityVueTrombi extends AppCompatActivity {
     // Récupération des valeures prédéfinies par l'utilisateur
     private void retrieveSharedPrefs(){
         prefs = getSharedPreferences("com.ufrst.app.trombi", Context.MODE_PRIVATE);
-        nbCols = prefs.getInt(PREFS_NBCOLS, 4);
+        nbCols = prefs.getInt(PREFS_NBCOLS, 3);
     }
 
     // Désérialise les vues dont on aura besoin depuis le XML
@@ -124,14 +122,12 @@ public class ActivityVueTrombi extends AppCompatActivity {
             }
         };
 
-        trombiViewModel.getElevesByTrombi(idTrombi).observe(this, observerEleve);
 
         trombiViewModel = ViewModelProviders.of(this).get(TrombiViewModel.class);
+        trombiViewModel.getElevesByTrombi(idTrombi).observe(this, observerEleve);
         trombiViewModel.getGroupesByTrombi(idTrombi).observe(this, new Observer<List<Groupe>>() {
             @Override
             public void onChanged(List<Groupe> groupes) {
-                listeGroupes = groupes;
-
                 // Insertion des chips pour le choix des groupes a afficher
                 for(Groupe g : groupes){
                     setChips(g);
@@ -155,7 +151,7 @@ public class ActivityVueTrombi extends AppCompatActivity {
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                tvNbCols.setText(String.valueOf(i));
+                tvNbCols.setText(String.valueOf(i + 1));
             }
 
             @Override
@@ -176,16 +172,26 @@ public class ActivityVueTrombi extends AppCompatActivity {
         chipGroup.setOnCheckedChangeListener(new ChipGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(ChipGroup chipGroup, int i){
-                //Chip c = findViewById(i);
-                int id = chipGroup.getChildAt(listeGroupes.size() - 1).getId();
-                Log.v("_______________id________________" , String.valueOf(id));
+                //
+                // SOLUTION TEMPORAIRE au problème du changement d'id des chips lors de la reprise de l'activité
+                //
+                /*int pos = i - 1;    // Représente la position du groupe dans la liste listeGroupe
+
+                while(pos > chipGroup.getChildCount() - 1){
+                    pos -= chipGroup.getChildCount();
+                }*/
 
                 // Une chips est sélectionnée
                 if(i != ChipGroup.NO_ID){
-                    //long index = listeGroupes.get(i - 1).getIdGroupe();
+                    // Récupération du groupe associé à la chips: cf setChips()
+                    Chip c = findViewById(i);
+                    Groupe currentGroupe = (Groupe) c.getTag(R.string.TAG_CHIPS_ID);
+
+                    // Changement de l'ID voulu pour la récupération de la méthode getGroupByIdWithEleves
+                    trombiViewModel.setIdGroup(currentGroupe.getIdGroupe());
 
                     // Observation des élèves du Groupe de la chips sélectionnée
-                    trombiViewModel.getGroupeByIdWithEleves(0)                                                  // A changer: index
+                    trombiViewModel.groupesWithEleves
                             .observe(ActivityVueTrombi.this, new Observer<GroupeWithEleves>() {
                         @Override
                         public void onChanged(GroupeWithEleves groupeWithEleves) {
@@ -209,9 +215,14 @@ public class ActivityVueTrombi extends AppCompatActivity {
                 .getLayoutInflater()
                 .inflate(R.layout.chips_choice, chipGroup, false);
 
-        c.setText(g.getNomGroupe() + "-" + g.getIdGroupe());                    // Texte de la chips
-        chipGroup.addView(c);                                                   // Ajout de la chips dans le groupe de chips
-        listeChips.add(c);                                                      // Et aussi dans une liste pour traquer le Groupe correspondant
+        // Ajout d'un tag pour lier un objet à cette vue
+        c.setTag(R.string.TAG_CHIPS_ID, g);
+
+        // Texte de la chips
+        c.setText(g.getNomGroupe() + "-" + g.getIdGroupe()); //A changer: enlever + idGroupe
+
+        // Ajout de la chips dans le groupe de chips
+        chipGroup.addView(c);
     }
 
     // Insère le HTML dans la WebView
@@ -241,7 +252,7 @@ public class ActivityVueTrombi extends AppCompatActivity {
             sb.append("<tr>");
 
             // Colonnes
-            for(int j = 0; j < nbCols; j++){
+            for(int j = 0; j < nbCols + 1; j++){
                 Eleve eleve;
 
                 try {
@@ -260,8 +271,8 @@ public class ActivityVueTrombi extends AppCompatActivity {
         }
 
         sb.append("</table>");
-
         sb.append("</body></html>");
+
         webView.loadData(sb.toString(), "text/html", "UTF-8");
     }
 
