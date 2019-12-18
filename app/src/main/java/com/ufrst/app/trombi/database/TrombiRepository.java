@@ -6,6 +6,8 @@ import android.os.AsyncTask;
 import androidx.lifecycle.LiveData;
 
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 // Couche supplémentaire entre les données et le ViewModel (Architecture MVVM)
 // pour que ce dernier n'ai pas à se préoccuper de la source des données (BD, éventuellement Internet...)
@@ -30,7 +32,7 @@ public class TrombiRepository {
 
 
     // Trombinoscope________________________________________________________________________________
-    void insert(Trombinoscope trombi) {new InsertTrombiAsyncTask(trombiDao).execute(trombi);}
+    void insert(Trombinoscope trombi) {new InsertTrombiAsyncTask(trombiDao).execute(trombi);} //{Executors.newSingleThreadExecutor().execute(() -> trombiDao.insert(trombi));}
     void update(Trombinoscope trombi) {new UpdateTrombiAsyncTask(trombiDao).execute(trombi);}
     void delete(Trombinoscope trombi) {new DeleteTrombiAsyncTask(trombiDao).execute(trombi);}
 
@@ -201,6 +203,7 @@ public class TrombiRepository {
             return null;
         }
     }
+
 
     // EleveGroupeJoin
     private static class InsertEleveXGroupeAsyncTask extends AsyncTask<EleveGroupeJoin, Void, Void>{
