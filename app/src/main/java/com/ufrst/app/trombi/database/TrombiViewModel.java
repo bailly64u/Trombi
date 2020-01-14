@@ -46,6 +46,8 @@ public class TrombiViewModel extends AndroidViewModel {
     public void softDeleteTrombi(long idTrombi){repository.softDeleteTrombi(idTrombi);}
     public void deleteSoftDeletedTrombis(){repository.deleteSoftDeletedTrombis();}
 
+    public long insertAndRetrieveId(Trombinoscope trombi){return repository.insertAndRetrieveId(trombi);}
+
 
     // Groupe_______________________________________________________________________________________
     public void insert(Groupe groupe){repository.insert(groupe);}

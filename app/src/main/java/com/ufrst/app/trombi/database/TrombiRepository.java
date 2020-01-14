@@ -2,11 +2,16 @@ package com.ufrst.app.trombi.database;
 
 import android.app.Application;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 // Couche supplémentaire entre les données et le ViewModel (Architecture MVVM)
 // pour que ce dernier n'ai pas à se préoccuper de la source des données (BD, éventuellement Internet...)
@@ -31,7 +36,7 @@ public class TrombiRepository {
 
 
     // Trombinoscope________________________________________________________________________________
-    void insert(Trombinoscope trombi){Executors.newSingleThreadExecutor().execute(() -> trombiDao.insert(trombi));} //{new InsertTrombiAsyncTask(trombiDao).execute(trombi);}
+    void insert(Trombinoscope trombi){Executors.newSingleThreadExecutor().execute(() -> trombiDao.insert(trombi));}
     void update(Trombinoscope trombi){Executors.newSingleThreadExecutor().execute(() -> trombiDao.update(trombi));}
     void delete(Trombinoscope trombi){Executors.newSingleThreadExecutor().execute(() -> trombiDao.delete(trombi));}
 
@@ -39,6 +44,23 @@ public class TrombiRepository {
     LiveData<Trombinoscope> getTrombiById(long idTrombi){return trombiDao.getTrombiById(idTrombi);}
     void softDeleteTrombi(long idTrombi){Executors.newSingleThreadExecutor().execute(() -> trombiDao.softDeleteTrombi(idTrombi));}
     void deleteSoftDeletedTrombis(){Executors.newSingleThreadExecutor().execute(() -> trombiDao.deleteSoftDeletedTrombis());}
+
+    // trombiDao.insert() retourne un long, pour qu'il puisse retourner un long (récupération de l'id inséré).
+    // Mais il est ignoré dans la méthode insert de cette classe (pour des raisons de performances)
+    // Cette méthode permet de récupérer l'ID de l'élément insérer sur le champ.
+    long insertAndRetrieveId(Trombinoscope trombi){
+        Callable<Long> callable = () -> trombiDao.insert(trombi);
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<Long> future = executor.submit(callable);
+        long id = 0;
+
+        try {
+            id = future.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        return id;
+    }
 
 
     // Groupe_______________________________________________________________________________________
@@ -86,6 +108,11 @@ public class TrombiRepository {
         protected Void doInBackground(Trombinoscope... trombinoscopes) {
             trombiDao.insert(trombinoscopes[0]);
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
         }
     }
     private static class UpdateTrombiAsyncTask extends AsyncTask<Trombinoscope, Void, Void>{

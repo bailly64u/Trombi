@@ -1,31 +1,39 @@
 package com.ufrst.app.trombi;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.fragment.app.DialogFragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
-import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
+import com.ufrst.app.trombi.database.Eleve;
+import com.ufrst.app.trombi.database.TrombiViewModel;
+import com.ufrst.app.trombi.database.Trombinoscope;
+
+import java.util.List;
 
 import static com.ufrst.app.trombi.ActivityMain.EXTRA_DESC;
 import static com.ufrst.app.trombi.ActivityMain.EXTRA_ID;
 import static com.ufrst.app.trombi.ActivityMain.EXTRA_NOM;
 
-public class ActivityAjoutTrombi extends AppCompatActivity {
+public class ActivityAjoutTrombi extends AppCompatActivity implements ImportAlertDialog.ImportDialogListener {
 
     private TextInputEditText etNom, etDesc;
     private CoordinatorLayout mCoordinatorLayout;
@@ -108,13 +116,22 @@ public class ActivityAjoutTrombi extends AppCompatActivity {
         finish();
     }
 
-    private void importTrombiText(){    //A changer
+    private void importTrombiFile(){ //A changer
         Intent intent = new Intent(ActivityAjoutTrombi.this, ActivityBDTest.class);
         startActivity(intent);
     }
 
-    private void importTrombiFile(){
+    // Traite le texte saisi par l'utilisateur lors de l'import d'un trombinoscope
+    private void parseText(final String text){
+        String[] split = text.split("\n");
+        TrombiViewModel trombiViewModel = ViewModelProviders.of(this).get(TrombiViewModel.class);
+        Trombinoscope trombi = new Trombinoscope("Trombinoscope importé",
+                "Modifiez moi en me maintenant");
+        long id = trombiViewModel.insertAndRetrieveId(trombi);
 
+        for(String eleve : split){
+            trombiViewModel.insert(new Eleve(eleve, id, ""));
+        }
     }
 
     @Override
@@ -132,13 +149,13 @@ public class ActivityAjoutTrombi extends AppCompatActivity {
                 return true;
 
             case R.id.AJOUTTROMBI_importerTexte:
-                Toast.makeText(this, "bruh", Toast.LENGTH_SHORT).show();
-                importTrombiText();
+                Toast.makeText(this, "bruh2", Toast.LENGTH_SHORT).show();
+                importTrombiFile();
                 return true;
 
             case R.id.AJOUTTROMBI_importerFichier:
-                Toast.makeText(this, "bruh2", Toast.LENGTH_SHORT).show();
-                importTrombiFile();
+                ImportAlertDialog dialog = new ImportAlertDialog();
+                dialog.show(getSupportFragmentManager(), "import");
                 return true;
 
             default:
@@ -150,5 +167,19 @@ public class ActivityAjoutTrombi extends AppCompatActivity {
     public boolean onSupportNavigateUp(){
         finish();
         return super.onSupportNavigateUp();
+    }
+
+
+    @Override
+    public void onDialogPositiveClick(DialogFragment dialog) {
+        Dialog d = dialog.getDialog();
+        EditText etImport;
+
+        if(d != null){
+            etImport = d.findViewById(R.id.AJOUTTROMBI_editTextImport);
+            String text = etImport.getText().toString();
+            Toast.makeText(this, text, Toast.LENGTH_LONG).show();
+            parseText(text);
+        }
     }
 }

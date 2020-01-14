@@ -22,12 +22,13 @@
     <string name="AJOUTTROMBI_importer">Importer</string>
     <string name="AJOUTTROMBI_hint1">Nom</string>
     <string name="AJOUTTROMBI_hint2">Description</string>
-    <string name="AJOUTTROMBI_hint3">Importer liste (optionnel)</string>
+    <string name="AJOUTTROMBI_hint3">Insérez votre texte</string>
     <string name="AJOUTTROMBI_menu1">Saisir un texte</string>
     <string name="AJOUTTROMBI_menu2">Choisir un fichier</string>
     <string name="AJOUTTROMBI_contentDesc1">Nom du trombinoscope</string>
     <string name="AJOUTTROMBI_contentDesc2">Description du trombinoscope</string>
     <string name="AJOUTTROMBI_empty">Champ requis</string>
+    <string name="AJOUTTROMBI_importTitle">Importer une liste</string>
 
     <string name="VUETROMBI_filtre">Réglages</string>
     <string name="VUETROMBI_choixGroupe">Choix du groupe</string>
