@@ -3,6 +3,7 @@ package com.ufrst.app.trombi;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -158,15 +159,17 @@ public class ActivityMain extends AppCompatActivity {
 
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction){
-                final Trombinoscope trombiSuppr = adapteur.getTrombiAt(viewHolder.getAdapterPosition());
-                trombiViewModel.delete(trombiSuppr);
+                final long idTrombiSuppr = adapteur.getTrombiAt(viewHolder.getAdapterPosition()).getIdTrombi();
+                trombiViewModel.softDeleteTrombi(idTrombiSuppr);
+                trombiViewModel.softDeleteElevesForTrombi(idTrombiSuppr);
 
                 // Snackbar avec possibilité d'annuler
                 Snackbar.make(coordinatorLayout, R.string.MAIN_trombiSuppr, Snackbar.LENGTH_INDEFINITE)
                         .setAction(R.string.U_annuler, new View.OnClickListener() {
                             @Override
                             public void onClick(View v){
-                                Toast.makeText(ActivityMain.this, "bruh", Toast.LENGTH_SHORT).show(); //A changer
+                                trombiViewModel.softDeleteTrombi(idTrombiSuppr);
+                                trombiViewModel.softDeleteElevesForTrombi(idTrombiSuppr);
                             }
                         })
                         .setDuration(8000)
@@ -189,7 +192,7 @@ public class ActivityMain extends AppCompatActivity {
         });
 
         // Implémentation de notre interface (voire AdapteurTrombi)
-        // On peut gérer le clique tout en ayent le contexte de l'activité principale,
+        // On peut gérer le clique tout en ayant le contexte de l'activité principale,
         // en particulier le ViewModel pour modifier la base de données
         adapteur.setOnItemClickListener(new AdapteurTrombi.OnItemClickListener() {
             @Override
@@ -215,6 +218,14 @@ public class ActivityMain extends AppCompatActivity {
                 startActivityForResult(intent, REQUETE_EDITE_TROMBI);
             }
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        trombiViewModel.deleteSoftDeletedTrombis();
+        trombiViewModel.deleteSoftDeletedEleves();
+
+        super.onDestroy();
     }
 
     @Override

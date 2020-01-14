@@ -33,12 +33,12 @@ public interface EleveDao {
     @Query("DELETE FROM table_eleve WHERE id_trombi=:idTrombi")
     void deleteElevesForTrombi(long idTrombi);
 
-    // Soft delete - Change la valeur du booleen isDeleted de l'Eleve
-    @Query("UPDATE table_eleve SET is_deleted = 1 WHERE id_eleve=:idEleve")
+    // Soft delete - Inverse la valeur du booleen isDeleted de l'Eleve
+    @Query("UPDATE table_eleve SET is_deleted = NOT is_deleted WHERE id_eleve=:idEleve")
     void softDeleteEleve(long idEleve);
 
     // Soft delete - Change la valeur du booleen isDeleted des Eleves d'un Trombi
-    @Query("UPDATE table_eleve SET is_deleted = 1 WHERE id_trombi=:idTrombi")
+    @Query("UPDATE table_eleve SET is_deleted = NOT is_deleted WHERE id_trombi=:idTrombi")
     void softDeleteElevesForTrombi(long idTrombi);
 
     // Supprime réellement les Eleves qui ont étés soft delete

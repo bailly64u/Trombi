@@ -6,7 +6,6 @@ import android.os.AsyncTask;
 import androidx.lifecycle.LiveData;
 
 import java.util.List;
-import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 // Couche supplémentaire entre les données et le ViewModel (Architecture MVVM)
@@ -32,46 +31,50 @@ public class TrombiRepository {
 
 
     // Trombinoscope________________________________________________________________________________
-    void insert(Trombinoscope trombi) {new InsertTrombiAsyncTask(trombiDao).execute(trombi);} //{Executors.newSingleThreadExecutor().execute(() -> trombiDao.insert(trombi));}
-    void update(Trombinoscope trombi) {new UpdateTrombiAsyncTask(trombiDao).execute(trombi);}
-    void delete(Trombinoscope trombi) {new DeleteTrombiAsyncTask(trombiDao).execute(trombi);}
+    void insert(Trombinoscope trombi){Executors.newSingleThreadExecutor().execute(() -> trombiDao.insert(trombi));} //{new InsertTrombiAsyncTask(trombiDao).execute(trombi);}
+    void update(Trombinoscope trombi){Executors.newSingleThreadExecutor().execute(() -> trombiDao.update(trombi));}
+    void delete(Trombinoscope trombi){Executors.newSingleThreadExecutor().execute(() -> trombiDao.delete(trombi));}
 
-    LiveData<List<Trombinoscope>> getAllTrombis() {return trombiDao.getAllTrombis();}
-    LiveData<Trombinoscope> getTrombiById(long idTrombi) {return trombiDao.getTrombiById(idTrombi);}
-    void softDeleteTrombi(long idTrombi) {}
+    LiveData<List<Trombinoscope>> getAllTrombis(){return trombiDao.getAllTrombis();}
+    LiveData<Trombinoscope> getTrombiById(long idTrombi){return trombiDao.getTrombiById(idTrombi);}
+    void softDeleteTrombi(long idTrombi){Executors.newSingleThreadExecutor().execute(() -> trombiDao.softDeleteTrombi(idTrombi));}
+    void deleteSoftDeletedTrombis(){Executors.newSingleThreadExecutor().execute(() -> trombiDao.deleteSoftDeletedTrombis());}
 
 
     // Groupe_______________________________________________________________________________________
-    void insert(Groupe groupe) {new InsertGroupeAsyncTask(groupeDao).execute(groupe);}
-    void update(Groupe groupe) {new UpdateGroupeAsyncTask(groupeDao).execute(groupe);}
-    void delete(Groupe groupe) {new DeleteGroupeAsyncTask(groupeDao).execute(groupe);}
+    void insert(Groupe groupe){Executors.newSingleThreadExecutor().execute(() -> groupeDao.insert(groupe));}
+    void update(Groupe groupe){Executors.newSingleThreadExecutor().execute(() -> groupeDao.update(groupe));}
+    void delete(Groupe groupe){Executors.newSingleThreadExecutor().execute(() -> groupeDao.delete(groupe));}
 
-    LiveData<List<Groupe>> getAllGroupes() {return groupeDao.getAllGroupes();}
-    LiveData<List<Groupe>> getGroupesByTrombi(long idTrombi) {return groupeDao.getGroupesByTrombi(idTrombi);}
-    void deleteGroupesForTrombi(long idTrombi){new DeleteGroupesForTrombiAsyncTask(groupeDao).execute(idTrombi);}
+    LiveData<List<Groupe>> getAllGroupes(){return groupeDao.getAllGroupes();}
+    LiveData<List<Groupe>> getGroupesByTrombi(long idTrombi){return groupeDao.getGroupesByTrombi(idTrombi);}
+    void deleteGroupesForTrombi(long idTrombi){Executors.newSingleThreadExecutor().execute(() -> groupeDao.deleteGroupesForTrombi(idTrombi));}
 
 
     // Eleve________________________________________________________________________________________
-    void insert(Eleve eleve) {new InsertEleveAsyncTask(eleveDao).execute(eleve);}
-    void update(Eleve eleve) {new UpdateEleveAsyncTask(eleveDao).execute(eleve);}
-    void delete(Eleve eleve) {new DeleteEleveAsyncTask(eleveDao).execute(eleve);}
+    void insert(Eleve eleve){Executors.newSingleThreadExecutor().execute(() -> eleveDao.insert(eleve));}
+    void update(Eleve eleve){Executors.newSingleThreadExecutor().execute(() -> eleveDao.update(eleve));}
+    void delete(Eleve eleve){Executors.newSingleThreadExecutor().execute(() -> eleveDao.delete(eleve));}
 
-    LiveData<List<Eleve>> getAllEleves() {return eleveDao.getAllEleves();}
+    LiveData<List<Eleve>> getAllEleves(){return eleveDao.getAllEleves();}
     LiveData<List<Eleve>> getElevesByTrombi(long idTrombi) {return eleveDao.getElevesByTrombi(idTrombi);}
-    void deleteElevesForTrombi(long idTrombi){new DeleteElevesForTrombiAsyncTask(eleveDao).execute(idTrombi);}
+    void deleteElevesForTrombi(long idTrombi){Executors.newSingleThreadExecutor().execute(() -> eleveDao.deleteElevesForTrombi(idTrombi));}
+    void softDeleteEleve(long idEleve){Executors.newSingleThreadExecutor().execute(() -> eleveDao.softDeleteEleve(idEleve));}
+    void softDeleteElevesForTrombi(long idTrombi){Executors.newSingleThreadExecutor().execute(() -> eleveDao.softDeleteElevesForTrombi(idTrombi));}
+    void deleteSoftDeletedEleves(){Executors.newSingleThreadExecutor().execute(() -> eleveDao.deleteSoftDeletedEleves());}
 
 
     // Groupe x Eleve_______________________________________________________________________________
-    void insert(EleveGroupeJoin eleveGroupeJoin) {new InsertEleveXGroupeAsyncTask(joinDao).execute(eleveGroupeJoin);}
-    void update(EleveGroupeJoin eleveGroupeJoin) {new UpdateEleveXGroupeAsyncTask(joinDao).execute(eleveGroupeJoin);}
-    void delete(EleveGroupeJoin eleveGroupeJoin) {new DeleteEleveXGroupeAsyncTask(joinDao).execute(eleveGroupeJoin);}
+    void insert(EleveGroupeJoin eleveGroupeJoin){Executors.newSingleThreadExecutor().execute(() -> joinDao.insert(eleveGroupeJoin));}
+    void update(EleveGroupeJoin eleveGroupeJoin){Executors.newSingleThreadExecutor().execute(() -> joinDao.update(eleveGroupeJoin));}
+    void delete(EleveGroupeJoin eleveGroupeJoin){Executors.newSingleThreadExecutor().execute(() -> joinDao.delete(eleveGroupeJoin));}
 
-    LiveData<List<GroupeWithEleves>> getGroupesWithEleves() {return joinDao.getGroupesWithEleves();}
-    LiveData<GroupeWithEleves> getGroupeByIdWithEleves(long idGroupe) {return joinDao.getGroupeByIdWithEleves(idGroupe);}
-
-
+    LiveData<List<GroupeWithEleves>> getGroupesWithEleves(){return joinDao.getGroupesWithEleves();}
+    LiveData<GroupeWithEleves> getGroupeByIdWithEleves(long idGroupe){return joinDao.getGroupeByIdWithEleves(idGroupe);}
 
 
+
+    //A changer : supprimer, remplacement par Executors.newSingleThreadExecutor()
     // Création de tâches asynchrone pour modifier la BD____________________________________________
     // Trombinoscopes
     private static class InsertTrombiAsyncTask extends AsyncTask<Trombinoscope, Void, Void>{
