@@ -232,7 +232,7 @@ public class ActivityVueTrombi extends AppCompatActivity {
 
         // Ne peut pas se produire, sauf si l'API du téléphone est inférieure à 26
         // Les APIs inférieures à 26 ne supportent pas l'attribut "min" des Seekbar
-        if(nbCols == 0){
+        if(nbCols == -1){
             return;
         }
 

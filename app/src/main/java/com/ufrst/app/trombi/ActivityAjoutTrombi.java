@@ -169,7 +169,6 @@ public class ActivityAjoutTrombi extends AppCompatActivity implements ImportAler
         return super.onSupportNavigateUp();
     }
 
-
     @Override
     public void onDialogPositiveClick(DialogFragment dialog) {
         Dialog d = dialog.getDialog();
