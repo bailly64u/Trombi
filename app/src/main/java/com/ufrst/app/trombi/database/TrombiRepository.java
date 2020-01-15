@@ -45,9 +45,9 @@ public class TrombiRepository {
     void softDeleteTrombi(long idTrombi){Executors.newSingleThreadExecutor().execute(() -> trombiDao.softDeleteTrombi(idTrombi));}
     void deleteSoftDeletedTrombis(){Executors.newSingleThreadExecutor().execute(() -> trombiDao.deleteSoftDeletedTrombis());}
 
-    // trombiDao.insert() retourne un long, pour qu'il puisse retourner un long (récupération de l'id inséré).
+    // trombiDao.insert() retourne un long (qui correspond à l'id du trombinoscope inséré).
     // Mais il est ignoré dans la méthode insert de cette classe (pour des raisons de performances)
-    // Cette méthode permet de récupérer l'ID de l'élément insérer sur le champ.
+    // Cette méthode permet de récupérer l'ID de l'élément inséré sur le champ.
     long insertAndRetrieveId(Trombinoscope trombi){
         Callable<Long> callable = () -> trombiDao.insert(trombi);
         ExecutorService executor = Executors.newSingleThreadExecutor();

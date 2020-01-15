@@ -33,6 +33,12 @@
     <string name="VUETROMBI_filtre">Réglages</string>
     <string name="VUETROMBI_choixGroupe">Choix du groupe</string>
     <string name="VUETROMBI_nbColonnes">Nombre de colonnes</string>
+    <string name="VUETROMBI_exporter">Exporter</string>
+    <string name="VUETROMBI_exporterImg">Exporter en tant qu\'image</string>
+    <string name="VUETROMBI_exporterPdf">Exporter en tant que PDF</string>
+    <string name="VUETROMBI_exporterListe">Exporter la liste des noms</string>
+    <string name="VUETROMBI_listeExportee">La liste a été exportée</string>
+    <string name="VUETROMBI_listeExporteeErr">Un problème est survenu lors de l\'exportation</string>
 
     <!-- ID pour chips -->
     <string name="TAG_CHIPS_ID">com.ufrst.app.trombi.TAG_CHIPS_ID</string>

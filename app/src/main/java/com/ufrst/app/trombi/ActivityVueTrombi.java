@@ -10,12 +10,14 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.ufrst.app.trombi.database.Eleve;
 import com.ufrst.app.trombi.database.Groupe;
 import com.ufrst.app.trombi.database.GroupeWithEleves;
 import com.ufrst.app.trombi.database.TrombiViewModel;
 import com.ufrst.app.trombi.database.Trombinoscope;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
@@ -23,13 +25,29 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import static com.ufrst.app.trombi.ActivityMain.EXTRA_DESC;
@@ -81,8 +99,6 @@ public class ActivityVueTrombi extends AppCompatActivity {
         // Applique la valeur par défaut de nbCols à la SeekBar
         seekBar.setProgress(nbCols);
         tvNbCols.setText(String.valueOf(nbCols + 1));
-
-
     }
 
     // Récupération des extras
@@ -139,13 +155,14 @@ public class ActivityVueTrombi extends AppCompatActivity {
     // Applique des listeners sur certains éléments
     private void setListeners(){
         // Floating action button
-        FloatingActionButton fab = findViewById(R.id.VUETROMBI_fab);
+        /*FloatingActionButton fab = findViewById(R.id.VUETROMBI_fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v){
-                // Bottom sheeet dialog
+                ModalBottomSheet modalBottomSheet = new ModalBottomSheet();
+                modalBottomSheet.show(getSupportFragmentManager(), modalBottomSheet.getTag());
             }
-        });
+        });*/
 
         // Seekbar
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -276,9 +293,76 @@ public class ActivityVueTrombi extends AppCompatActivity {
         webView.loadData(sb.toString(), "text/html", "UTF-8");
     }
 
+    // Ecrit une liste d'élèves dans un fichier situé dans le stockage externe de l'app
+    private void writeExportedList(){
+        DateFormat df = new SimpleDateFormat("dd-MM-yyyy");
+        Calendar calendar = Calendar.getInstance();
+        String filename = nomTrombi + "-" + df.format(calendar.getTime());
+
+        // Ecriture des eleves dans le fichier
+        trombiViewModel.getElevesByTrombi(idTrombi).observe(this, new Observer<List<Eleve>>() {
+            @Override
+            public void onChanged(List<Eleve> eleves) {
+                try (BufferedWriter writer =
+                             new BufferedWriter(
+                                     new OutputStreamWriter(
+                                             new FileOutputStream(getExternalFilesDir(null) +
+                                                     "/" + filename + ".txt",
+                                                     true),
+                                             StandardCharsets.UTF_8)
+                             )
+                ){
+                    for (Eleve eleve : eleves) {
+                        writer.write(eleve.getNomPrenom() + "\n");
+                    }
+                } catch (IOException e) {
+                    Snackbar.make(coordinatorLayout,
+                            R.string.VUETROMBI_listeExporteeErr,
+                            Snackbar.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        trombiViewModel.getElevesByTrombi(idTrombi).removeObservers(this);
+        Snackbar.make(coordinatorLayout, R.string.VUETROMBI_listeExporteeErr, Snackbar.LENGTH_SHORT)
+                .show();
+    }
+
     @Override
     public boolean onSupportNavigateUp(){
         finish();
         return super.onSupportNavigateUp();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.export_trombi_menu, menu);
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item){
+        switch(item.getItemId()){
+            case R.id.VUETROMBI_exporterTrombi:
+                return true;
+
+            case R.id.VUETROMBI_exporterPdf:
+                Toast.makeText(this, "bruh1", Toast.LENGTH_SHORT).show();
+                return true;
+
+            case R.id.VUETROMBI_exporterImg:
+                Toast.makeText(this, "bruh2", Toast.LENGTH_SHORT).show();
+                return true;
+
+            case R.id.VUETROMBI_exporterListe:
+                Toast.makeText(this, "bruh3", Toast.LENGTH_SHORT).show();
+                writeExportedList();
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }

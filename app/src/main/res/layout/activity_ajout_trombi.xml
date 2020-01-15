@@ -85,7 +85,7 @@
                         android:layout_marginEnd="8dp"
                         android:paddingBottom="8dp"
                         android:contentDescription="@string/AJOUTTROMBI_contentDesc1"
-                        android:src="@drawable/ic_grid"
+                        android:src="@drawable/ic_portrait"
                         android:tint="?attr/colorAccent" />
 
                     <com.google.android.material.textfield.TextInputLayout
