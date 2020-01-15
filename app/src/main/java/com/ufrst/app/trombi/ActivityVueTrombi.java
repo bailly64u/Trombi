@@ -37,6 +37,7 @@ import android.widget.Toast;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -293,39 +294,76 @@ public class ActivityVueTrombi extends AppCompatActivity {
         webView.loadData(sb.toString(), "text/html", "UTF-8");
     }
 
-    // Ecrit une liste d'élèves dans un fichier situé dans le stockage externe de l'app
-    private void writeExportedList(){
+    // Demande à l'utilisateur si la liste doit être exportée
+    // Un fichier correspondant à cette liste peut déjà exister
+    private void checkWriteExportedList(){
         DateFormat df = new SimpleDateFormat("dd-MM-yyyy");
         Calendar calendar = Calendar.getInstance();
-        String filename = nomTrombi + "-" + df.format(calendar.getTime());
+        final String filename = nomTrombi + "-" + df.format(calendar.getTime());
 
-        // Ecriture des eleves dans le fichier
+        // Observation des élèves du trombi à exporter
         trombiViewModel.getElevesByTrombi(idTrombi).observe(this, new Observer<List<Eleve>>() {
             @Override
-            public void onChanged(List<Eleve> eleves) {
-                try (BufferedWriter writer =
-                             new BufferedWriter(
-                                     new OutputStreamWriter(
-                                             new FileOutputStream(getExternalFilesDir(null) +
-                                                     "/" + filename + ".txt",
-                                                     true),
-                                             StandardCharsets.UTF_8)
-                             )
-                ){
-                    for (Eleve eleve : eleves) {
-                        writer.write(eleve.getNomPrenom() + "\n");
-                    }
-                } catch (IOException e) {
-                    Snackbar.make(coordinatorLayout,
-                            R.string.VUETROMBI_listeExporteeErr,
-                            Snackbar.LENGTH_SHORT).show();
+            public void onChanged(List<Eleve> eleves){
+                File file = new File(getExternalFilesDir(null) + "/" + filename + ".txt");
+
+                // Si le fichier existe, on demande à le remplacer, sinon on le créer.
+                if(file.exists()){
+                    // Snackbar avec action
+                    Snackbar.make(coordinatorLayout, R.string.VUETROMBI_fichierExiste, Snackbar.LENGTH_INDEFINITE)
+                            .setAction(R.string.U_remplacer, new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v){
+                                    writeExportedList(filename, eleves, true);
+                                }
+                            })
+                            .setDuration(8000)
+                            .show();
+                } else{
+                    writeExportedList(filename, eleves, false);
                 }
             }
         });
 
         trombiViewModel.getElevesByTrombi(idTrombi).removeObservers(this);
-        Snackbar.make(coordinatorLayout, R.string.VUETROMBI_listeExporteeErr, Snackbar.LENGTH_SHORT)
-                .show();
+    }
+
+    // Ecrit une liste d'élèves dans un fichier situé dans le stockage externe de l'app
+    private void writeExportedList(final String filename, final List<Eleve> eleves,
+                                   final boolean doErase){
+        // Le fichier est réécrit, on doit supprimer son contenu actuel
+        if(doErase){
+            try{
+                PrintWriter writer = new PrintWriter(getExternalFilesDir(null) +
+                        "/" + filename + ".txt");
+                writer.print("");
+                writer.close();
+            } catch(FileNotFoundException e){
+                e.printStackTrace();
+            }
+        }
+
+        // Ecriture du fichier
+        try (BufferedWriter writer =
+                     new BufferedWriter(
+                             new OutputStreamWriter(
+                                     new FileOutputStream(getExternalFilesDir(null) +
+                                             "/" + filename + ".txt",
+                                             true),
+                                     StandardCharsets.UTF_8)
+                     )
+        ){
+            for (Eleve eleve : eleves) {
+                writer.write(eleve.getNomPrenom() + "\n");
+            }
+
+            Snackbar.make(coordinatorLayout, R.string.VUETROMBI_listeExportee, Snackbar.LENGTH_LONG)
+                    .show();
+        } catch (IOException e) {
+            Snackbar.make(coordinatorLayout,
+                    R.string.VUETROMBI_listeExporteeErr,
+                    Snackbar.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -358,7 +396,7 @@ public class ActivityVueTrombi extends AppCompatActivity {
 
             case R.id.VUETROMBI_exporterListe:
                 Toast.makeText(this, "bruh3", Toast.LENGTH_SHORT).show();
-                writeExportedList();
+                checkWriteExportedList();
                 return true;
 
             default:

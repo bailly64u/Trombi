@@ -12,9 +12,9 @@ import java.util.List;
 @Dao
 public interface TrombinoscopeDao {
 
-    @Insert
     // insert peut retourner void, long ou long[]. Retourne l'id inséré. Utile pour joindre
     // un Eleve en même temps que la création du groupe.
+    @Insert
     long insert(Trombinoscope trombinoscope);
 
     @Update

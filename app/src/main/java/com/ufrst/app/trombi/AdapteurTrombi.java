@@ -1,18 +1,19 @@
 package com.ufrst.app.trombi;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ufrst.app.trombi.database.Trombinoscope;
 
-import java.util.ArrayList;
 import java.util.List;
 
 // ListeAdapter s'apparente à un RecyclerView, mais avec des méthodes pour gére les animations
@@ -64,7 +65,7 @@ public class AdapteurTrombi extends ListAdapter<Trombinoscope, AdapteurTrombi.Tr
 
     // Classe interne permettant de contenir les informations à afficher dans la liste
     class TrombiHolder extends RecyclerView.ViewHolder{
-        private TextView mTextViewNom;        // Nom du trombi
+        private TextView mTextViewNom;          // Nom du trombi
         private TextView mTextViewDesc;         // Description du trombi
         private TextView mTextViewNombre;       // Nb d'élèves dans le trombi
 
@@ -97,10 +98,16 @@ public class AdapteurTrombi extends ListAdapter<Trombinoscope, AdapteurTrombi.Tr
                         listener.onItemLongClick(getItem(pos));
                     }
 
-                    return false;
+                    return true;
                 }
             });
         }
+    }
+
+    @Override
+    public void submitList(@Nullable List<Trombinoscope> list){
+        Log.v("____________________________", "submitList");
+        super.submitList(list);
     }
 
     // Interface permettant de gérer le clique dans l'activité principale et son contexte

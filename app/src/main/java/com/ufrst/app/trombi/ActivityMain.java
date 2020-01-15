@@ -43,8 +43,9 @@ public class ActivityMain extends AppCompatActivity {
     //private NavigationView navigationView;
     private RecyclerView recyclerView;
     private FloatingActionButton fab;
-    private Toolbar toolbar;
+    private AdapteurTrombi adapteur;
     private TextView tvEmpty;
+    private Toolbar toolbar;
 
     private TrombiViewModel trombiViewModel;
 
@@ -54,6 +55,9 @@ public class ActivityMain extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         setTitle(R.string.MAIN_title);
+
+        // Définir l'adapteur du RecyclerView
+        adapteur = new AdapteurTrombi();
 
         findViews();
         setListeners();
@@ -67,6 +71,7 @@ public class ActivityMain extends AppCompatActivity {
     private void findViews(){
         //mNavigationView = findViewById(R.id.NAV_navigationView);
         coordinatorLayout = findViewById(R.id.MAIN_coordinator);
+        recyclerView = findViewById(R.id.MAIN_recyclerView);
         tvEmpty = findViewById(R.id.MAIN_emptyRecyclerView);
         toolbar = findViewById(R.id.MAIN_toolbar);
         fab = findViewById(R.id.MAIN_fab);
@@ -108,21 +113,19 @@ public class ActivityMain extends AppCompatActivity {
 
     // Met en place l'observeur et le RecyclerView
     public void setRecyclerViewAndViewModel(){
-        recyclerView = findViewById(R.id.MAIN_recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));  // Affiche les items les uns en dessous des autres
         recyclerView.setHasFixedSize(true);                                    // Meilleures performances si le RV ne change pas de taille
-
-        // Définir l'adapteur du RecyclerView
-        final AdapteurTrombi adapteur = new AdapteurTrombi();
         recyclerView.setAdapter(adapteur);
 
-        // Récupére le ViewModel et observer la liste de Trombinoscopes
+
+        // Récupérer le ViewModel et observer la liste de Trombinoscopes
         trombiViewModel = ViewModelProviders.of(this).get(TrombiViewModel.class);
         trombiViewModel.getAllTrombis().observe(this, new Observer<List<Trombinoscope>>() {
             @Override
             public void onChanged(List<Trombinoscope> trombis){
                 adapteur.submitList(trombis);
 
+                Log.v("________________________", String.valueOf(trombis.size()));
                 // Afficher le placeholder en cas de liste vide
                 if(trombis.isEmpty()){
                     tvEmpty.setVisibility(View.VISIBLE);

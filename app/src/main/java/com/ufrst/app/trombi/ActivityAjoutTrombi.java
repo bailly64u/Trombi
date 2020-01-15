@@ -1,33 +1,43 @@
 package com.ufrst.app.trombi;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.DialogFragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.app.Dialog;
-import android.content.DialogInterface;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.ufrst.app.trombi.database.Eleve;
 import com.ufrst.app.trombi.database.TrombiViewModel;
 import com.ufrst.app.trombi.database.Trombinoscope;
 
-import java.util.List;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
 
 import static com.ufrst.app.trombi.ActivityMain.EXTRA_DESC;
 import static com.ufrst.app.trombi.ActivityMain.EXTRA_ID;
@@ -35,10 +45,13 @@ import static com.ufrst.app.trombi.ActivityMain.EXTRA_NOM;
 
 public class ActivityAjoutTrombi extends AppCompatActivity implements ImportAlertDialog.ImportDialogListener {
 
+    public final int PICKFILE_RESULT_CODE = 0;
+
+    private CoordinatorLayout coordinatorLayout;
     private TextInputEditText etNom, etDesc;
-    private CoordinatorLayout mCoordinatorLayout;
-    private Toolbar mToolbar;
-    private Button mButton;
+    private TrombiViewModel trombiViewModel;
+    private Toolbar toolbar;
+    private Button button;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -50,15 +63,15 @@ public class ActivityAjoutTrombi extends AppCompatActivity implements ImportAler
         setListeners();
 
         // Toolbar
-        setSupportActionBar(mToolbar);
+        setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     private void findViews(){
-        mCoordinatorLayout = findViewById(R.id.AJOUTTROMBI_coordinator);
+        coordinatorLayout = findViewById(R.id.AJOUTTROMBI_coordinator);
         etDesc = findViewById(R.id.AJOUTTROMBI_entrerDescription);
-        mButton = findViewById(R.id.AJOUTTROMBI_btnValider);
-        mToolbar = findViewById(R.id.AJOUTTROMBI_toolbar);
+        button = findViewById(R.id.AJOUTTROMBI_btnValider);
+        toolbar = findViewById(R.id.AJOUTTROMBI_toolbar);
         etNom = findViewById(R.id.AJOUTTROMBI_entrerNom);
     }
 
@@ -79,7 +92,7 @@ public class ActivityAjoutTrombi extends AppCompatActivity implements ImportAler
     }
 
     private void setListeners(){
-        mButton.setOnClickListener(new View.OnClickListener() {
+        button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v){
                 saveTrombi();
@@ -117,21 +130,33 @@ public class ActivityAjoutTrombi extends AppCompatActivity implements ImportAler
     }
 
     private void importTrombiFile(){ //A changer
-        Intent intent = new Intent(ActivityAjoutTrombi.this, ActivityBDTest.class);
-        startActivity(intent);
+        /*Intent intent = new Intent(ActivityAjoutTrombi.this, ActivityBDTest.class);
+        startActivity(intent);*/
+
+        Intent fileintent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        fileintent.addCategory(Intent.CATEGORY_OPENABLE);
+        fileintent.setType("text/plain");
+
+        try{
+            startActivityForResult(fileintent, PICKFILE_RESULT_CODE);
+        } catch(ActivityNotFoundException e){
+            Snackbar.make(coordinatorLayout, R.string.AJOUTTROMBI_fichierImporteErr, Snackbar.LENGTH_LONG).show();
+        }
     }
 
     // Traite le texte saisi par l'utilisateur lors de l'import d'un trombinoscope
-    private void parseText(final String text){
-        String[] split = text.split("\n");
+    private void importTrombiText(final String nomTrombi, final String descTrombi, final String liste){
+        String[] split = liste.split("\n");
         TrombiViewModel trombiViewModel = ViewModelProviders.of(this).get(TrombiViewModel.class);
-        Trombinoscope trombi = new Trombinoscope("Trombinoscope importé",
-                "Modifiez moi en me maintenant");
+        Trombinoscope trombi = new Trombinoscope(nomTrombi, descTrombi);
         long id = trombiViewModel.insertAndRetrieveId(trombi);
 
         for(String eleve : split){
             trombiViewModel.insert(new Eleve(eleve, id, ""));
         }
+
+        Toast.makeText(this, R.string.AJOUTTROMBI_listeImportee, Toast.LENGTH_SHORT).show();
+        finish();
     }
 
     @Override
@@ -172,13 +197,67 @@ public class ActivityAjoutTrombi extends AppCompatActivity implements ImportAler
     @Override
     public void onDialogPositiveClick(DialogFragment dialog) {
         Dialog d = dialog.getDialog();
-        EditText etImport;
+        EditText etImportNom;
+        EditText etImportDesc;
+        EditText etImportListe;
 
         if(d != null){
-            etImport = d.findViewById(R.id.AJOUTTROMBI_editTextImport);
-            String text = etImport.getText().toString();
-            Toast.makeText(this, text, Toast.LENGTH_LONG).show();
-            parseText(text);
+            etImportNom = d.findViewById(R.id.AJOUTTROMBI_editTextImportNom);
+            etImportDesc = d.findViewById(R.id.AJOUTTROMBI_editTextImportDesc);
+            etImportListe = d.findViewById(R.id.AJOUTTROMBI_editTextImportListe);
+
+            final String nomTrombi = etImportNom.getText().toString();
+            final String descTrombi = etImportDesc.getText().toString();
+            final String liste = etImportListe.getText().toString();
+
+            if(nomTrombi.trim().isEmpty()){
+                Snackbar.make(coordinatorLayout,
+                        R.string.AJOUTTROMBI_listeImporteeErr,
+                        Snackbar.LENGTH_LONG).show();
+
+                return;
+            }
+
+            importTrombiText(nomTrombi, descTrombi, liste);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == PICKFILE_RESULT_CODE){
+            if(resultCode == RESULT_OK && data.getData() != null){
+                try (BufferedReader reader =
+                             new BufferedReader(
+                                     new InputStreamReader(
+                                             new FileInputStream(getExternalFilesDir(null) +
+                                                     "/" + "ATrombi import-15-01-2020" + ".txt"))   //A changer
+                             )
+                ){
+                    trombiViewModel = ViewModelProviders.of(this).get(TrombiViewModel.class);
+                    String nomTrombi = null;
+
+                    // Récupère le nom du fichier, puis le nom du trombinoscope.
+                    if(data.getData().getLastPathSegment() != null){
+                        String[] split = data.getData().getLastPathSegment().split("-");
+                        nomTrombi = split[0];
+                    }
+
+                    Trombinoscope trombi = new Trombinoscope(nomTrombi, "");
+                    long id = trombiViewModel.insertAndRetrieveId(trombi);
+
+                    String line;
+                    while((line = reader.readLine()) != null){
+                        trombiViewModel.insert(new Eleve(line, id, ""));
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Snackbar.make(coordinatorLayout,
+                            R.string.AJOUTTROMBI_fichierImporteErr,
+                            Snackbar.LENGTH_SHORT).show();
+                }
+            }
         }
     }
 }

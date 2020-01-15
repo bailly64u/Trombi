@@ -5,13 +5,33 @@
     android:layout_height="match_parent">
 
     <EditText
-        android:id="@+id/AJOUTTROMBI_editTextImport"
+        android:id="@+id/AJOUTTROMBI_editTextImportNom"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="wrap_content"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
+        android:inputType="textCapSentences"
+        android:hint="@string/AJOUTTROMBI_hint1" />
+
+    <EditText
+        android:id="@+id/AJOUTTROMBI_editTextImportDesc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
+        android:inputType="textCapSentences"
+        android:hint="@string/AJOUTTROMBI_hint2" />
+
+    <EditText
+        android:id="@+id/AJOUTTROMBI_editTextImportListe"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
-        android:layout_marginTop="16dp"
         android:gravity="top"
         android:inputType="textMultiLine|textCapSentences"
         android:hint="@string/AJOUTTROMBI_hint3" />
