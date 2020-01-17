@@ -34,16 +34,6 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true">
 
-            <!--<Button
-                android:id="@+id/AJOUTTROMBI_btnValider"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:layout_marginStart="4dp"
-                android:layout_marginEnd="4dp"
-                android:backgroundTint="?attr/colorAccent"
-                android:textColor="?attr/onSecondary"
-                android:text="@string/AJOUTTROMBI_btnValider" />-->
-
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/AJOUTTROMBI_btnValider"
                 android:layout_width="match_parent"

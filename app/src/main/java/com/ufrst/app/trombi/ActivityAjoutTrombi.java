@@ -13,6 +13,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -228,20 +229,30 @@ public class ActivityAjoutTrombi extends AppCompatActivity implements ImportAler
 
         if(requestCode == PICKFILE_RESULT_CODE){
             if(resultCode == RESULT_OK && data.getData() != null){
+                String filename = null;
+
+                // Récupération du nom du fichier
+                if(data.getData().getLastPathSegment() != null){
+                    String[] split = data.getData().getLastPathSegment().split("/");
+                    filename = split[split.length - 1];
+                }
+
                 try (BufferedReader reader =
                              new BufferedReader(
                                      new InputStreamReader(
-                                             new FileInputStream(getExternalFilesDir(null) +
-                                                     "/" + "ATrombi import-15-01-2020" + ".txt"))   //A changer
+                                             new FileInputStream(
+                                                     getExternalFilesDir(null) +
+                                                     "/" + filename
+                                             )
+                                     )
                              )
                 ){
                     trombiViewModel = ViewModelProviders.of(this).get(TrombiViewModel.class);
                     String nomTrombi = null;
 
-                    // Récupère le nom du fichier, puis le nom du trombinoscope.
-                    if(data.getData().getLastPathSegment() != null){
-                        String[] split = data.getData().getLastPathSegment().split("-");
-                        nomTrombi = split[0];
+                    // Récupère le nom du fichier sans fioritures
+                    if(data.getData().getLastPathSegment() != null && filename != null){
+                        nomTrombi = filename.split("-")[0];
                     }
 
                     Trombinoscope trombi = new Trombinoscope(nomTrombi, "");
@@ -251,11 +262,15 @@ public class ActivityAjoutTrombi extends AppCompatActivity implements ImportAler
                     while((line = reader.readLine()) != null){
                         trombiViewModel.insert(new Eleve(line, id, ""));
                     }
+
+                    Snackbar.make(coordinatorLayout,
+                            R.string.AJOUTTROMBI_listeImportee,
+                            Snackbar.LENGTH_LONG).show();
                 } catch (IOException e) {
                     e.printStackTrace();
                     Snackbar.make(coordinatorLayout,
                             R.string.AJOUTTROMBI_fichierImporteErr,
-                            Snackbar.LENGTH_SHORT).show();
+                            Snackbar.LENGTH_LONG).show();
                 }
             }
         }

@@ -52,9 +52,6 @@ public class ActivityMain extends AppCompatActivity {
 
         setTitle(R.string.MAIN_title);
 
-        // Définir l'adapteur du RecyclerView
-        adapteur = new AdapteurTrombi();
-
         findViews();
         setListeners();
         setRecyclerViewAndViewModel();
@@ -109,10 +106,13 @@ public class ActivityMain extends AppCompatActivity {
 
     // Met en place l'observeur et le RecyclerView
     public void setRecyclerViewAndViewModel(){
+        // Définir l'adapteur du RecyclerView
+        adapteur = new AdapteurTrombi();
+
+        // Mise en place du RecyclerView
         recyclerView.setLayoutManager(new LinearLayoutManager(this));  // Affiche les items les uns en dessous des autres
         recyclerView.setHasFixedSize(true);                                    // Meilleures performances si le RV ne change pas de taille
         recyclerView.setAdapter(adapteur);
-
 
         // Récupérer le ViewModel et observer la liste de Trombinoscopes
         trombiViewModel = ViewModelProviders.of(this).get(TrombiViewModel.class);
