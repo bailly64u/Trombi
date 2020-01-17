@@ -3,10 +3,8 @@ package com.ufrst.app.trombi;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,8 +19,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
-import com.ufrst.app.trombi.database.Eleve;
-import com.ufrst.app.trombi.database.Groupe;
 import com.ufrst.app.trombi.database.TrombiViewModel;
 import com.ufrst.app.trombi.database.Trombinoscope;
 
@@ -41,13 +37,13 @@ public class ActivityMain extends AppCompatActivity {
 
     private CoordinatorLayout coordinatorLayout;
     //private NavigationView navigationView;
+    private TrombiViewModel trombiViewModel;
     private RecyclerView recyclerView;
     private FloatingActionButton fab;
     private AdapteurTrombi adapteur;
     private TextView tvEmpty;
     private Toolbar toolbar;
 
-    private TrombiViewModel trombiViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -125,7 +121,6 @@ public class ActivityMain extends AppCompatActivity {
             public void onChanged(List<Trombinoscope> trombis){
                 adapteur.submitList(trombis);
 
-                Log.v("________________________", String.valueOf(trombis.size()));
                 // Afficher le placeholder en cas de liste vide
                 if(trombis.isEmpty()){
                     tvEmpty.setVisibility(View.VISIBLE);

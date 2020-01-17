@@ -28,25 +28,6 @@
         android:gravity="center"
         android:text="@string/MAIN_emptyRecyclerView" />
 
-    <!--
-    <androidx.drawerlayout.widget.DrawerLayout
-        android:id="@+id/MAIN_drawer_layout"
-        android:layout_height="match_parent"
-        android:layout_width="match_parent"
-        android:fitsSystemWindows="true">
-
-        <com.google.android.material.navigation.NavigationView
-            android:id="@+id/NAV_navigationView"
-            android:layout_height="match_parent"
-            android:layout_width="wrap_content"
-            android:layout_gravity="start"
-            android:fitsSystemWindows="true"
-            app:headerLayout="@layout/drawer_header"
-            app:menu="@menu/drawer_view" />
-
-    </androidx.drawerlayout.widget.DrawerLayout>-->
-
-
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/MAIN_fab"
         android:layout_width="wrap_content"
@@ -55,19 +36,13 @@
         android:layout_margin="16dp"
         android:src="@drawable/ic_add" />
 
-    <LinearLayout
+    <!--android:layout_marginTop="20dp"-->
+    <!--android:layout_marginBottom="4dp"-->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/MAIN_recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_marginTop="?attr/actionBarSize"
-        android:orientation="vertical">
+        tools:listitem="@layout/trombi_item" />
 
-        <!--android:layout_marginTop="20dp"-->
-        <!--android:layout_marginBottom="4dp"-->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/MAIN_recyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:listitem="@layout/trombi_item" />
-
-    </LinearLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

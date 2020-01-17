@@ -1,6 +1,5 @@
 package com.ufrst.app.trombi;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -106,7 +105,6 @@ public class AdapteurTrombi extends ListAdapter<Trombinoscope, AdapteurTrombi.Tr
 
     @Override
     public void submitList(@Nullable List<Trombinoscope> list){
-        Log.v("____________________________", "submitList");
         super.submitList(list);
     }
 
