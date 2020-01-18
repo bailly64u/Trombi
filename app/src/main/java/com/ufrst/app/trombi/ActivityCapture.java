@@ -2,13 +2,16 @@ package com.ufrst.app.trombi;
 
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageCapture;
 import androidx.camera.core.ImageCaptureConfig;
+import androidx.camera.core.ImageProxy;
 import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
@@ -20,6 +23,7 @@ import androidx.lifecycle.LifecycleOwner;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
 
 public class ActivityCapture extends AppCompatActivity{
 
@@ -88,7 +92,47 @@ public class ActivityCapture extends AppCompatActivity{
 
         CameraSelector cameraSelector =
                 new CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_BACK).build();
-        cameraProvider.bindToLifecycle((LifecycleOwner) this, cameraSelector, preview);
+
+        //-------------Prise de photos, experimental
+
+        /*ImageCaptureConfig config = new ImageCaptureConfig.Builder()
+                .setTargetRotation(getWindowManager().getDefaultDisplay().getRotation())
+                .build();*/
+
+        ImageCapture imageCapture = new ImageCapture.Builder().build();
+
+        findViewById(R.id.CAPT_takePic).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                imageCapture.takePicture(Executors.newSingleThreadExecutor(), new ImageCapture.OnImageCapturedCallback() {
+                    @Override
+                    public void onCaptureSuccess(@NonNull ImageProxy image) {
+                        previewView.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(ActivityCapture.this, "Photo prise !", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                        super.onCaptureSuccess(image);
+                    }
+
+                    @Override
+                    public void onError(int imageCaptureError, @NonNull String message, @Nullable Throwable cause) {
+                        previewView.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(ActivityCapture.this, message, Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                        super.onError(imageCaptureError, message, cause);
+                    }
+                });
+            }
+        });
+
+
+        //-----------------------------------------
+        cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageCapture);
     }
 
     private void takePhoto(){

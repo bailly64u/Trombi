@@ -15,4 +15,11 @@
             android:layout_width="match_parent" />
 
     </FrameLayout>
+
+    <Button
+        android:id="@+id/CAPT_takePic"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center"
+        android:text="PHOTO" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
