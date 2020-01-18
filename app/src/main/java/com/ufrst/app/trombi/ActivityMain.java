@@ -195,7 +195,8 @@ public class ActivityMain extends AppCompatActivity {
         adapteur.setOnItemClickListener(new AdapteurTrombi.OnItemClickListener() {
             @Override
             public void onItemClick(Trombinoscope trombi){
-                Intent intent = new Intent(ActivityMain.this, ActivityVueTrombi.class);
+                //Intent intent = new Intent(ActivityMain.this, ActivityVueTrombi.class); //A changer
+                Intent intent = new Intent(ActivityMain.this, ActivityCapture.class);
 
                 intent.putExtra(EXTRA_ID, trombi.getIdTrombi());
                 intent.putExtra(EXTRA_NOM, trombi.getNomTrombi());  // On passe le nom pour le mettre en titre de l'activité déclenchée

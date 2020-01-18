@@ -46,6 +46,8 @@
     <string name="VUETROMBI_listeExporteeErr">Un problème est survenu lors de l\'exportation</string>
     <string name="VUETROMBI_fichierExiste">Le fichier existe déjà, remplacer ?</string>
 
+    <string name="CAPT_requestDenied">L\'application doit disposer de ces dorits pour fonctionner.</string>
+
     <!-- ID pour chips -->
     <string name="TAG_CHIPS_ID">com.ufrst.app.trombi.TAG_CHIPS_ID</string>
 </resources>
