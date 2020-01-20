@@ -1,14 +1,24 @@
 package com.ufrst.app.trombi;
 
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.ImageFormat;
+import android.graphics.Rect;
+import android.graphics.YuvImage;
+import android.media.Image;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Size;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.CameraSelector;
+import androidx.camera.core.ImageAnalysis;
 import androidx.camera.core.ImageCapture;
 import androidx.camera.core.ImageCaptureConfig;
 import androidx.camera.core.ImageProxy;
@@ -20,8 +30,12 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.LifecycleOwner;
 
+import com.bumptech.glide.Glide;
 import com.google.common.util.concurrent.ListenableFuture;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.nio.ByteBuffer;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 
@@ -34,6 +48,7 @@ public class ActivityCapture extends AppCompatActivity{
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     private CoordinatorLayout coordinatorLayout;
     private PreviewView previewView;
+    private ImageView imageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +68,7 @@ public class ActivityCapture extends AppCompatActivity{
     private void findViews() {
         coordinatorLayout = findViewById(R.id.CAPT_coordinator);
         previewView = findViewById(R.id.CAPT_previewView);
+        imageView = findViewById(R.id.CAPT_imgView);
     }
 
     // Vérifie si les permission nécessaires sont accordées, sinon on les demande
@@ -90,27 +106,43 @@ public class ActivityCapture extends AppCompatActivity{
 
         preview.setPreviewSurfaceProvider(previewView.getPreviewSurfaceProvider());
 
-        CameraSelector cameraSelector =
-                new CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_BACK).build();
+        CameraSelector cameraSelector = new CameraSelector.Builder()
+                .requireLensFacing(CameraSelector.LENS_FACING_BACK)
+                .build();
 
         //-------------Prise de photos, experimental
 
+        // CameraX est en alpha, la documentation est actuellement pas en accord avec la librairie
         /*ImageCaptureConfig config = new ImageCaptureConfig.Builder()
                 .setTargetRotation(getWindowManager().getDefaultDisplay().getRotation())
                 .build();*/
 
-        ImageCapture imageCapture = new ImageCapture.Builder().build();
+        ImageCapture imageCapture = new ImageCapture.Builder()
+                .setTargetRotation(getWindowManager().getDefaultDisplay().getRotation())
+                //.setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
+                //.setFlashMode(ImageCapture.FLASH_MODE_ON)
+                .build();
 
         findViewById(R.id.CAPT_takePic).setOnClickListener(new View.OnClickListener() {
+            File f = new File(getExternalFilesDir(null).getPath());
+
             @Override
             public void onClick(View view) {
                 imageCapture.takePicture(Executors.newSingleThreadExecutor(), new ImageCapture.OnImageCapturedCallback() {
                     @Override
                     public void onCaptureSuccess(@NonNull ImageProxy image) {
+                        //Bitmap b = getBitmap(image);
+
+                        // Nous ne sommes plus sur le ThreadUI. Pour effectuer des opérations sur l'UI
+                        // depuis ce Thread, on peut utiliser la méthode View#post afin d'ajouter
+                        // un Runnable dans une queue, qui sera exécuté.
                         previewView.post(new Runnable() {
                             @Override
                             public void run() {
                                 Toast.makeText(ActivityCapture.this, "Photo prise !", Toast.LENGTH_SHORT).show();
+                                previewView.setVisibility(View.GONE);
+
+                                //imageView.setImageBitmap(b);
                             }
                         });
                         super.onCaptureSuccess(image);
@@ -130,21 +162,57 @@ public class ActivityCapture extends AppCompatActivity{
             }
         });
 
+        // Tentative de récupération de l'image prise sans la stocker dans le stockage interne
+        // du téléphone
+        /*ImageAnalysisConfig config =
+                new ImageAnalysisConfig.Builder()
+                        .setTargetResolution(new Size(1280, 720))
+                        .setImageReaderMode(ImageAnalysis.ImageReaderMode.ACQUIRE_LATEST_IMAGE)
+                        .build();*/
+
+        /*ImageAnalysis imageAnalysis = new ImageAnalysis.Builder()
+                .setTargetResolution(new Size(1280, 720))
+                .build();
+
+        imageAnalysis.setAnalyzer(Executors.newSingleThreadExecutor(), new ImageAnalysis.Analyzer(){
+            @Override
+            public void analyze(@NonNull ImageProxy image) {
+
+            }
+        });*/
 
         //-----------------------------------------
+
+        // Le paramaètre imageCapture correspond à un useCase qui envisage la prise d'une photo
         cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageCapture);
     }
 
-    private void takePhoto(){
-        /*ImageCapture config = new ImageCapture.Builder()
-                .setTargetRotation(getWindowManager().getDefaultDisplay().getRotation())
-                .build();
+    // Retourne le Bitmap correspondant à l'image capturée
+    /*private Bitmap getBitmap(ImageProxy imageProxy){
+        Image i = imageProxy.getImage();
 
-        ImageCapture imageCapture = new ImageCapture(config);
+        Image.Plane[] planes = i.getPlanes();
+        ByteBuffer yBuffer = planes[0].getBuffer();
+        ByteBuffer uBuffer = planes[1].getBuffer();
+        ByteBuffer vBuffer = planes[2].getBuffer();
 
-        cameraProvider.bindToLifecycle((LifecycleOwner) this, imageCapture, imageAnalysis, preview);*/
+        int ySize = yBuffer.remaining();
+        int uSize = uBuffer.remaining();
+        int vSize = vBuffer.remaining();
 
-    }
+        byte[] nv21 = new byte[ySize + uSize + vSize];
+        //U and V are swapped
+        yBuffer.get(nv21, 0, ySize);
+        vBuffer.get(nv21, ySize, vSize);
+        uBuffer.get(nv21, ySize + vSize, uSize);
+
+        YuvImage yuvImage = new YuvImage(nv21, ImageFormat.NV21, i.getWidth(), i.getHeight(), null);
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        yuvImage.compressToJpeg(new Rect(49, 7, 273, 231), 75, out);
+
+        byte[] imageBytes = out.toByteArray();
+        return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+    }*/
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
