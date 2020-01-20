@@ -1,15 +1,7 @@
 package com.ufrst.app.trombi;
 
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.ImageFormat;
-import android.graphics.Rect;
-import android.graphics.YuvImage;
-import android.media.Image;
-import android.net.Uri;
 import android.os.Bundle;
-import android.util.Size;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -18,28 +10,24 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.CameraSelector;
-import androidx.camera.core.ImageAnalysis;
 import androidx.camera.core.ImageCapture;
-import androidx.camera.core.ImageCaptureConfig;
-import androidx.camera.core.ImageProxy;
 import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.lifecycle.LifecycleOwner;
 
-import com.bumptech.glide.Glide;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.common.util.concurrent.ListenableFuture;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.nio.ByteBuffer;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 
-public class ActivityCapture extends AppCompatActivity{
+public class ActivityCapture extends AppCompatActivity {
 
     private static final int REQUEST_CODE_PERMISSIONS = 10;
     private static final String[] REQUIRED_PERMISSIONS = new String[]{"android.permission.CAMERA",
@@ -124,41 +112,36 @@ public class ActivityCapture extends AppCompatActivity{
                 .build();
 
         findViewById(R.id.CAPT_takePic).setOnClickListener(new View.OnClickListener() {
-            File f = new File(getExternalFilesDir(null).getPath());
-
             @Override
             public void onClick(View view) {
-                imageCapture.takePicture(Executors.newSingleThreadExecutor(), new ImageCapture.OnImageCapturedCallback() {
-                    @Override
-                    public void onCaptureSuccess(@NonNull ImageProxy image) {
-                        //Bitmap b = getBitmap(image);
+                if (getExternalFilesDir(null) != null) {
+                    String timeStamp = new SimpleDateFormat("HHmmss").format(new Date());
+                    File f = new File(getExternalFilesDir(null).getPath() + "/caca.jpeg");
 
-                        // Nous ne sommes plus sur le ThreadUI. Pour effectuer des opérations sur l'UI
-                        // depuis ce Thread, on peut utiliser la méthode View#post afin d'ajouter
-                        // un Runnable dans une queue, qui sera exécuté.
-                        previewView.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(ActivityCapture.this, "Photo prise !", Toast.LENGTH_SHORT).show();
-                                previewView.setVisibility(View.GONE);
+                    imageCapture.takePicture(f, Executors.newSingleThreadExecutor(), new ImageCapture.OnImageSavedCallback() {
+                        @Override
+                        public void onImageSaved(@NonNull File file) {
+                            previewView.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(ActivityCapture.this, "Image saved at : " + file.getPath(), Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        }
 
-                                //imageView.setImageBitmap(b);
-                            }
-                        });
-                        super.onCaptureSuccess(image);
-                    }
-
-                    @Override
-                    public void onError(int imageCaptureError, @NonNull String message, @Nullable Throwable cause) {
-                        previewView.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(ActivityCapture.this, message, Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                        super.onError(imageCaptureError, message, cause);
-                    }
-                });
+                        @Override
+                        public void onError(int imageCaptureError, @NonNull String message, @Nullable Throwable cause) {
+                            previewView.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(ActivityCapture.this, "ezrro", Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        }
+                    });
+                } else {
+                    Snackbar.make(coordinatorLayout, "Impossible d'accéder aurépertoire externe de l'application", Snackbar.LENGTH_LONG);
+                }
             }
         });
 
