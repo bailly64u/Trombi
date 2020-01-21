@@ -198,8 +198,9 @@ public class ActivityMain extends AppCompatActivity {
                 Intent intent = new Intent(ActivityMain.this, ActivityVueTrombi.class); //A changer
                 //Intent intent = new Intent(ActivityMain.this, ActivityCapture.class);
 
+                // Informations à passer pour afficher dans le HTML
                 intent.putExtra(EXTRA_ID, trombi.getIdTrombi());
-                intent.putExtra(EXTRA_NOM, trombi.getNomTrombi());  // On passe le nom pour le mettre en titre de l'activité déclenchée
+                intent.putExtra(EXTRA_NOM, trombi.getNomTrombi());
                 intent.putExtra(EXTRA_DESC, trombi.getDescription());
 
                 startActivity(intent);
@@ -215,6 +216,14 @@ public class ActivityMain extends AppCompatActivity {
                 intent.putExtra(EXTRA_DESC, trombi.getDescription());
 
                 startActivityForResult(intent, REQUETE_EDITE_TROMBI);
+            }
+
+            @Override
+            public void onEditClick(Trombinoscope trombi){
+                Intent intent = new Intent(ActivityMain.this, ActivityAjoutTrombi.class);
+                intent.putExtra(EXTRA_ID, trombi.getIdTrombi());
+
+                startActivity(intent);
             }
         });
     }

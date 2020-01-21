@@ -15,12 +15,12 @@
     <string name="MAIN_trombiSuppr">Le trombinoscope a été supprimé</string>
     <string name="MAIN_trombiAjoute">Le trombinoscope a été ajouté</string>
     <string name="MAIN_trombiModifie">Le trombinoscope a été modifié</string>
+    <string name="MAIN_modifier">Modifier les élèves</string>
 
     <string name="AJOUTTROMBI_title">Ajouter un trombinoscope</string>
     <string name="AJOUTTROMBI_titleVar">Modifier un trombinoscope</string>
     <string name="AJOUTTROMBI_btnValider">VALIDER</string>
     <string name="AJOUTTROMBI_btnEnregistrer">ENREGISTRER</string>
-    <string name="AJOUTTROMBI_btnModifier">MODFIER LES ÉLÈVES</string>
     <string name="AJOUTTROMBI_importer">Importer</string>
     <string name="AJOUTTROMBI_hint1">Nom</string>
     <string name="AJOUTTROMBI_hint2">Description</string>

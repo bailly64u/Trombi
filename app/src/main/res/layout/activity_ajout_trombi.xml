@@ -148,7 +148,8 @@
                     android:layout_alignParentEnd="true"
                     android:layout_below="@+id/AJOUTTROMBI_nbEleve" />
 
-                <com.google.android.material.button.MaterialButton
+                <!--Déplacement du bouton dans les items de REcyclerView -->
+                <!--<com.google.android.material.button.MaterialButton
                     android:id="@+id/AJOUTTROMBI_btnModfier"
                     style="@style/Widget.MaterialComponents.Button.Icon"
                     android:layout_width="match_parent"
@@ -160,7 +161,7 @@
                     android:textAppearance="@style/TextAppearance.AppCompat"
                     android:textSize="18sp"
                     app:backgroundTint="?attr/colorPrimary"
-                    app:icon="@drawable/ic_edit" />
+                    app:icon="@drawable/ic_edit" />-->
 
             </RelativeLayout>
 

@@ -3,6 +3,7 @@ package com.ufrst.app.trombi;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -52,9 +53,8 @@ public class AdapteurTrombi extends ListAdapter<Trombinoscope, AdapteurTrombi.Tr
     @Override
     public void onBindViewHolder(@NonNull TrombiHolder holder, int position){
         Trombinoscope currentTrombi = getItem(position);
-        holder.mTextViewNom.setText(currentTrombi.getNomTrombi() + " - " + currentTrombi.getIdTrombi());
-        holder.mTextViewDesc.setText(currentTrombi.getDescription());
-        holder.mTextViewNombre.setText("8");
+        holder.textViewNom.setText(currentTrombi.getNomTrombi() + " - " + currentTrombi.getIdTrombi());
+        holder.textViewDesc.setText(currentTrombi.getDescription());
 
         // Récupérer le nombre d'élèves, VM étant un viewModel passé par le constructeur
         // Cancer ?
@@ -74,17 +74,17 @@ public class AdapteurTrombi extends ListAdapter<Trombinoscope, AdapteurTrombi.Tr
 
     // Classe interne permettant de contenir les informations à afficher dans la liste
     class TrombiHolder extends RecyclerView.ViewHolder{
-        private TextView mTextViewNom;          // Nom du trombi
-        private TextView mTextViewDesc;         // Description du trombi
-        private TextView mTextViewNombre;       // Nb d'élèves dans le trombi
+        private TextView textViewNom;           // Nom du trombi
+        private TextView textViewDesc;          // Description du trombi
+        private ImageButton ibNombre;           // Nb d'élèves dans le trombi
 
         TrombiHolder(View itemView){
             super(itemView);
 
             // Gestion des vues
-            mTextViewNom = itemView.findViewById(R.id.TROMBIITEM_nom);
-            mTextViewDesc = itemView.findViewById(R.id.TROMBIITEM_description);
-            mTextViewNombre = itemView.findViewById(R.id.TROMBIITEM_nombre);
+            textViewNom = itemView.findViewById(R.id.TROMBIITEM_nom);
+            textViewDesc = itemView.findViewById(R.id.TROMBIITEM_description);
+            ibNombre = itemView.findViewById(R.id.TROMBIITEM_action);
 
             // Gestion des listeners
             itemView.setOnClickListener(new View.OnClickListener() {
@@ -93,7 +93,7 @@ public class AdapteurTrombi extends ListAdapter<Trombinoscope, AdapteurTrombi.Tr
                     int pos = getAdapterPosition();             // Récupération position item cliqué
 
                     if(listener != null && pos != RecyclerView.NO_POSITION){
-                        listener.onItemClick(getItem(pos)); // Récupération objet dans la liste
+                        listener.onItemClick(getItem(pos));     // Récupération objet dans la liste
                     }
                 }
             });
@@ -110,6 +110,17 @@ public class AdapteurTrombi extends ListAdapter<Trombinoscope, AdapteurTrombi.Tr
                     return true;
                 }
             });
+
+            ibNombre.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view){
+                    int pos = getAdapterPosition();             // Récupération position item cliqué
+
+                    if(listener != null && pos != RecyclerView.NO_POSITION){
+                        listener.onEditClick(getItem(pos));     // Récupération objet dans la liste
+                    }
+                }
+            });
         }
     }
 
@@ -122,6 +133,7 @@ public class AdapteurTrombi extends ListAdapter<Trombinoscope, AdapteurTrombi.Tr
     public interface OnItemClickListener{
         void onItemClick(Trombinoscope trombi);
         void onItemLongClick(Trombinoscope trombi);
+        void onEditClick(Trombinoscope trombi);
     }
 
     public void setOnItemClickListener(OnItemClickListener listener){

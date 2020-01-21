@@ -1,7 +1,6 @@
 package com.ufrst.app.trombi;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
@@ -12,14 +11,11 @@ import androidx.lifecycle.ViewModelProviders;
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
@@ -34,17 +30,10 @@ import com.ufrst.app.trombi.database.TrombiViewModel;
 import com.ufrst.app.trombi.database.Trombinoscope;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.concurrent.Executors;
 
 import static com.ufrst.app.trombi.ActivityMain.EXTRA_DESC;
 import static com.ufrst.app.trombi.ActivityMain.EXTRA_ID;
@@ -60,9 +49,7 @@ public class ActivityAjoutTrombi extends AppCompatActivity implements ImportAler
     private TrombiViewModel trombiViewModel;
     private TextView tvNbEleve, tvNbGroupe;
     private Toolbar toolbar;
-    private Button button;
-
-    private long idTrombi;
+    private Button valider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -83,7 +70,7 @@ public class ActivityAjoutTrombi extends AppCompatActivity implements ImportAler
         editRelativeLayout = findViewById(R.id.AJOUTTROMBI_infoLayout);
         etDesc = findViewById(R.id.AJOUTTROMBI_entrerDescription);
         tvNbGroupe = findViewById(R.id.AJOUTTROMBI_nbGroupe);
-        button = findViewById(R.id.AJOUTTROMBI_btnValider);
+        valider = findViewById(R.id.AJOUTTROMBI_btnValider);
         tvNbEleve = findViewById(R.id.AJOUTTROMBI_nbEleve);
         etNom = findViewById(R.id.AJOUTTROMBI_entrerNom);
         toolbar = findViewById(R.id.AJOUTTROMBI_toolbar);
@@ -101,7 +88,7 @@ public class ActivityAjoutTrombi extends AppCompatActivity implements ImportAler
             setTitle(R.string.AJOUTTROMBI_titleVar);
 
             // Récupération de l'id
-            idTrombi = intent.getLongExtra(EXTRA_ID, -1);
+            long idTrombi = intent.getLongExtra(EXTRA_ID, -1);
 
             // Les champs d'édition doivent refléter le trombinoscope à modifier
             etNom.setText(intent.getStringExtra(EXTRA_NOM));
@@ -140,7 +127,7 @@ public class ActivityAjoutTrombi extends AppCompatActivity implements ImportAler
     }
 
     private void setListeners(){
-        button.setOnClickListener(new View.OnClickListener() {
+        valider.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v){
                 saveTrombi();
