@@ -52,6 +52,11 @@
 
     <string name="CAPT_requestDenied">L\'application doit disposer de ces dorits pour fonctionner.</string>
 
+    <string name="LISTe_title">Gérer les élèves</string>
+    <string name="LISTe_emptyRecyclerView">Aucun élève dans ce trombinoscope :O .</string>
+    <string name="LISTe_imgView">Photo de l\'élève</string>
+    <string name="LISTe_fatalError">Erreur fatale, impossible de démarrer l\'activité</string>
+
     <!-- ID pour chips -->
     <string name="TAG_CHIPS_ID">com.ufrst.app.trombi.TAG_CHIPS_ID</string>
 </resources>

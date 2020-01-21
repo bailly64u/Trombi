@@ -220,7 +220,7 @@ public class ActivityMain extends AppCompatActivity {
 
             @Override
             public void onEditClick(Trombinoscope trombi){
-                Intent intent = new Intent(ActivityMain.this, ActivityAjoutTrombi.class);
+                Intent intent = new Intent(ActivityMain.this, ActivityListEleve.class);
                 intent.putExtra(EXTRA_ID, trombi.getIdTrombi());
 
                 startActivity(intent);

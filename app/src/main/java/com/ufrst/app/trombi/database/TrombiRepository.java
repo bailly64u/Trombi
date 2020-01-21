@@ -2,7 +2,6 @@ package com.ufrst.app.trombi.database;
 
 import android.app.Application;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 
@@ -95,6 +94,7 @@ public class TrombiRepository {
 
     LiveData<List<GroupeWithEleves>> getGroupesWithEleves(){return joinDao.getGroupesWithEleves();}
     LiveData<GroupeWithEleves> getGroupeByIdWithEleves(long idGroupe){return joinDao.getGroupeByIdWithEleves(idGroupe);}
+    LiveData<EleveWithGroups> getEleveByIdWithGroups(long idEleve){return joinDao.getEleveByIdWithGroups(idEleve);}
 
 
 

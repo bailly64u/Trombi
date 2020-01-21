@@ -75,6 +75,7 @@ public class ActivityVueTrombi extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_vue_trombi);
 
+
         getExtras();
         retrieveSharedPrefs();
         findViews();
@@ -84,7 +85,7 @@ public class ActivityVueTrombi extends AppCompatActivity {
         // Toolbar
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        toolbar.setTitle(nomTrombi);
+        setTitle(nomTrombi);
 
         // Met en place la Bottom Sheet persistante, qui contiendra les filtres
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
@@ -123,14 +124,10 @@ public class ActivityVueTrombi extends AppCompatActivity {
     private void getGroupesAndEleves(){
         // Création et référenciation d'un observeur qui sera supprimé/ajouté lors de la sélection
         // ou déselection d'un groupe
-        observerEleve = new Observer<List<Eleve>>() {
-            @Override
-            public void onChanged(List<Eleve> eleves){
-                listeEleves = eleves;
-                showHTML();
-            }
+        observerEleve = eleves -> {
+            listeEleves = eleves;
+            showHTML();
         };
-
 
         trombiViewModel = ViewModelProviders.of(this).get(TrombiViewModel.class);
         trombiViewModel.getElevesByTrombi(idTrombi).observe(this, observerEleve);
@@ -141,6 +138,8 @@ public class ActivityVueTrombi extends AppCompatActivity {
                 for(Groupe g : groupes){
                     setChips(g);
                 }
+
+                trombiViewModel.getGroupesByTrombi(idTrombi).removeObserver(this);
             }
         });
     }
