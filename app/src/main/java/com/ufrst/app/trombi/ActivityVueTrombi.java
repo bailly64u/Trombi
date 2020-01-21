@@ -3,27 +3,7 @@ package com.ufrst.app.trombi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
-
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
-import com.google.android.material.chip.Chip;
-import com.google.android.material.chip.ChipGroup;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-import com.ufrst.app.trombi.database.Eleve;
-import com.ufrst.app.trombi.database.Groupe;
-import com.ufrst.app.trombi.database.GroupeWithEleves;
-import com.ufrst.app.trombi.database.TrombiViewModel;
-import com.ufrst.app.trombi.database.Trombinoscope;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
-
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -34,20 +14,32 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
+
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
+import com.google.android.material.snackbar.Snackbar;
+import com.ufrst.app.trombi.database.Eleve;
+import com.ufrst.app.trombi.database.Groupe;
+import com.ufrst.app.trombi.database.GroupeWithEleves;
+import com.ufrst.app.trombi.database.TrombiViewModel;
+
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -133,7 +125,7 @@ public class ActivityVueTrombi extends AppCompatActivity {
         // ou déselection d'un groupe
         observerEleve = new Observer<List<Eleve>>() {
             @Override
-            public void onChanged(List<Eleve> eleves) {
+            public void onChanged(List<Eleve> eleves){
                 listeEleves = eleves;
                 showHTML();
             }
@@ -144,7 +136,7 @@ public class ActivityVueTrombi extends AppCompatActivity {
         trombiViewModel.getElevesByTrombi(idTrombi).observe(this, observerEleve);
         trombiViewModel.getGroupesByTrombi(idTrombi).observe(this, new Observer<List<Groupe>>() {
             @Override
-            public void onChanged(List<Groupe> groupes) {
+            public void onChanged(List<Groupe> groupes){
                 // Insertion des chips pour le choix des groupes a afficher
                 for(Groupe g : groupes){
                     setChips(g);
@@ -168,17 +160,17 @@ public class ActivityVueTrombi extends AppCompatActivity {
         // Seekbar
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
-            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b){
                 tvNbCols.setText(String.valueOf(i + 1));
             }
 
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
+            public void onStartTrackingTouch(SeekBar seekBar){
 
             }
 
             @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
+            public void onStopTrackingTouch(SeekBar seekBar){
                 if(seekBar.getProgress() != nbCols){
                     nbCols = seekBar.getProgress();
                     showHTML();
@@ -211,12 +203,12 @@ public class ActivityVueTrombi extends AppCompatActivity {
                     // Observation des élèves du Groupe de la chips sélectionnée
                     trombiViewModel.groupesWithEleves
                             .observe(ActivityVueTrombi.this, new Observer<GroupeWithEleves>() {
-                        @Override
-                        public void onChanged(GroupeWithEleves groupeWithEleves) {
-                            listeEleves = groupeWithEleves.getEleves();
-                            showHTML();
-                        }
-                    });
+                                @Override
+                                public void onChanged(GroupeWithEleves groupeWithEleves){
+                                    listeEleves = groupeWithEleves.getEleves();
+                                    showHTML();
+                                }
+                            });
                 } else{
                     // On observe la liste de tous les élèves du trombi à nouveau
                     trombiViewModel.getElevesByTrombi(idTrombi)
@@ -273,13 +265,13 @@ public class ActivityVueTrombi extends AppCompatActivity {
             for(int j = 0; j < nbCols + 1; j++){
                 Eleve eleve;
 
-                try {
+                try{
                     eleve = listeEleves.get(index++);
 
                     if(eleve.getPhoto() != null){
                         sb.append("<td>").append(eleve.getNomPrenom()).append("</td>");
                     }
-                } catch (IndexOutOfBoundsException e){              // Fin de la liste atteinte, sortie
+                } catch(IndexOutOfBoundsException e){              // Fin de la liste atteinte, sortie
                     isLastRow = true;
                     break;
                 }
@@ -344,22 +336,22 @@ public class ActivityVueTrombi extends AppCompatActivity {
         }
 
         // Ecriture du fichier
-        try (BufferedWriter writer =
-                     new BufferedWriter(
-                             new OutputStreamWriter(
-                                     new FileOutputStream(getExternalFilesDir(null) +
-                                             "/" + filename + ".txt",
-                                             true),
-                                     StandardCharsets.UTF_8)
-                     )
+        try(BufferedWriter writer =
+                    new BufferedWriter(
+                            new OutputStreamWriter(
+                                    new FileOutputStream(getExternalFilesDir(null) +
+                                            "/" + filename + ".txt",
+                                            true),
+                                    StandardCharsets.UTF_8)
+                    )
         ){
-            for (Eleve eleve : eleves) {
+            for(Eleve eleve : eleves){
                 writer.write(eleve.getNomPrenom() + "\n");
             }
 
             Snackbar.make(coordinatorLayout, R.string.VUETROMBI_listeExportee, Snackbar.LENGTH_LONG)
                     .show();
-        } catch (IOException e) {
+        } catch(IOException e){
             Snackbar.make(coordinatorLayout,
                     R.string.VUETROMBI_listeExporteeErr,
                     Snackbar.LENGTH_SHORT).show();

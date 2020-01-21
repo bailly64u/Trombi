@@ -20,6 +20,7 @@
     <string name="AJOUTTROMBI_titleVar">Modifier un trombinoscope</string>
     <string name="AJOUTTROMBI_btnValider">VALIDER</string>
     <string name="AJOUTTROMBI_btnEnregistrer">ENREGISTRER</string>
+    <string name="AJOUTTROMBI_btnModifier">MODFIER LES ÉLÈVES</string>
     <string name="AJOUTTROMBI_importer">Importer</string>
     <string name="AJOUTTROMBI_hint1">Nom</string>
     <string name="AJOUTTROMBI_hint2">Description</string>
@@ -34,6 +35,8 @@
     <string name="AJOUTTROMBI_listeImporteeErr">Le nom du trombinoscope doit être renseigné</string>
     <string name="AJOUTTROMBI_fichierImporte">Le fichier a été importé</string>
     <string name="AJOUTTROMBI_fichierImporteErr">Un problème est survenu lors de l\'importation</string>
+    <string name="AJOUTTROMBI_nbEleveText">Nombre d\'élèves: </string>
+    <string name="AJOUTTROMBI_nbGroupeText">Nombre de groupes: </string>
 
     <string name="VUETROMBI_filtre">Réglages</string>
     <string name="VUETROMBI_choixGroupe">Choix du groupe</string>

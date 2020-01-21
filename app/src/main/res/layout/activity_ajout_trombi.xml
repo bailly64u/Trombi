@@ -22,121 +22,161 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <RelativeLayout
+    <ScrollView
+        android:id="@+id/AJOUTTROMBI_scrollView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="80dp"
-        app:layout_behavior="com.ufrst.app.trombi.FABBehavior" >
+        android:layout_height="match_parent"
+        android:layout_marginTop="?attr/actionBarSize">
 
         <LinearLayout
-            android:id="@+id/AJOUTTROMBI_btnWrapper"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true">
+            android:layout_margin="8dp"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/AJOUTTROMBI_ivIcon1"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="8dp"
+                    android:contentDescription="@string/AJOUTTROMBI_contentDesc1"
+                    android:paddingBottom="8dp"
+                    android:src="@drawable/ic_portrait"
+                    android:tint="?attr/colorAccent" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/AJOUTTROMBI_tilNom"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginBottom="16dp"
+                    android:layout_toEndOf="@+id/AJOUTTROMBI_ivIcon1"
+                    android:hint="@string/AJOUTTROMBI_hint1"
+                    app:boxBackgroundColor="?attr/boxBackground">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/AJOUTTROMBI_entrerNom"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:imeOptions="actionNext"
+                        android:inputType="textCapSentences"
+                        android:maxLines="1" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/AJOUTTROMBI_ivIcon2"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="8dp"
+                    android:contentDescription="@string/AJOUTTROMBI_contentDesc2"
+                    android:paddingBottom="8dp"
+                    android:src="@drawable/ic_desc"
+                    android:tint="?attr/colorAccent" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginBottom="16dp"
+                    android:layout_toEndOf="@+id/AJOUTTROMBI_ivIcon2"
+                    android:hint="@string/AJOUTTROMBI_hint2"
+                    app:boxBackgroundColor="?attr/boxBackground">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/AJOUTTROMBI_entrerDescription"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:imeOptions="actionDone"
+                        android:inputType="textCapSentences"
+                        android:maxLines="1" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+            </RelativeLayout>
+
+            <!-- A ne révéler que pour une modification de trombi -->
+            <RelativeLayout
+                android:id="@+id/AJOUTTROMBI_infoLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_toStartOf="@+id/AJOUTTROMBI_nbEleve"
+                    android:text="@string/AJOUTTROMBI_nbEleveText" />
+
+                <TextView
+                    android:id="@+id/AJOUTTROMBI_nbEleve"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:layout_alignParentEnd="true" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_toStartOf="@+id/AJOUTTROMBI_nbEleve"
+                    android:layout_below="@+id/AJOUTTROMBI_nbEleve"
+                    android:text="@string/AJOUTTROMBI_nbGroupeText" />
+
+                <TextView
+                    android:id="@+id/AJOUTTROMBI_nbGroupe"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_below="@+id/AJOUTTROMBI_nbEleve" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/AJOUTTROMBI_btnModfier"
+                    style="@style/Widget.MaterialComponents.Button.Icon"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="15dp"
+                    android:layout_below="@+id/AJOUTTROMBI_nbGroupe"
+                    android:letterSpacing="0.05"
+                    android:text="@string/AJOUTTROMBI_btnModifier"
+                    android:textAppearance="@style/TextAppearance.AppCompat"
+                    android:textSize="18sp"
+                    app:backgroundTint="?attr/colorPrimary"
+                    app:icon="@drawable/ic_edit" />
+
+            </RelativeLayout>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/AJOUTTROMBI_btnValider"
+                style="@style/Widget.MaterialComponents.Button.Icon"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:layout_marginEnd="4dp"
-                style="@style/Widget.MaterialComponents.Button.Icon"
-                app:backgroundTint="@color/colorPrimary"
-                app:icon="@drawable/ic_valid"
+                android:layout_margin="15dp"
+                android:letterSpacing="0.05"
+                android:text="@string/AJOUTTROMBI_btnEnregistrer"
                 android:textAppearance="@style/TextAppearance.AppCompat"
                 android:textSize="18sp"
-                android:letterSpacing="0.05"
-                android:text="@string/AJOUTTROMBI_btnEnregistrer" />
+                app:backgroundTint="?attr/colorPrimary"
+                app:icon="@drawable/ic_valid" />
 
         </LinearLayout>
-
-        <ScrollView
-            android:id="@+id/AJOUTTROMBI_scrollView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_above="@+id/AJOUTTROMBI_btnWrapper">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="16dp"
-                android:orientation="vertical">
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" >
-
-                    <ImageView
-                        android:id="@+id/AJOUTTROMBI_ivIcon1"
-                        android:layout_width="36dp"
-                        android:layout_height="36dp"
-                        android:layout_alignParentStart="true"
-                        android:layout_centerVertical="true"
-                        android:layout_marginEnd="8dp"
-                        android:paddingBottom="8dp"
-                        android:contentDescription="@string/AJOUTTROMBI_contentDesc1"
-                        android:src="@drawable/ic_portrait"
-                        android:tint="?attr/colorAccent" />
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/AJOUTTROMBI_tilNom"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="16dp"
-                        android:layout_alignParentEnd="true"
-                        android:layout_toEndOf="@+id/AJOUTTROMBI_ivIcon1"
-                        app:boxBackgroundColor="?attr/boxBackground"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
-                        android:hint="@string/AJOUTTROMBI_hint1">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/AJOUTTROMBI_entrerNom"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:inputType="textCapSentences"
-                            android:maxLines="1"
-                            android:imeOptions="actionNext" />
-
-                    </com.google.android.material.textfield.TextInputLayout>
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <ImageView
-                        android:id="@+id/AJOUTTROMBI_ivIcon2"
-                        android:layout_width="36dp"
-                        android:layout_height="36dp"
-                        android:layout_alignParentStart="true"
-                        android:layout_centerVertical="true"
-                        android:layout_marginEnd="8dp"
-                        android:paddingBottom="8dp"
-                        android:contentDescription="@string/AJOUTTROMBI_contentDesc2"
-                        android:src="@drawable/ic_desc"
-                        android:tint="?attr/colorAccent" />
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="16dp"
-                        android:layout_alignParentEnd="true"
-                        android:layout_toEndOf="@+id/AJOUTTROMBI_ivIcon2"
-                        app:boxBackgroundColor="?attr/boxBackground"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
-                        android:hint="@string/AJOUTTROMBI_hint2">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/AJOUTTROMBI_entrerDescription"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:inputType="textCapSentences"
-                            android:maxLines="1"
-                            android:imeOptions="actionDone" />
-
-                    </com.google.android.material.textfield.TextInputLayout>
-                </RelativeLayout>
-            </LinearLayout>
-        </ScrollView>
-    </RelativeLayout>
+    </ScrollView>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

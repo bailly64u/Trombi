@@ -21,6 +21,7 @@ import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -49,6 +50,7 @@ public class ActivityAjoutTrombi extends AppCompatActivity implements ImportAler
     public final int PICKFILE_RESULT_CODE = 0;
 
     private CoordinatorLayout coordinatorLayout;
+    private RelativeLayout editRelativeLayout;
     private TextInputEditText etNom, etDesc;
     private TrombiViewModel trombiViewModel;
     private Toolbar toolbar;
@@ -70,6 +72,7 @@ public class ActivityAjoutTrombi extends AppCompatActivity implements ImportAler
 
     private void findViews(){
         coordinatorLayout = findViewById(R.id.AJOUTTROMBI_coordinator);
+        editRelativeLayout = findViewById(R.id.AJOUTTROMBI_infoLayout);
         etDesc = findViewById(R.id.AJOUTTROMBI_entrerDescription);
         button = findViewById(R.id.AJOUTTROMBI_btnValider);
         toolbar = findViewById(R.id.AJOUTTROMBI_toolbar);
@@ -87,6 +90,9 @@ public class ActivityAjoutTrombi extends AppCompatActivity implements ImportAler
             // Les champs d'édition doivent refléter le trombinoscope à modifier
             etNom.setText(intent.getStringExtra(EXTRA_NOM));
             etDesc.setText(intent.getStringExtra(EXTRA_DESC));
+
+            // Affichage des composants permettant la modification d'un trombinoscope
+            editRelativeLayout.setVisibility(View.VISIBLE);
         } else{
             setTitle(R.string.AJOUTTROMBI_title);
         }
@@ -102,6 +108,7 @@ public class ActivityAjoutTrombi extends AppCompatActivity implements ImportAler
     }
 
     // Prépare la sauvegarde du trombi qui sera finalisée dans ActivityMain
+    // TODO: Ne pas rediriger vers le menu principal, mais vers la page de modification du trombi
     private void saveTrombi(){
         String nom = etNom.getText().toString();
         String desc = etDesc.getText().toString();

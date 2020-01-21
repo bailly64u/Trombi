@@ -32,6 +32,7 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- Persistent Bottom Sheet, pour afficher les options de filtrage -->
+    <!-- TODO: Fixer la NEstedScrollView qui dépasse de la BottomSheet -->
     <androidx.core.widget.NestedScrollView
         android:id="@+id/VUETROMBI_bottomSheet"
         android:layout_width="match_parent"
@@ -149,10 +150,12 @@
 
                 <TextView
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
                     android:layout_marginStart="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:gravity="center"
+                    android:layout_marginEnd="8dp"
+                    android:layout_centerVertical="true"
+                    android:layout_toStartOf="@+id/VUETROMBI_switchDesc"
                     android:text="@string/VUETROMBI_afficherDesc"
                     android:textColor="?attr/textMediumEmphasis" />
 
