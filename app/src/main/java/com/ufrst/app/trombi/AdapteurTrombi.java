@@ -54,7 +54,17 @@ public class AdapteurTrombi extends ListAdapter<Trombinoscope, AdapteurTrombi.Tr
         Trombinoscope currentTrombi = getItem(position);
         holder.mTextViewNom.setText(currentTrombi.getNomTrombi() + " - " + currentTrombi.getIdTrombi());
         holder.mTextViewDesc.setText(currentTrombi.getDescription());
-        holder.mTextViewNombre.setText("8"); //A changer
+        holder.mTextViewNombre.setText("8");
+
+        // Récupérer le nombre d'élèves, VM étant un viewModel passé par le constructeur
+        // Cancer ?
+        /*Executors.newSingleThreadExecutor().execute(new Runnable() {
+            @Override
+            public void run(){
+                int i = vm.getElevesNumberByTrombi(currentTrombi.getIdTrombi());
+                holder.mTextViewNombre.post(() -> holder.mTextViewNombre.setText(String.valueOf(i)));
+            }
+        });*/
     }
 
     // Retourne le Trombinoscope d'une certaine position

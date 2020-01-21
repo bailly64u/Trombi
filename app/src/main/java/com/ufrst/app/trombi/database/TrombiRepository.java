@@ -85,6 +85,8 @@ public class TrombiRepository {
     void softDeleteElevesForTrombi(long idTrombi){Executors.newSingleThreadExecutor().execute(() -> eleveDao.softDeleteElevesForTrombi(idTrombi));}
     void deleteSoftDeletedEleves(){Executors.newSingleThreadExecutor().execute(() -> eleveDao.deleteSoftDeletedEleves());}
 
+    int getElevesNumberByTrombi(long idTrombi){return eleveDao.getElevesNumberByTrombi(idTrombi);}
+
 
     // Groupe x Eleve_______________________________________________________________________________
     void insert(EleveGroupeJoin eleveGroupeJoin){Executors.newSingleThreadExecutor().execute(() -> joinDao.insert(eleveGroupeJoin));}

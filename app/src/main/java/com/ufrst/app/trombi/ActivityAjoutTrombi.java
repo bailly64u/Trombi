@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.DialogFragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.app.Dialog;
@@ -22,11 +23,13 @@ import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.ufrst.app.trombi.database.Eleve;
+import com.ufrst.app.trombi.database.Groupe;
 import com.ufrst.app.trombi.database.TrombiViewModel;
 import com.ufrst.app.trombi.database.Trombinoscope;
 
@@ -40,6 +43,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.concurrent.Executors;
 
 import static com.ufrst.app.trombi.ActivityMain.EXTRA_DESC;
 import static com.ufrst.app.trombi.ActivityMain.EXTRA_ID;
@@ -53,8 +58,11 @@ public class ActivityAjoutTrombi extends AppCompatActivity implements ImportAler
     private RelativeLayout editRelativeLayout;
     private TextInputEditText etNom, etDesc;
     private TrombiViewModel trombiViewModel;
+    private TextView tvNbEleve, tvNbGroupe;
     private Toolbar toolbar;
     private Button button;
+
+    private long idTrombi;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -74,18 +82,26 @@ public class ActivityAjoutTrombi extends AppCompatActivity implements ImportAler
         coordinatorLayout = findViewById(R.id.AJOUTTROMBI_coordinator);
         editRelativeLayout = findViewById(R.id.AJOUTTROMBI_infoLayout);
         etDesc = findViewById(R.id.AJOUTTROMBI_entrerDescription);
+        tvNbGroupe = findViewById(R.id.AJOUTTROMBI_nbGroupe);
         button = findViewById(R.id.AJOUTTROMBI_btnValider);
-        toolbar = findViewById(R.id.AJOUTTROMBI_toolbar);
+        tvNbEleve = findViewById(R.id.AJOUTTROMBI_nbEleve);
         etNom = findViewById(R.id.AJOUTTROMBI_entrerNom);
+        toolbar = findViewById(R.id.AJOUTTROMBI_toolbar);
     }
 
     // Actualise certaines données selon la raison pour laquelle cette activité est lancée
     private void updateData(){
         Intent intent = getIntent();
 
+        // Récupération du ViewModel
+        trombiViewModel = ViewModelProviders.of(this).get(TrombiViewModel.class);
+
         // Cas de la modification. Voire ActivityMain#setRecyclerViewAndViewModel
         if(intent.hasExtra(EXTRA_ID)){
             setTitle(R.string.AJOUTTROMBI_titleVar);
+
+            // Récupération de l'id
+            idTrombi = intent.getLongExtra(EXTRA_ID, -1);
 
             // Les champs d'édition doivent refléter le trombinoscope à modifier
             etNom.setText(intent.getStringExtra(EXTRA_NOM));
@@ -93,6 +109,31 @@ public class ActivityAjoutTrombi extends AppCompatActivity implements ImportAler
 
             // Affichage des composants permettant la modification d'un trombinoscope
             editRelativeLayout.setVisibility(View.VISIBLE);
+
+            // Insertion des valeurs pour les groupes et les élèves
+            trombiViewModel.getElevesByTrombi(idTrombi).observe(this, new Observer<List<Eleve>>() {
+                @Override
+                public void onChanged(List<Eleve> eleves){
+                    tvNbEleve.setText(String.valueOf(eleves.size()));
+                }
+            });
+
+            trombiViewModel.getGroupesByTrombi(idTrombi).observe(this, new Observer<List<Groupe>>() {
+                @Override
+                public void onChanged(List<Groupe> groupes){
+                    tvNbGroupe.setText(String.valueOf(groupes.size()));
+                }
+            });
+
+            // Permet de ne pas observer la valeur, mais performances réduites
+            /*Executors.newSingleThreadExecutor().execute(new Runnable() {
+                @Override
+                public void run(){
+                    int i = trombiViewModel.getElevesNumberByTrombi(idTrombi);
+                    tvNbEleve.post(() -> tvNbEleve.setText(String.valueOf(i)));
+                }
+            });*/
+
         } else{
             setTitle(R.string.AJOUTTROMBI_title);
         }
@@ -155,7 +196,6 @@ public class ActivityAjoutTrombi extends AppCompatActivity implements ImportAler
     // Traite le texte saisi par l'utilisateur lors de l'import d'un trombinoscope
     private void importTrombiText(final String nomTrombi, final String descTrombi, final String liste){
         String[] split = liste.split("\n");
-        TrombiViewModel trombiViewModel = ViewModelProviders.of(this).get(TrombiViewModel.class);
         Trombinoscope trombi = new Trombinoscope(nomTrombi, descTrombi);
         long id = trombiViewModel.insertAndRetrieveId(trombi);
 
