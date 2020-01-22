@@ -25,8 +25,15 @@ public interface EleveGroupeJoinDao {
 
     // Retourne une liste d'objet contenant un Groupe avec sa liste d'Eleves
     // Comme Room utilisera deux requêtes pour nous dans les coulisses, on annote une Transaction pour s'assurer que cela se passe atomiquement
-    @Transaction
+    /*@Transaction
     @Query("SELECT * FROM table_groupe")
+    LiveData<List<GroupeWithEleves>> getGroupesWithEleves();*/
+
+    // GroupeWitheEleves sans Objets représentant chaque groupe et sa liste d'élèves (sans les élèves soft deleted)
+    @Query("SELECT * FROM eleve_x_group " +
+            "INNER JOIN table_eleve ON table_eleve.id_eleve = eleve_x_group.join_id_eleve " +
+            "INNER JOIN table_groupe ON table_groupe.id_groupe = eleve_x_group.join_id_groupe " +
+            "WHERE table_eleve.is_deleted = 0")
     LiveData<List<GroupeWithEleves>> getGroupesWithEleves();
 
     // Retourne un objet GroupeWithEleve avec un groupe d'un certain id

@@ -98,8 +98,10 @@ public class ActivityMain extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 // Démarre une activité. Au retour, onActivityResult() sera déclenchée
-                Intent intent = new Intent(ActivityMain.this, ActivityAjoutTrombi.class);
-                startActivityForResult(intent, REQUETE_AJOUT_TROMBI);
+                //Intent intent = new Intent(ActivityMain.this, ActivityAjoutTrombi.class);
+                //startActivityForResult(intent, REQUETE_AJOUT_TROMBI);
+                Intent intent = new Intent(ActivityMain.this, ActivityBDTest.class);
+                startActivity(intent);
             }
         });
     }

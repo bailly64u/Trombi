@@ -6,7 +6,7 @@ import androidx.room.ForeignKey;
 import androidx.room.Index;
 
 // Classe intermédiaire pour définir une relation many-to-many
-@Entity(primaryKeys = {"join_id_eleve", "join_id_groupe"},
+@Entity(tableName = "eleve_x_group", primaryKeys = {"join_id_eleve", "join_id_groupe"},
         indices = {@Index("join_id_eleve"), @Index("join_id_groupe")})
 public class EleveGroupeJoin {
 
