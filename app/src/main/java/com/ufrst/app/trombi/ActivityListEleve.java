@@ -79,6 +79,7 @@ public class ActivityListEleve extends AppCompatActivity {
             @Override
             public void onClick(View view){
                 Intent intent = new Intent(ActivityListEleve.this, ActivityListEleve.class);
+                startActivity(intent);
             }
         });
     }
