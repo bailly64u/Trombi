@@ -26,11 +26,11 @@ public interface EleveDao {
     LiveData<List<Eleve>> getAllEleves();
 
     // Récupère les Eleves d'un trombinoscope
-    @Query("SELECT * FROM table_eleve WHERE id_trombi=:idTrombi ORDER BY nom_prenom")
+    @Query("SELECT * FROM table_eleve WHERE id_trombi=:idTrombi AND is_deleted = 0 ORDER BY nom_prenom")
     LiveData<List<Eleve>> getElevesByTrombi(long idTrombi);
 
-    // Récupère les Eleves d'un trombinoscope
-    @Query("SELECT COUNT(*) FROM table_eleve WHERE id_trombi=:idTrombi")
+    // Récupère le nombre d'Eleves d'un trombinoscope
+    @Query("SELECT COUNT(*) FROM table_eleve WHERE id_trombi=:idTrombi AND is_deleted = 0")
     int getElevesNumberByTrombi(long idTrombi);
 
     // Supprime les Eleves appertenant à un certain Trombinoscope

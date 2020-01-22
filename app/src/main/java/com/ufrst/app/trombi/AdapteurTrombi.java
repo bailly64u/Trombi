@@ -21,6 +21,7 @@ import java.util.List;
 public class AdapteurTrombi extends ListAdapter<Trombinoscope, AdapteurTrombi.TrombiHolder> {
 
     private OnItemClickListener listener;                   // Interface
+    private LayoutInflater inflater;
 
     public AdapteurTrombi(){
         super(DIFF_CALLBACK);
@@ -44,8 +45,11 @@ public class AdapteurTrombi extends ListAdapter<Trombinoscope, AdapteurTrombi.Tr
     @NonNull
     @Override
     public TrombiHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType){
-        View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.trombi_item, parent, false);
+        if(inflater == null){
+            inflater = LayoutInflater.from(parent.getContext());
+        }
+
+        View itemView = inflater.inflate(R.layout.trombi_item, parent, false);
 
         return new TrombiHolder(itemView);
     }

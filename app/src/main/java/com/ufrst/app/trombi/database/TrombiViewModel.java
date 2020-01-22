@@ -9,6 +9,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class TrombiViewModel extends AndroidViewModel {
 
@@ -20,9 +21,7 @@ public class TrombiViewModel extends AndroidViewModel {
     // de l'utilisateur. Pour plus d'informations: https://developer.android.com/topic/libraries/architecture/livedata#transform_livedata
     private final MutableLiveData<Long> requestedIdGroupe = new MutableLiveData<>();
     public final LiveData<GroupeWithEleves> groupesWithEleves =
-            Transformations.switchMap(requestedIdGroupe, (idGroupe) ->
-                    repository.getGroupeByIdWithEleves(idGroupe)
-            );
+            Transformations.switchMap(requestedIdGroupe, this::getGroupeByIdWithEleves);
 
     public TrombiViewModel(@NonNull Application application){
         super(application);
@@ -79,7 +78,39 @@ public class TrombiViewModel extends AndroidViewModel {
     public void update(EleveGroupeJoin eleveGroupeJoin){repository.update(eleveGroupeJoin);}
     public void delete(EleveGroupeJoin eleveGroupeJoin){repository.delete(eleveGroupeJoin);}
 
-    public LiveData<List<GroupeWithEleves>> getGroupesWithEleves(){return repository.getGroupesWithEleves();}
-    public LiveData<GroupeWithEleves> getGroupeByIdWithEleves(long idGroupe) {return repository.getGroupeByIdWithEleves(idGroupe);}
     public LiveData<EleveWithGroups> getEleveByIdWithGroups(long idEleve){return repository.getEleveByIdWithGroups(idEleve);}
+
+    // Cette méthode va modifier le contenu des LiveData pour retirer les élèves qui ont étés soft delete
+    public LiveData<List<GroupeWithEleves>> getGroupesWithEleves(){
+        // TODO: se fier au commentaire de cette méthode, utiliser Transformation.Map
+        return repository.getGroupesWithEleves();
+    }
+
+    // Cette méthode va modifier le contenu des LiveData pour retirer les élèves qui ont étés soft delete
+    public LiveData<GroupeWithEleves> getGroupeByIdWithEleves(long idGroupe) {
+        LiveData<GroupeWithEleves> liveGroup = repository.getGroupeByIdWithEleves(idGroupe);
+
+        return Transformations.map(liveGroup, group ->{
+            List<Eleve> newEleves = group.getEleves().stream()
+                    .filter(eleve -> !eleve.isDeleted())
+                    .collect(Collectors.toList());
+
+            GroupeWithEleves newGroup = new GroupeWithEleves();
+            newGroup.eleves = newEleves;
+            newGroup.groupe = group.getGroupe();
+
+            return newGroup;
+        });
+    }
+
+    /*private GroupeWithEleves transform(GroupeWithEleves g){
+        List<Eleve> newEleves = g.getEleves().stream()
+                .filter(eleve -> !eleve.isDeleted())
+                .collect(Collectors.toList());
+
+        GroupeWithEleves newGroup = new GroupeWithEleves();
+        newGroup.eleves = newEleves;
+
+        return newGroup;
+    }*/
 }
