@@ -42,6 +42,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
+import java.util.concurrent.Executors;
 
 import static com.ufrst.app.trombi.ActivityMain.EXTRA_DESC;
 import static com.ufrst.app.trombi.ActivityMain.EXTRA_ID;
@@ -135,9 +136,11 @@ public class ActivityVueTrombi extends AppCompatActivity {
             @Override
             public void onChanged(List<Groupe> groupes){
                 // Insertion des chips pour le choix des groupes a afficher
-                for(Groupe g : groupes){
-                    setChips(g);
-                }
+                Executors.newSingleThreadExecutor().execute(() -> {
+                    for(Groupe g : groupes){
+                        setChips(g);
+                    }
+                });
 
                 trombiViewModel.getGroupesByTrombi(idTrombi).removeObserver(this);
             }
@@ -231,7 +234,12 @@ public class ActivityVueTrombi extends AppCompatActivity {
         c.setText(g.getNomGroupe() + "-" + g.getIdGroupe()); //A changer: enlever + idGroupe
 
         // Ajout de la chips dans le groupe de chips
-        chipGroup.addView(c);
+        chipGroup.post(new Runnable() {
+            @Override
+            public void run(){
+                chipGroup.addView(c);
+            }
+        });
     }
 
     // Insère le HTML dans la WebView

@@ -69,7 +69,6 @@ public class ActivityListEleve extends AppCompatActivity {
     }
 
     private void setRecyclerViewAndViewModel(){
-
         // Définir l'adapteur du RecyclerView
         adapteur = new AdapteurEleve();
 
@@ -93,5 +92,11 @@ public class ActivityListEleve extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    @Override
+    public boolean onSupportNavigateUp(){
+        finish();
+        return super.onSupportNavigateUp();
     }
 }
