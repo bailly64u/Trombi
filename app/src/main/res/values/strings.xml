@@ -57,6 +57,12 @@
     <string name="LISTe_imgView">Photo de l\'élève</string>
     <string name="LISTe_fatalError">Erreur fatale, impossible de démarrer l\'activité</string>
 
+    <string name="AJOUTELEVE_hint1">Nom prénom</string>
+    <string name="AJOUTELEVE_contentDesc1">Nom prénom de l\'élève</string>
+    <string name="AJOUTELEVE_contentDesc2">Groupes auxquels l\élève appartient</string>
+    <string name="AJOUTELEVE_btnValider">VALIDER</string>
+    <string name="AJOUTELEVE_btnEnregistrer">ENREGISTRER</string>
+
     <!-- ID pour chips -->
     <string name="TAG_CHIPS_ID">com.ufrst.app.trombi.TAG_CHIPS_ID</string>
 </resources>

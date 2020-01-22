@@ -13,7 +13,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ActivityListEleve"></activity>
+        <activity android:name=".ActivityAjoutEleve"></activity>
+        <activity android:name=".ActivityListEleve" />
         <activity android:name=".ActivityCapture" />
         <activity android:name=".ActivityBDTest" />
         <activity android:name=".ActivityMain">

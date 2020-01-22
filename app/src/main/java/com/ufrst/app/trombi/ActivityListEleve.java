@@ -48,6 +48,7 @@ public class ActivityListEleve extends AppCompatActivity {
 
         getExtras();
         findViews();
+        setListeners();
         setRecyclerViewAndViewModel();
 
         // Toolbar
@@ -71,6 +72,15 @@ public class ActivityListEleve extends AppCompatActivity {
         recyclerView = findViewById(R.id.LISTe_recyclerView);
         toolbar = findViewById(R.id.LISTe_toolbar);
         fab = findViewById(R.id.LISTe_fab);
+    }
+
+    private void setListeners(){
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view){
+                Intent intent = new Intent(ActivityListEleve.this, ActivityListEleve.class);
+            }
+        });
     }
 
     private void setRecyclerViewAndViewModel(){

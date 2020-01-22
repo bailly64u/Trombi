@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/AJOUTELEVE_coordinator"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/backgroundApp"
+    tools:context=".ActivityAjoutTrombi">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/AJOUTELEVE_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <ScrollView
+        android:id="@+id/AJOUTELEVE_scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="?attr/actionBarSize">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/AJOUTELEVE_ivIcon1"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="8dp"
+                    android:contentDescription="@string/AJOUTELEVE_contentDesc1"
+                    android:paddingBottom="8dp"
+                    android:src="@drawable/ic_person"
+                    android:tint="?attr/colorAccent" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/AJOUTELEVE_tilNom"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginBottom="16dp"
+                    android:layout_toEndOf="@+id/AJOUTELEVE_ivIcon1"
+                    android:hint="@string/AJOUTELEVE_hint1"
+                    app:boxBackgroundColor="?attr/boxBackground">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/AJOUTELEVE_entrerNom"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:imeOptions="actionNext"
+                        android:inputType="textCapSentences"
+                        android:maxLines="1" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/AJOUTELEVE_ivIcon2"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="8dp"
+                    android:contentDescription="@string/AJOUTELEVE_contentDesc2"
+                    android:paddingBottom="8dp"
+                    android:src="@drawable/ic_people"
+                    android:tint="?attr/colorAccent" />
+
+            </RelativeLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/AJOUTELEVE_btnValider"
+                style="@style/Widget.MaterialComponents.Button.Icon"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="15dp"
+                android:letterSpacing="0.05"
+                android:text="@string/AJOUTELEVE_btnEnregistrer"
+                android:textAppearance="@style/TextAppearance.AppCompat"
+                android:textSize="18sp"
+                app:backgroundTint="?attr/colorPrimary"
+                app:icon="@drawable/ic_valid" />
+
+        </LinearLayout>
+    </ScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
