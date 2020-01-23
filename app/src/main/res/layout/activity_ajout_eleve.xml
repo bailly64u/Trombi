@@ -88,6 +88,32 @@
                     android:src="@drawable/ic_people"
                     android:tint="?attr/colorAccent" />
 
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@+id/AJOUTELEVE_ivIcon2"
+                    android:scrollbars="none">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="60dp"
+                        android:orientation="horizontal"
+                        android:layout_marginEnd="8dp"
+                        android:paddingTop="12dp" >
+
+                        <com.google.android.material.chip.ChipGroup
+                            android:id="@+id/AJOUTELEVE_chipsGroup"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_marginStart="4dp"
+                            android:layout_marginEnd="4dp"
+                            app:singleSelection="false"
+                            app:singleLine="true" />
+
+                    </LinearLayout>
+
+                </HorizontalScrollView>
+
             </RelativeLayout>
 
             <com.google.android.material.button.MaterialButton

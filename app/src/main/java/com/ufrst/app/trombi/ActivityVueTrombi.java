@@ -15,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.WorkerThread;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
@@ -142,6 +143,7 @@ public class ActivityVueTrombi extends AppCompatActivity {
                     }
                 });
 
+                // On a besoin des valeurs une seule fois
                 trombiViewModel.getGroupesByTrombi(idTrombi).removeObserver(this);
             }
         });
@@ -220,11 +222,10 @@ public class ActivityVueTrombi extends AppCompatActivity {
         });
     }
 
-    // Instancie positionne, et met en place les listeners des chips dans la bottom sheet.
+    // Instancie positionne, et met en place les chips dans la bottom sheet.
     private void setChips(Groupe g){
         // Inflate la chips d'après mon layout customisé, afin de pouvoir changer l'apparence de la chips lors de la sélection
-        Chip c = (Chip) ActivityVueTrombi.this
-                .getLayoutInflater()
+        Chip c = (Chip) getLayoutInflater()
                 .inflate(R.layout.chips_choice, chipGroup, false);
 
         // Ajout d'un tag pour lier un objet à cette vue

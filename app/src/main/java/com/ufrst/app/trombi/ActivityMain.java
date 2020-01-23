@@ -33,6 +33,10 @@ public class ActivityMain extends AppCompatActivity {
     public static final String EXTRA_NOM = "com.ufrst.app.trombi.EXTRA_NOM";
     public static final String EXTRA_DESC = "com.ufrst.app.trombi.EXTRA_DESC";
 
+    public static final String EXTRA_ID_E = "com.ufrst.app.trombi.EXTRA_ID_E";
+    public static final String EXTRA_NOM_E = "com.ufrst.app.trombi.EXTRA_NOM_E";
+    public static final String EXTRA_GROUPE_E = "com.ufrst.app.trombi.EXTRA_GROUPE_E";
+
     public static final String PREFS_NBCOLS = "com.ufrst.app.trombi.PREFS_NBCOLS";
 
     private CoordinatorLayout coordinatorLayout;

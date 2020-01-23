@@ -26,6 +26,7 @@ import com.ufrst.app.trombi.database.TrombiViewModel;
 import java.util.List;
 
 import static com.ufrst.app.trombi.ActivityMain.EXTRA_ID;
+import static com.ufrst.app.trombi.ActivityMain.EXTRA_ID_E;
 
 public class ActivityListEleve extends AppCompatActivity {
 
@@ -78,7 +79,8 @@ public class ActivityListEleve extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view){
-                Intent intent = new Intent(ActivityListEleve.this, ActivityListEleve.class);
+                Intent intent = new Intent(ActivityListEleve.this, ActivityAjoutEleve.class);
+                intent.putExtra(EXTRA_ID, idTrombi);
                 startActivity(intent);
             }
         });
@@ -142,7 +144,7 @@ public class ActivityListEleve extends AppCompatActivity {
                 // TODO: Gérer les cross reference à supprimer
 
                 // Snackbar avec possibilité d'annuler
-                Snackbar.make(coordinatorLayout, R.string.MAIN_trombiSuppr, Snackbar.LENGTH_INDEFINITE)
+                Snackbar.make(coordinatorLayout, R.string.LISTe_eleveSuppr, Snackbar.LENGTH_INDEFINITE)
                         .setAction(R.string.U_annuler, new View.OnClickListener() {
                             @Override
                             public void onClick(View v){

@@ -34,7 +34,9 @@ public class TrombiRepository {
     }
 
 
+    //______________________________________________________________________________________________
     // Trombinoscope________________________________________________________________________________
+    //______________________________________________________________________________________________
     void insert(Trombinoscope trombi){Executors.newSingleThreadExecutor().execute(() -> trombiDao.insert(trombi));}
     void update(Trombinoscope trombi){Executors.newSingleThreadExecutor().execute(() -> trombiDao.update(trombi));}
     void delete(Trombinoscope trombi){Executors.newSingleThreadExecutor().execute(() -> trombiDao.delete(trombi));}
@@ -62,7 +64,9 @@ public class TrombiRepository {
     }
 
 
+    //______________________________________________________________________________________________
     // Groupe_______________________________________________________________________________________
+    //______________________________________________________________________________________________
     void insert(Groupe groupe){Executors.newSingleThreadExecutor().execute(() -> groupeDao.insert(groupe));}
     void update(Groupe groupe){Executors.newSingleThreadExecutor().execute(() -> groupeDao.update(groupe));}
     void delete(Groupe groupe){Executors.newSingleThreadExecutor().execute(() -> groupeDao.delete(groupe));}
@@ -72,7 +76,9 @@ public class TrombiRepository {
     void deleteGroupesForTrombi(long idTrombi){Executors.newSingleThreadExecutor().execute(() -> groupeDao.deleteGroupesForTrombi(idTrombi));}
 
 
+    //______________________________________________________________________________________________
     // Eleve________________________________________________________________________________________
+    //______________________________________________________________________________________________
     void insert(Eleve eleve){Executors.newSingleThreadExecutor().execute(() -> eleveDao.insert(eleve));}
     void update(Eleve eleve){Executors.newSingleThreadExecutor().execute(() -> eleveDao.update(eleve));}
     void delete(Eleve eleve){Executors.newSingleThreadExecutor().execute(() -> eleveDao.delete(eleve));}
@@ -86,8 +92,25 @@ public class TrombiRepository {
 
     int getElevesNumberByTrombi(long idTrombi){return eleveDao.getElevesNumberByTrombi(idTrombi);}
 
+    // Voir TrombiRepository#insertAndRetrieveId(Trombinoscope trombi)
+    long insertAndRetrieveId(Eleve eleve){
+        Callable<Long> callable = () -> eleveDao.insert(eleve);
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<Long> future = executor.submit(callable);
+        long id = 0;
 
+        try {
+            id = future.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        return id;
+    }
+
+
+    //______________________________________________________________________________________________
     // Groupe x Eleve_______________________________________________________________________________
+    //______________________________________________________________________________________________
     void insert(EleveGroupeJoin eleveGroupeJoin){Executors.newSingleThreadExecutor().execute(() -> joinDao.insert(eleveGroupeJoin));}
     void update(EleveGroupeJoin eleveGroupeJoin){Executors.newSingleThreadExecutor().execute(() -> joinDao.update(eleveGroupeJoin));}
     void delete(EleveGroupeJoin eleveGroupeJoin){Executors.newSingleThreadExecutor().execute(() -> joinDao.delete(eleveGroupeJoin));}

@@ -71,6 +71,7 @@ public class TrombiViewModel extends AndroidViewModel {
     public void deleteSoftDeletedEleves(){repository.deleteSoftDeletedEleves();}
 
     public int getElevesNumberByTrombi(long idTrombi){return repository.getElevesNumberByTrombi(idTrombi);}
+    public long insertAndRetrieveId(Eleve eleve){return repository.insertAndRetrieveId(eleve);}
 
 
     // Eleve Groupe Join____________________________________________________________________________

@@ -13,7 +13,8 @@ import java.util.List;
 public interface EleveDao {
 
     @Insert
-    void insert(Eleve eleve);
+    // Voir TrombinoscopeDao#insert
+    long insert(Eleve eleve);
 
     @Update
     void update(Eleve eleve);
