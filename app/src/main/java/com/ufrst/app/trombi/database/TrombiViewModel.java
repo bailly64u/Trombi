@@ -80,18 +80,14 @@ public class TrombiViewModel extends AndroidViewModel {
     public void delete(EleveGroupeJoin eleveGroupeJoin){repository.delete(eleveGroupeJoin);}
 
     public LiveData<EleveWithGroups> getEleveByIdWithGroups(long idEleve){return repository.getEleveByIdWithGroups(idEleve);}
+    public LiveData<List<GroupeWithEleves>> getGroupesWithEleves(){ return repository.getGroupesWithEleves(); }
 
-    // Cette méthode va modifier le contenu des LiveData pour retirer les élèves qui ont étés soft delete
-    public LiveData<List<GroupeWithEleves>> getGroupesWithEleves(){
-        // TODO: se fier au commentaire de cette méthode, utiliser Transformation.Map
-        return repository.getGroupesWithEleves();
-    }
-
-    // Cette méthode va modifier le contenu des LiveData pour retirer les élèves qui ont étés soft delete
+    // Cette méthode va modifier le contenu des LiveData avant de propager aux observeurs
+    // pour retirer les élèves qui ont étés soft delete
     public LiveData<GroupeWithEleves> getGroupeByIdWithEleves(long idGroupe) {
         LiveData<GroupeWithEleves> liveGroup = repository.getGroupeByIdWithEleves(idGroupe);
 
-        return Transformations.map(liveGroup, group ->{
+        return Transformations.map(liveGroup, group -> {
             List<Eleve> newEleves = group.getEleves().stream()
                     .filter(eleve -> !eleve.isDeleted())
                     .collect(Collectors.toList());
@@ -103,15 +99,4 @@ public class TrombiViewModel extends AndroidViewModel {
             return newGroup;
         });
     }
-
-    /*private GroupeWithEleves transform(GroupeWithEleves g){
-        List<Eleve> newEleves = g.getEleves().stream()
-                .filter(eleve -> !eleve.isDeleted())
-                .collect(Collectors.toList());
-
-        GroupeWithEleves newGroup = new GroupeWithEleves();
-        newGroup.eleves = newEleves;
-
-        return newGroup;
-    }*/
 }

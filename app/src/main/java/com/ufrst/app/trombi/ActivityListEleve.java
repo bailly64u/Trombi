@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -151,6 +152,7 @@ public class ActivityListEleve extends AppCompatActivity {
                                 trombiViewModel.softDeleteEleve(idEleveSuppr);
                             }
                         })
+                        .setActionTextColor(ContextCompat.getColor(ActivityListEleve.this, R.color.colorAccent))
                         .setDuration(8000)
                         .show();
             }

@@ -8,19 +8,19 @@ import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.ufrst.app.trombi.database.Eleve;
 import com.ufrst.app.trombi.database.EleveGroupeJoin;
 import com.ufrst.app.trombi.database.Groupe;
 import com.ufrst.app.trombi.database.TrombiViewModel;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
 
@@ -30,10 +30,11 @@ import static com.ufrst.app.trombi.ActivityMain.EXTRA_NOM_E;
 
 public class ActivityAjoutEleve extends AppCompatActivity {
 
+    private ExtendedFloatingActionButton button;
     private CoordinatorLayout coordinatorLayout;
     private TrombiViewModel trombiViewModel;
     private TextInputEditText inputEditText;
-    private MaterialButton button;
+    private TextView emptyTextView;
     private ChipGroup chipGroup;
     private Toolbar toolbar;
 
@@ -47,7 +48,7 @@ public class ActivityAjoutEleve extends AppCompatActivity {
         getExtras();
         findViews();
         setListeners();
-        setData();
+        updateData();
         observeGroups();
 
         // Toolbar
@@ -65,6 +66,7 @@ public class ActivityAjoutEleve extends AppCompatActivity {
         coordinatorLayout = findViewById(R.id.AJOUTELEVE_coordinator);
         inputEditText = findViewById(R.id.AJOUTELEVE_entrerNom);
         chipGroup = findViewById(R.id.AJOUTELEVE_chipsGroup);
+        emptyTextView = findViewById(R.id.AJOUTELEVE_empty);
         button = findViewById(R.id.AJOUTELEVE_btnValider);
         toolbar = findViewById(R.id.AJOUTELEVE_toolbar);
     }
@@ -78,10 +80,16 @@ public class ActivityAjoutEleve extends AppCompatActivity {
         });
     }
 
-    private void setData(){
-
-
+    private void updateData(){
         //TODO: Updater les données en cas d'édition, et changer le titre
+
+        // Cas de la création d'élève puis de la modification
+        if(idTrombi == -1){
+            button.setText(R.string.AJOUTELEVE_btnValider);
+        } else{
+
+        }
+
     }
 
     private void observeGroups(){
@@ -90,11 +98,15 @@ public class ActivityAjoutEleve extends AppCompatActivity {
         trombiViewModel.getGroupesByTrombi(idTrombi).observe(this, new Observer<List<Groupe>>() {
             @Override
             public void onChanged(List<Groupe> groupes){
-                Executors.newSingleThreadExecutor().execute(() -> {
-                    for(Groupe g : groupes){
-                        setChips(g);
-                    }
-                });
+                if(groupes.size() != 0){
+                    Executors.newSingleThreadExecutor().execute(() -> {
+                        for(Groupe g : groupes){
+                            setChips(g);
+                        }
+                    });
+                } else{
+                    emptyTextView.setVisibility(View.VISIBLE);
+                }
 
                 // On a besoin des valeurs une seule fois
                 trombiViewModel.getGroupesByTrombi(idTrombi).removeObserver(this);

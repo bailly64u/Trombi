@@ -16,12 +16,12 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.ufrst.app.trombi.database.Eleve;
@@ -43,13 +43,13 @@ public class ActivityAjoutTrombi extends AppCompatActivity implements ImportAler
 
     public final int PICKFILE_RESULT_CODE = 0;
 
+    private ExtendedFloatingActionButton valider;
     private CoordinatorLayout coordinatorLayout;
     private RelativeLayout editRelativeLayout;
     private TextInputEditText etNom, etDesc;
     private TrombiViewModel trombiViewModel;
     private TextView tvNbEleve, tvNbGroupe;
     private Toolbar toolbar;
-    private Button valider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -86,6 +86,7 @@ public class ActivityAjoutTrombi extends AppCompatActivity implements ImportAler
         // Cas de la modification. Voire ActivityMain#setRecyclerViewAndViewModel
         if(intent.hasExtra(EXTRA_ID)){
             setTitle(R.string.AJOUTTROMBI_titleVar);
+            valider.setText(R.string.AJOUTELEVE_btnEnregistrer);
 
             // Récupération de l'id
             long idTrombi = intent.getLongExtra(EXTRA_ID, -1);
@@ -165,7 +166,7 @@ public class ActivityAjoutTrombi extends AppCompatActivity implements ImportAler
         finish();
     }
 
-    private void importTrombiFile(){ //A changer
+    private void importTrombiFile(){
         /*Intent intent = new Intent(ActivityAjoutTrombi.this, ActivityBDTest.class);
         startActivity(intent);*/
 
@@ -176,7 +177,9 @@ public class ActivityAjoutTrombi extends AppCompatActivity implements ImportAler
         try{
             startActivityForResult(fileintent, PICKFILE_RESULT_CODE);
         } catch(ActivityNotFoundException e){
-            Snackbar.make(coordinatorLayout, R.string.AJOUTTROMBI_fichierImporteErr, Snackbar.LENGTH_LONG).show();
+            Snackbar.make(coordinatorLayout,
+                    R.string.AJOUTTROMBI_fichierImporteErr,
+                    Snackbar.LENGTH_LONG).show();
         }
     }
 
@@ -196,8 +199,13 @@ public class ActivityAjoutTrombi extends AppCompatActivity implements ImportAler
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
-        MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.add_trombi_menu, menu);
+        Intent intent = getIntent();
+
+        // Cas de la modification. Le menu d'import n'est pas affiché
+        if(!intent.hasExtra(EXTRA_ID)){
+            MenuInflater menuInflater = getMenuInflater();
+            menuInflater.inflate(R.menu.add_trombi_menu, menu);
+        }
 
         return true;
     }

@@ -22,6 +22,18 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/AJOUTELEVE_btnValider"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center"
+        android:layout_margin="8dp"
+        android:text="@string/AJOUTELEVE_btnEnregistrer"
+        android:textColor="?attr/onSecondary"
+        style="Widget.MaterialComponents.ExtendedFloatingActionButton.Icon"
+        app:icon="@drawable/ic_valid"
+        app:iconTint="?attr/onSecondary" />
+
     <ScrollView
         android:id="@+id/AJOUTELEVE_scrollView"
         android:layout_width="match_parent"
@@ -59,6 +71,8 @@
                     android:layout_marginBottom="16dp"
                     android:layout_toEndOf="@+id/AJOUTELEVE_ivIcon1"
                     android:hint="@string/AJOUTELEVE_hint1"
+                    app:boxStrokeColor="?attr/colorAccent"
+                    app:hintTextColor="?attr/colorAccent"
                     app:boxBackgroundColor="?attr/boxBackground">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -81,14 +95,16 @@
                     android:layout_width="36dp"
                     android:layout_height="36dp"
                     android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true"
+                    android:layout_alignParentBottom="true"
                     android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="4dp"
                     android:contentDescription="@string/AJOUTELEVE_contentDesc2"
                     android:paddingBottom="8dp"
                     android:src="@drawable/ic_people"
                     android:tint="?attr/colorAccent" />
 
                 <HorizontalScrollView
+                    android:id="@+id/AJOUTELEVE_hScrollView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_toEndOf="@+id/AJOUTELEVE_ivIcon2"
@@ -101,6 +117,15 @@
                         android:layout_marginEnd="8dp"
                         android:paddingTop="12dp" >
 
+                        <TextView
+                            android:id="@+id/AJOUTELEVE_empty"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_margin="8dp"
+                            android:gravity="bottom"
+                            android:text="@string/AJOUTELEVE_emptyGroup"
+                            android:visibility="gone" />
+
                         <com.google.android.material.chip.ChipGroup
                             android:id="@+id/AJOUTELEVE_chipsGroup"
                             android:layout_width="wrap_content"
@@ -111,12 +136,10 @@
                             app:singleLine="true" />
 
                     </LinearLayout>
-
                 </HorizontalScrollView>
-
             </RelativeLayout>
 
-            <com.google.android.material.button.MaterialButton
+            <!--<com.google.android.material.button.MaterialButton
                 android:id="@+id/AJOUTELEVE_btnValider"
                 style="@style/Widget.MaterialComponents.Button.Icon"
                 android:layout_width="match_parent"
@@ -127,7 +150,15 @@
                 android:textAppearance="@style/TextAppearance.AppCompat"
                 android:textSize="18sp"
                 app:backgroundTint="?attr/colorPrimary"
-                app:icon="@drawable/ic_valid" />
+                app:icon="@drawable/ic_valid" />-->
+
+            <!--<TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:textStyle="italic"
+                android:textSize="12sp"
+                android:text="@string/AJOUTELEVE_hint2" />-->
 
         </LinearLayout>
     </ScrollView>

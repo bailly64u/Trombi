@@ -116,7 +116,7 @@ public class ActivityCapture extends AppCompatActivity {
             public void onClick(View view) {
                 if (getExternalFilesDir(null) != null) {
                     String timeStamp = new SimpleDateFormat("HHmmss").format(new Date());
-                    File f = new File(getExternalFilesDir(null).getPath() + "/caca.jpeg");
+                    File f = new File(getExternalFilesDir(null).getPath() + "/ma-photo.jpeg");
 
                     imageCapture.takePicture(f, Executors.newSingleThreadExecutor(), new ImageCapture.OnImageSavedCallback() {
                         @Override
@@ -140,7 +140,7 @@ public class ActivityCapture extends AppCompatActivity {
                         }
                     });
                 } else {
-                    Snackbar.make(coordinatorLayout, "Impossible d'accéder aurépertoire externe de l'application", Snackbar.LENGTH_LONG);
+                    Snackbar.make(coordinatorLayout, "Impossible d'accéder au répertoire externe de l'application", Snackbar.LENGTH_LONG);
                 }
             }
         });

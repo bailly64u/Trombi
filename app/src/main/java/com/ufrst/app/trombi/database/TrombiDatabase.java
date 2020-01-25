@@ -61,14 +61,14 @@ public abstract class TrombiDatabase extends RoomDatabase {
             trombiDao.insert(new Trombinoscope("Mon trombinoscope 2", "Mon premier trombinoscope 2"));
             trombiDao.insert(new Trombinoscope("Mon trombinoscope 3", "Mon premier trombinoscope 3"));
             trombiDao.insert(new Trombinoscope("Mon trombinoscope 4", "Mon premier trombinoscope 4"));
-            trombiDao.insert(new Trombinoscope("Mon trombinoscope", "Mon premier trombinoscope"));
-            trombiDao.insert(new Trombinoscope("Mon trombinoscope 2", "Mon premier trombinoscope 2"));
-            trombiDao.insert(new Trombinoscope("Mon trombinoscope 3", "Mon premier trombinoscope 3"));
-            trombiDao.insert(new Trombinoscope("Mon trombinoscope 4", "Mon premier trombinoscope 4"));
-            trombiDao.insert(new Trombinoscope("Mon trombinoscope", "Mon premier trombinoscope"));
-            trombiDao.insert(new Trombinoscope("Mon trombinoscope 2", "Mon premier trombinoscope 2"));
-            trombiDao.insert(new Trombinoscope("Mon trombinoscope 3", "Mon premier trombinoscope 3"));
-            trombiDao.insert(new Trombinoscope("Mon trombinoscope 4", "Mon premier trombinoscope 4"));
+            trombiDao.insert(new Trombinoscope("Mon trombinoscope 5", "Mon premier trombinoscope"));
+            trombiDao.insert(new Trombinoscope("Mon trombinoscope 6", "Mon premier trombinoscope 2"));
+            trombiDao.insert(new Trombinoscope("Mon trombinoscope 7", "Mon premier trombinoscope 3"));
+            trombiDao.insert(new Trombinoscope("Mon trombinoscope 8", "Mon premier trombinoscope 4"));
+            trombiDao.insert(new Trombinoscope("Mon trombinoscope 9", "Mon premier trombinoscope"));
+            trombiDao.insert(new Trombinoscope("Mon trombinoscope 10", "Mon premier trombinoscope 2"));
+            trombiDao.insert(new Trombinoscope("Mon trombinoscope 11", "Mon premier trombinoscope 3"));
+            trombiDao.insert(new Trombinoscope("Mon trombinoscope 12", "Mon premier trombinoscope 4"));
 
             Groupe g1 = new Groupe("Mon groupe - TP1", 1);
             Groupe g2 = new Groupe("Mon groupe - TD1", 1);
@@ -89,13 +89,13 @@ public abstract class TrombiDatabase extends RoomDatabase {
             groupeDao.insert(g7);
             groupeDao.insert(g8);
 
-            Eleve e1 = new Eleve("Bailly Louis", 1, "Bruh");
-            Eleve e2 = new Eleve("Niclass Maria", 1, "Bruh");
+            Eleve e1 = new Eleve("Henry Dupont", 1, "Bruh");
+            Eleve e2 = new Eleve("Isabelle Henry", 1, "Bruh");
             Eleve e3 = new Eleve("Nom prénom", 1, "Bruh");
             Eleve e4 = new Eleve("Jean Jacques", 1, "Bruh");
             Eleve e5 = new Eleve("Billy the kid", 1, "Bruh");
-            Eleve e6 = new Eleve("Henry Dupont", 1, "Bruh");
-            Eleve e7 = new Eleve("Marine Lepen", 1, "Bruh");
+            Eleve e6 = new Eleve("Patrick", 1, "Bruh");
+            Eleve e7 = new Eleve("Maria Durand", 1, "Bruh");
 
             Eleve e8 = new Eleve("Bailly Louis", 2, "Bruh");
             Eleve e9 = new Eleve("Niclass Maria", 2, "Bruh");

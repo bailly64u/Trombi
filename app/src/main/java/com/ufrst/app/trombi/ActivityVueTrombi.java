@@ -19,6 +19,7 @@ import androidx.annotation.WorkerThread;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
@@ -317,6 +318,7 @@ public class ActivityVueTrombi extends AppCompatActivity {
                                     writeExportedList(filename, eleves, true);
                                 }
                             })
+                            .setActionTextColor(ContextCompat.getColor(ActivityVueTrombi.this, R.color.colorAccent))
                             .setDuration(8000)
                             .show();
                 } else{

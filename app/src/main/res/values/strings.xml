@@ -63,11 +63,13 @@
     <string name="AJOUTELEVE_title">Ajouter un élève</string>
     <string name="AJOUTELEVE_titleVar">Modifier un élève</string>
     <string name="AJOUTELEVE_hint1">Nom prénom</string>
+    <string name="AJOUTELEVE_hint2">Sélectionnez les groupes auxquels l\'élève appartient</string>
     <string name="AJOUTELEVE_contentDesc1">Nom prénom de l\'élève</string>
     <string name="AJOUTELEVE_contentDesc2">Groupes auxquels l\élève appartient</string>
     <string name="AJOUTELEVE_btnValider">VALIDER</string>
     <string name="AJOUTELEVE_btnEnregistrer">ENREGISTRER</string>
     <string name="AJOUTELEVE_empty">Champ requis</string>
+    <string name="AJOUTELEVE_emptyGroup">Aucun groupe dans ce trombinoscope :/ .</string>
 
     <!-- ID pour chips -->
     <string name="TAG_CHIPS_ID">com.ufrst.app.trombi.TAG_CHIPS_ID</string>
