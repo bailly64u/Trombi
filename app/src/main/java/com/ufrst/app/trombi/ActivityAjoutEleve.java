@@ -136,6 +136,12 @@ public class ActivityAjoutEleve extends AppCompatActivity {
         trombiViewModel.getGroupesByTrombi(idTrombi).observe(this, new Observer<List<Groupe>>() {
             @Override
             public void onChanged(List<Groupe> groupes){
+                //---------------------------------
+                // SOLUTION TEMPORAIRE, suppression de toutes les vues avant de les remettre
+                // pour éviter les résidus des manipulations précédentes
+                //---------------------------------
+                chipGroup.post(() -> chipGroup.removeAllViews());
+
                 // La liste des groupes n'est pas vide
                 if(groupes.size() != 0){
                     Executors.newSingleThreadExecutor().execute(() ->
@@ -155,8 +161,6 @@ public class ActivityAjoutEleve extends AppCompatActivity {
     // Ne pas exécuter sur le ThreadUI
     private void setChips(List<Groupe> groups, List<Groupe> groupsToCheck){
         for(Groupe g : groups){
-            Log.v("____________________", "bruh");
-
             // Inflate la chips d'après mon layout customisé, afin de pouvoir changer l'apparence de la chips lors de la sélection
             Chip c = (Chip) getLayoutInflater()
                     .inflate(R.layout.chips_choice, chipGroup, false);
@@ -164,13 +168,13 @@ public class ActivityAjoutEleve extends AppCompatActivity {
             // Ajout d'un tag pour lier un objet à cette vue
             c.setTag(R.string.TAG_CHIPS_ID, g);
 
-            // Check la chips si l'émève appartient au groupe
+            // Check la chips si l'élève appartient au groupe
             if(groupsToCheck != null && groupsToCheck.contains(g)){
-                c.post( () -> c.setChecked(true));  // View#post permet de donner un executable dans les thread UI
+                c.post( () -> c.setChecked(true));  // View#post permet de donner un executable dans le thread UI
             }
 
             // Texte de la chips
-            c.setText(g.getNomGroupe()); //A changer: enlever + idGroupe
+            c.setText(g.getNomGroupe());
 
             // Ajout de la chips dans le groupe de chips
             chipGroup.post(() -> chipGroup.addView(c));
