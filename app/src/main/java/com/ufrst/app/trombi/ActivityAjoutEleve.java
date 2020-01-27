@@ -8,7 +8,6 @@ import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -40,6 +39,7 @@ public class ActivityAjoutEleve extends AppCompatActivity {
     private Toolbar toolbar;
 
     private String nomPrenomEleve;
+    boolean isEditMode = false;                 // false: ajout, true: modification élève
     private long idTrombi;
     private long idEleve;
 
@@ -65,6 +65,7 @@ public class ActivityAjoutEleve extends AppCompatActivity {
         Intent intent = getIntent();
         idTrombi = intent.getLongExtra(EXTRA_ID, -1);
         if(intent.hasExtra(EXTRA_NOM_E) && intent.hasExtra(EXTRA_ID_E)){
+            isEditMode = true;
             nomPrenomEleve = intent.getStringExtra(EXTRA_NOM_E);
             idEleve = intent.getLongExtra(EXTRA_ID_E, -1);
         } else{
@@ -152,8 +153,6 @@ public class ActivityAjoutEleve extends AppCompatActivity {
     }
 
     private void updateData(){
-        //TODO: Updater les données en cas d'édition, et changer le titre
-
         // Cas de la création d'élève puis de la modification
         if(nomPrenomEleve == null){
             button.setText(R.string.AJOUTELEVE_btnValider);
@@ -162,6 +161,7 @@ public class ActivityAjoutEleve extends AppCompatActivity {
         }
     }
 
+    // Enregistre un nouvel élève dans la BD, avec ses groupes s'il y en a
     private void saveEleve(){
         String nom = inputEditText.getText().toString();
 
@@ -173,41 +173,43 @@ public class ActivityAjoutEleve extends AppCompatActivity {
         // Instanciation d'un élève
         Eleve eleve = new Eleve(nom, idTrombi, "");
 
-        //TODO: insérer les groupes
+        // Cas de l'ajout de l'élève, puis de la modification
+        if(!isEditMode){
+            // Insertion d'un élève et récupération de son ID dans la BD
+            long idEleve = trombiViewModel.insertAndRetrieveId(eleve);
+            setGroupForEleve(idEleve);
+        } else {
+            eleve.setIdEleve(idEleve);
+            trombiViewModel.update(eleve);
+            setGroupForEleve(idEleve);
+        }
 
-        // Insertion d'un élève et récupération de son ID dans la BD
-        long idEleve = trombiViewModel.insertAndRetrieveId(eleve);
+        // Retour à l'activitré appelante
+        Intent data = new Intent();
+        setResult(RESULT_OK, data);
 
+        finish();
+    }
+
+    // Alimente la cross ref entre groupe et élèves
+    private void setGroupForEleve(long idEleve){
         // On récupère les groupes associés aux chips sélectionnées et insère des XRef dans la BD
         for(int i=0; i < chipGroup.getChildCount(); i++){
             Chip chip = (Chip) chipGroup.getChildAt(i);
-            if(chip.isChecked()){
-                Groupe g = (Groupe) chip.getTag(R.string.TAG_CHIPS_ID);
+            Groupe g = (Groupe) chip.getTag(R.string.TAG_CHIPS_ID);
 
-                if(g != null){
-                    // XRef entre groupe et élève
+            if(g != null){
+                // Ajout de la XRef pour toutes les chips checkées (si il existe déja il sera ignoré
+                // cf EleveGroupJoin#insert pour plus de détails
+                // puis retrait de la XRef pour toutes les chips pas checkées
+                // si Room ne trouve pas d'item à supprimer, il ne fait rien
+                if(chip.isChecked()){
                     trombiViewModel.insert(new EleveGroupeJoin(idEleve, g.getIdGroupe()));
+                } else {
+                    trombiViewModel.delete(new EleveGroupeJoin(idEleve, g.getIdGroupe()));
                 }
             }
         }
-
-        //A changer: a suppr si on n'utilise plus de activityForResult
-        Intent data = new Intent();
-        data.putExtra(EXTRA_NOM_E, nom);
-
-        // Récupération de l'id.
-        // Si on ne récupère pas d'"EXTRA_ID", on prend -1 et on sait en prime que l'activité
-        // a été lancée dans le but d'ajouter un élève et non de le modifier.
-        // Si on a un EXTRA_ID, alors on modifie un éllève et nous changerons la bonne entrée dans la BD en conséquence
-        long id = getIntent().getLongExtra(EXTRA_ID_E, -1);
-
-        // On édite un trombi
-        if(id != -1){
-            data.putExtra(EXTRA_ID_E, id);
-        }
-
-        setResult(RESULT_OK, data);
-        finish();
     }
 
     @Override
