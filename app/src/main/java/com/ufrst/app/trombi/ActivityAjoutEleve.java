@@ -144,8 +144,12 @@ public class ActivityAjoutEleve extends AppCompatActivity {
 
                 // La liste des groupes n'est pas vide
                 if(groupes.size() != 0){
-                    Executors.newSingleThreadExecutor().execute(() ->
-                            setChips(groupes, groupsToCheck));
+                    Executors.newSingleThreadExecutor().execute(() -> {
+                            setChips(groupes, groupsToCheck);
+                            //testCheckChips();
+                            });
+
+
                 } else{
                     emptyTextView.setVisibility(View.VISIBLE);
                 }
@@ -160,6 +164,8 @@ public class ActivityAjoutEleve extends AppCompatActivity {
     // et la liste de groupes auxquels l'élève appartient
     // Ne pas exécuter sur le ThreadUI
     private void setChips(List<Groupe> groups, List<Groupe> groupsToCheck){
+        Log.v("_________________________", Thread.currentThread().toString());
+
         for(Groupe g : groups){
             // Inflate la chips d'après mon layout customisé, afin de pouvoir changer l'apparence de la chips lors de la sélection
             Chip c = (Chip) getLayoutInflater()
@@ -179,6 +185,8 @@ public class ActivityAjoutEleve extends AppCompatActivity {
             // Ajout de la chips dans le groupe de chips
             chipGroup.post(() -> chipGroup.addView(c));
         }
+
+        testCheckChips();
     }
 
     private void updateData(){
@@ -243,7 +251,9 @@ public class ActivityAjoutEleve extends AppCompatActivity {
 
     private void testCheckChips(){
         try{
-            Thread.sleep(1000);
+            // fonctionne avec sleep 100, mais pas sans
+            Thread.sleep(0);
+            Log.v("_________________________", Thread.currentThread().toString());
         } catch(InterruptedException e){
             e.printStackTrace();
         }
@@ -265,14 +275,14 @@ public class ActivityAjoutEleve extends AppCompatActivity {
         }
     }
 
-    @Override
+    /*@Override
     public void onWindowFocusChanged(boolean hasFocus){
         super.onWindowFocusChanged(hasFocus);
 
         if(hasFocus){
             Executors.newSingleThreadExecutor().execute(() -> testCheckChips());
         }
-    }
+    }*/
 
     @Override
     public boolean onSupportNavigateUp(){
