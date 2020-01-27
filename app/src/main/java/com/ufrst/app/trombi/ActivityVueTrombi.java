@@ -10,7 +10,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -55,8 +57,10 @@ public class ActivityVueTrombi extends AppCompatActivity {
 
     private BottomSheetBehavior bottomSheetBehavior;
     private CoordinatorLayout coordinatorLayout;
+    private RelativeLayout relativeLayout;
     private ChipGroup chipGroup;
     private TextView tvNbCols;
+    private Switch switchDesc;
     private View bottomSheet;
     private WebView webView;
     private Toolbar toolbar;
@@ -114,8 +118,10 @@ public class ActivityVueTrombi extends AppCompatActivity {
 
     // Désérialise les vues dont on aura besoin depuis le XML
     private void findViews(){
+        relativeLayout = findViewById(R.id.VUETROMBI_switchDescLayout);
         coordinatorLayout = findViewById(R.id.VUETROMBI_coordinator);
         bottomSheet = findViewById(R.id.VUETROMBI_bottomSheet);
+        switchDesc = findViewById(R.id.VUETROMBI_switchDesc);
         chipGroup = findViewById(R.id.VUETROMBI_chipsGroup);
         tvNbCols = findViewById(R.id.VUETROMBI_nbCols);
         seekBar = findViewById(R.id.VUETROMBI_seekBar);
@@ -129,7 +135,7 @@ public class ActivityVueTrombi extends AppCompatActivity {
         // ou déselection d'un groupe
         observerEleve = eleves -> {
             listeEleves = eleves;
-            showHTML();
+            showHTML(true);
         };
 
         trombiViewModel = ViewModelProviders.of(this).get(TrombiViewModel.class);
@@ -178,7 +184,7 @@ public class ActivityVueTrombi extends AppCompatActivity {
             public void onStopTrackingTouch(SeekBar seekBar){
                 if(seekBar.getProgress() != nbCols){
                     nbCols = seekBar.getProgress();
-                    showHTML();
+                    showHTML(switchDesc.isChecked());
                 }
             }
         });
@@ -211,7 +217,7 @@ public class ActivityVueTrombi extends AppCompatActivity {
                                 @Override
                                 public void onChanged(GroupeWithEleves groupeWithEleves){
                                     listeEleves = groupeWithEleves.getEleves();
-                                    showHTML();
+                                    showHTML(switchDesc.isChecked());
                                 }
                             });
                 } else{
@@ -219,6 +225,15 @@ public class ActivityVueTrombi extends AppCompatActivity {
                     trombiViewModel.getElevesByTrombi(idTrombi)
                             .observe(ActivityVueTrombi.this, observerEleve);
                 }
+            }
+        });
+
+        // Switch afficher description
+        relativeLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view){
+                switchDesc.setChecked(!switchDesc.isChecked());
+                showHTML(switchDesc.isChecked());
             }
         });
     }
@@ -245,7 +260,7 @@ public class ActivityVueTrombi extends AppCompatActivity {
     }
 
     // Insère le HTML dans la WebView
-    private void showHTML(){
+    private void showHTML(boolean withDescription){
         boolean isLastRow = false;              // Détermine si la dernière ligne affichée était la dernière
         int index = 0;                          // Indexe a chosir dans la liste d'élèves
 
@@ -257,9 +272,13 @@ public class ActivityVueTrombi extends AppCompatActivity {
 
         StringBuilder sb = new StringBuilder();
         sb.append("<html><body>")
-                .append("<h1>").append(nomTrombi).append("</h1>")
-                .append("<h2>").append(descTrombi).append("</h2>")
-                .append("<table>");
+                .append("<h1>").append(nomTrombi).append("</h1>");
+
+        if(withDescription){
+            sb.append("<h2>").append(descTrombi).append("</h2>");
+        }
+
+        sb.append("<table>");
 
         //A changer; supprimer
         for(int k = 0; k < listeEleves.size(); k++){
