@@ -8,7 +8,9 @@ import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.android.material.button.MaterialButton;
@@ -36,6 +38,7 @@ public class ActivityAjoutEleve extends AppCompatActivity {
     private TrombiViewModel trombiViewModel;
     private TextInputEditText inputEditText;
     private MaterialButton buttonGroup;
+    private LinearLayout linearLayout;
     private TextView emptyTextView;
     private ChipGroup chipGroup;
     private Toolbar toolbar;
@@ -76,6 +79,7 @@ public class ActivityAjoutEleve extends AppCompatActivity {
 
     private void findViews(){
         coordinatorLayout = findViewById(R.id.AJOUTELEVE_coordinator);
+        linearLayout = findViewById(R.id.AJOUTELEVE_chipsLayout);
         buttonGroup = findViewById(R.id.AJOUTELEVE_buttonGroup);
         inputEditText = findViewById(R.id.AJOUTELEVE_entrerNom);
         chipGroup = findViewById(R.id.AJOUTELEVE_chipsGroup);
@@ -103,6 +107,9 @@ public class ActivityAjoutEleve extends AppCompatActivity {
         });
     }
 
+    // TODO: AntiPettern, observer d'observer, la liste des groupes fait n'importe quoi car
+    //  elle est observé en cascade dès qu'il y a une modification. Remplacer par une transformation
+
     // Récupère les groupes auxquels l'élève appartient
     private void getGroupesForEleve(){
         trombiViewModel = ViewModelProviders.of(this).get(TrombiViewModel.class);
@@ -123,13 +130,13 @@ public class ActivityAjoutEleve extends AppCompatActivity {
         });
     }
 
-    // GetGroupesForEleve appelle cette fonction, et luis pass la liste des groupes
+    // GetGroupesForEleve appelle cette fonction, et lui passe la liste des groupes
     // auxquels l'élève appartient
     private void observeGroupesForTrombi(List<Groupe> groupsToCheck){
         trombiViewModel.getGroupesByTrombi(idTrombi).observe(this, new Observer<List<Groupe>>() {
             @Override
             public void onChanged(List<Groupe> groupes){
-                // La liste des groupes n'est pas vide et il n'y a pas de chips déja insérées
+                // La liste des groupes n'est pas vide
                 if(groupes.size() != 0){
                     Executors.newSingleThreadExecutor().execute(() ->
                             setChips(groupes, groupsToCheck));
@@ -148,6 +155,8 @@ public class ActivityAjoutEleve extends AppCompatActivity {
     // Ne pas exécuter sur le ThreadUI
     private void setChips(List<Groupe> groups, List<Groupe> groupsToCheck){
         for(Groupe g : groups){
+            Log.v("____________________", "bruh");
+
             // Inflate la chips d'après mon layout customisé, afin de pouvoir changer l'apparence de la chips lors de la sélection
             Chip c = (Chip) getLayoutInflater()
                     .inflate(R.layout.chips_choice, chipGroup, false);
