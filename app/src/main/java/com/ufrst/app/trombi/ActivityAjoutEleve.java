@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
@@ -30,10 +31,11 @@ import static com.ufrst.app.trombi.ActivityMain.EXTRA_NOM_E;
 
 public class ActivityAjoutEleve extends AppCompatActivity {
 
-    private ExtendedFloatingActionButton button;
     private CoordinatorLayout coordinatorLayout;
+    private ExtendedFloatingActionButton fab;
     private TrombiViewModel trombiViewModel;
     private TextInputEditText inputEditText;
+    private MaterialButton buttonGroup;
     private TextView emptyTextView;
     private ChipGroup chipGroup;
     private Toolbar toolbar;
@@ -53,7 +55,6 @@ public class ActivityAjoutEleve extends AppCompatActivity {
         setListeners();
         getGroupesForEleve();
         updateData();
-        //observeGroupsForTrombi();
 
         // Toolbar
         setSupportActionBar(toolbar);
@@ -75,18 +76,29 @@ public class ActivityAjoutEleve extends AppCompatActivity {
 
     private void findViews(){
         coordinatorLayout = findViewById(R.id.AJOUTELEVE_coordinator);
+        buttonGroup = findViewById(R.id.AJOUTELEVE_buttonGroup);
         inputEditText = findViewById(R.id.AJOUTELEVE_entrerNom);
         chipGroup = findViewById(R.id.AJOUTELEVE_chipsGroup);
         emptyTextView = findViewById(R.id.AJOUTELEVE_empty);
-        button = findViewById(R.id.AJOUTELEVE_btnValider);
         toolbar = findViewById(R.id.AJOUTELEVE_toolbar);
+        fab = findViewById(R.id.AJOUTELEVE_btnValider);
     }
 
     private void setListeners(){
-        button.setOnClickListener(new View.OnClickListener() {
+        fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view){
                 saveEleve();
+            }
+        });
+
+        buttonGroup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view){
+                Intent intent = new Intent(ActivityAjoutEleve.this, ActivityListGroupe.class);
+                intent.putExtra(EXTRA_ID, idTrombi);
+
+                startActivity(intent);
             }
         });
     }
@@ -98,8 +110,12 @@ public class ActivityAjoutEleve extends AppCompatActivity {
         trombiViewModel.getEleveByIdWithGroups(idEleve).observe(this, new Observer<EleveWithGroups>() {
             @Override
             public void onChanged(EleveWithGroups eleveWithGroups){
-                List<Groupe> eleveGroups = eleveWithGroups.getGroupes();
-                observeGroupsForTrombi(eleveGroups);
+                if(eleveWithGroups != null){
+                    List<Groupe> eleveGroups = eleveWithGroups.getGroupes();
+                    observeGroupsForTrombi(eleveGroups);
+                } else{
+                    observeGroupsForTrombi(null);
+                }
 
                 // On a besoin des valeurs une seule fois
                 trombiViewModel.getEleveByIdWithGroups(idEleve).removeObserver(this);
@@ -140,7 +156,7 @@ public class ActivityAjoutEleve extends AppCompatActivity {
             c.setTag(R.string.TAG_CHIPS_ID, g);
 
             // Check la chips si l'émève appartient au groupe
-            if(groupsToCheck.contains(g)){
+            if(groupsToCheck != null && groupsToCheck.contains(g)){
                 c.post( () -> c.setChecked(true));  // View#post permet de donner un executable dans les thread UI
             }
 
@@ -155,7 +171,7 @@ public class ActivityAjoutEleve extends AppCompatActivity {
     private void updateData(){
         // Cas de la création d'élève puis de la modification
         if(nomPrenomEleve == null){
-            button.setText(R.string.AJOUTELEVE_btnValider);
+            fab.setText(R.string.AJOUTELEVE_btnValider);
         } else{
             inputEditText.setText(nomPrenomEleve);
         }

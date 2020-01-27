@@ -55,12 +55,5 @@ public interface EleveGroupeJoinDao {
     @Query("SELECT * FROM table_eleve WHERE id_eleve=:idEleve")
     LiveData<EleveWithGroups> getEleveByIdWithGroups(long idEleve);
 
-    //TODO: Requête pour récupérer les groupes d'un élève ?
-    /*@Transaction
-    @Query("SELECT id_groupe " +
-            "FROM eleve_x_group " +
-            "INNER JOIN table_eleve ON table_eleve.id_eleve = eleve_x_group.join_id_eleve " +
-            "INNER JOIN table_groupe ON table_groupe.id_groupe = eleve_x_group.join_id_groupe " +
-            "WHERE table_eleve.is_deleted = 0 AND id_eleve=:idEleve")
-    List<Long> getGroupesIdForEleve(long idEleve);*/
+    //TODO: Requête pour supprimer les XREf inutiles
 }

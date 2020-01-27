@@ -16,7 +16,7 @@ import com.ufrst.app.trombi.database.Trombinoscope;
 
 import java.util.List;
 
-// ListeAdapter s'apparente à un RecyclerView, mais avec des méthodes pour gére les animations
+// ListeAdapter s'apparente à un RecyclerView, mais avec des méthodes pour gérer les animations
 // d'insertions, suppresion etc aux bons endroits dans la liste
 public class AdapteurTrombi extends ListAdapter<Trombinoscope, AdapteurTrombi.TrombiHolder> {
 

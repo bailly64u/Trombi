@@ -72,6 +72,10 @@
     <string name="AJOUTELEVE_emptyGroup">Aucun groupe dans ce trombinoscope :/ .</string>
     <string name="AJOUTELEVE_handleGroup">Gérer les groupes</string>
 
+    <string name="LISTg_title">Gérer les groupes</string>
+    <string name="LISTg_emptyRecyclerView">Aucun groupe dans ce trombinoscope : | .</string>
+    <string name="LISTg_groupeSuppr">Le groupe a été supprimé</string>
+
     <!-- ID pour chips -->
     <string name="TAG_CHIPS_ID">com.ufrst.app.trombi.TAG_CHIPS_ID</string>
 </resources>
