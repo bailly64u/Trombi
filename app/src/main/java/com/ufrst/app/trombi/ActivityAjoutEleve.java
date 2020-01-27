@@ -241,6 +241,39 @@ public class ActivityAjoutEleve extends AppCompatActivity {
         }
     }
 
+    private void testCheckChips(){
+        try{
+            Thread.sleep(1000);
+        } catch(InterruptedException e){
+            e.printStackTrace();
+        }
+
+        for(int i=0; i < chipGroup.getChildCount(); i++ ){
+            Chip c;
+            Log.v("_è___________________________", "AHHHHHHH");
+            try{
+                c = (Chip) chipGroup.getChildAt(i);
+            } catch(ClassCastException e){
+                // Nothing
+                continue;
+            }
+
+            //c.setChecked(true);
+
+            //c.setChecked(true);
+            c.post( () -> c.setChecked(true));
+        }
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus){
+        super.onWindowFocusChanged(hasFocus);
+
+        if(hasFocus){
+            Executors.newSingleThreadExecutor().execute(() -> testCheckChips());
+        }
+    }
+
     @Override
     public boolean onSupportNavigateUp(){
         finish();
