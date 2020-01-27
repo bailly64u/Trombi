@@ -70,6 +70,7 @@
     <string name="AJOUTELEVE_btnEnregistrer">ENREGISTRER</string>
     <string name="AJOUTELEVE_empty">Champ requis</string>
     <string name="AJOUTELEVE_emptyGroup">Aucun groupe dans ce trombinoscope :/ .</string>
+    <string name="AJOUTELEVE_handleGroup">Gérer les groupes</string>
 
     <!-- ID pour chips -->
     <string name="TAG_CHIPS_ID">com.ufrst.app.trombi.TAG_CHIPS_ID</string>

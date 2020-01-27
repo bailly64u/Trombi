@@ -26,8 +26,10 @@ import com.ufrst.app.trombi.database.TrombiViewModel;
 
 import java.util.List;
 
+import static com.ufrst.app.trombi.ActivityMain.EXTRA_GROUPE_E;
 import static com.ufrst.app.trombi.ActivityMain.EXTRA_ID;
 import static com.ufrst.app.trombi.ActivityMain.EXTRA_ID_E;
+import static com.ufrst.app.trombi.ActivityMain.EXTRA_NOM_E;
 
 public class ActivityListEleve extends AppCompatActivity {
 
@@ -181,7 +183,12 @@ public class ActivityListEleve extends AppCompatActivity {
 
             @Override
             public void onItemLongClick(Eleve eleve){
+                Intent intent = new Intent(ActivityListEleve.this, ActivityAjoutEleve.class);
+                intent.putExtra(EXTRA_ID, idTrombi);
+                intent.putExtra(EXTRA_NOM_E, eleve.getNomPrenom());
+                intent.putExtra(EXTRA_ID_E, eleve.getIdEleve());
 
+                startActivity(intent);
             }
 
             @Override

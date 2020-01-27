@@ -1,5 +1,6 @@
 package com.ufrst.app.trombi.database;
 
+import androidx.annotation.Nullable;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
@@ -37,6 +38,22 @@ public class Groupe {
     public Groupe(String nomGroupe, long idTrombi) {
         this.nomGroupe = nomGroupe;
         this.idTrombi = idTrombi;
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj){
+        if(obj == null){
+            return false;
+        }
+
+        if(obj instanceof Groupe){
+            Groupe other = (Groupe) obj;
+            return this.idTrombi == other.getIdTrombi() && this.nomGroupe.equals(other.getNomGroupe())
+                    && this.idGroupe == other.getIdGroupe();
+        } else{
+            return false;
+        }
+
     }
 
     public long getIdGroupe() { return idGroupe; }

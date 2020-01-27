@@ -8,16 +8,17 @@ import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
-import com.google.android.material.button.MaterialButton;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.ufrst.app.trombi.database.Eleve;
 import com.ufrst.app.trombi.database.EleveGroupeJoin;
+import com.ufrst.app.trombi.database.EleveWithGroups;
 import com.ufrst.app.trombi.database.Groupe;
 import com.ufrst.app.trombi.database.TrombiViewModel;
 
@@ -38,7 +39,9 @@ public class ActivityAjoutEleve extends AppCompatActivity {
     private ChipGroup chipGroup;
     private Toolbar toolbar;
 
+    private String nomPrenomEleve;
     private long idTrombi;
+    private long idEleve;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -48,8 +51,9 @@ public class ActivityAjoutEleve extends AppCompatActivity {
         getExtras();
         findViews();
         setListeners();
+        getGroupesForEleve();
         updateData();
-        observeGroups();
+        //observeGroupsForTrombi();
 
         // Toolbar
         setSupportActionBar(toolbar);
@@ -60,6 +64,12 @@ public class ActivityAjoutEleve extends AppCompatActivity {
     private void getExtras(){
         Intent intent = getIntent();
         idTrombi = intent.getLongExtra(EXTRA_ID, -1);
+        if(intent.hasExtra(EXTRA_NOM_E) && intent.hasExtra(EXTRA_ID_E)){
+            nomPrenomEleve = intent.getStringExtra(EXTRA_NOM_E);
+            idEleve = intent.getLongExtra(EXTRA_ID_E, -1);
+        } else{
+            nomPrenomEleve = null;
+        }
     }
 
     private void findViews(){
@@ -80,29 +90,31 @@ public class ActivityAjoutEleve extends AppCompatActivity {
         });
     }
 
-    private void updateData(){
-        //TODO: Updater les données en cas d'édition, et changer le titre
-
-        // Cas de la création d'élève puis de la modification
-        if(idTrombi == -1){
-            button.setText(R.string.AJOUTELEVE_btnValider);
-        } else{
-
-        }
-
-    }
-
-    private void observeGroups(){
+    // Récupère les groupes auxquels l'élève appartient
+    private void getGroupesForEleve(){
         trombiViewModel = ViewModelProviders.of(this).get(TrombiViewModel.class);
 
+        trombiViewModel.getEleveByIdWithGroups(idEleve).observe(this, new Observer<EleveWithGroups>() {
+            @Override
+            public void onChanged(EleveWithGroups eleveWithGroups){
+                List<Groupe> eleveGroups = eleveWithGroups.getGroupes();
+                observeGroupsForTrombi(eleveGroups);
+
+                // On a besoin des valeurs une seule fois
+                trombiViewModel.getEleveByIdWithGroups(idEleve).removeObserver(this);
+            }
+        });
+    }
+
+    // GetGroupesForEleve appelle cette fonction, et luis pass la liste des groupes
+    // auxquels l'élève appartient
+    private void observeGroupsForTrombi(List<Groupe> groupsToCheck){
         trombiViewModel.getGroupesByTrombi(idTrombi).observe(this, new Observer<List<Groupe>>() {
             @Override
             public void onChanged(List<Groupe> groupes){
                 if(groupes.size() != 0){
                     Executors.newSingleThreadExecutor().execute(() -> {
-                        for(Groupe g : groupes){
-                            setChips(g);
-                        }
+                        setChips(groupes, groupsToCheck);
                     });
                 } else{
                     emptyTextView.setVisibility(View.VISIBLE);
@@ -114,24 +126,40 @@ public class ActivityAjoutEleve extends AppCompatActivity {
         });
     }
 
-    private void setChips(Groupe g){
-        // Inflate la chips d'après mon layout customisé, afin de pouvoir changer l'apparence de la chips lors de la sélection
-        Chip c = (Chip) getLayoutInflater()
-                .inflate(R.layout.chips_choice, chipGroup, false);
+    // Appellé par observeGroupsForTrombi en passant la liste des groupes du trombi
+    // et la liste de groupes auxquels l'élève appartient
+    // Ne pas exécuter sur le ThreadUI
+    private void setChips(List<Groupe> groups, List<Groupe> groupsToCheck){
+        for(Groupe g : groups){
+            // Inflate la chips d'après mon layout customisé, afin de pouvoir changer l'apparence de la chips lors de la sélection
+            Chip c = (Chip) getLayoutInflater()
+                    .inflate(R.layout.chips_choice, chipGroup, false);
 
-        // Ajout d'un tag pour lier un objet à cette vue
-        c.setTag(R.string.TAG_CHIPS_ID, g);
+            // Ajout d'un tag pour lier un objet à cette vue
+            c.setTag(R.string.TAG_CHIPS_ID, g);
 
-        // Texte de la chips
-        c.setText(g.getNomGroupe()); //A changer: enlever + idGroupe
-
-        // Ajout de la chips dans le groupe de chips
-        chipGroup.post(new Runnable() {
-            @Override
-            public void run(){
-                chipGroup.addView(c);
+            // Check la chips si l'émève appartient au groupe
+            if(groupsToCheck.contains(g)){
+                c.post( () -> c.setChecked(true));  // View#post permet de donner un executable dans les thread UI
             }
-        });
+
+            // Texte de la chips
+            c.setText(g.getNomGroupe()); //A changer: enlever + idGroupe
+
+            // Ajout de la chips dans le groupe de chips
+            chipGroup.post(() -> chipGroup.addView(c));
+        }
+    }
+
+    private void updateData(){
+        //TODO: Updater les données en cas d'édition, et changer le titre
+
+        // Cas de la création d'élève puis de la modification
+        if(nomPrenomEleve == null){
+            button.setText(R.string.AJOUTELEVE_btnValider);
+        } else{
+            inputEditText.setText(nomPrenomEleve);
+        }
     }
 
     private void saveEleve(){
