@@ -28,7 +28,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center"
         android:layout_margin="8dp"
-        android:text="@string/AJOUTELEVE_btnEnregistrer"
+        android:text="@string/U_enregistrer"
         android:textColor="?attr/onSecondary"
         style="Widget.MaterialComponents.ExtendedFloatingActionButton.Icon"
         app:icon="@drawable/ic_valid"

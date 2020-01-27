@@ -86,7 +86,7 @@ public class ActivityAjoutTrombi extends AppCompatActivity implements ImportAler
         // Cas de la modification. Voire ActivityMain#setRecyclerViewAndViewModel
         if(intent.hasExtra(EXTRA_ID)){
             setTitle(R.string.AJOUTTROMBI_titleVar);
-            valider.setText(R.string.AJOUTELEVE_btnEnregistrer);
+            valider.setText(R.string.U_enregistrer);
 
             // Récupération de l'id
             long idTrombi = intent.getLongExtra(EXTRA_ID, -1);
@@ -143,7 +143,7 @@ public class ActivityAjoutTrombi extends AppCompatActivity implements ImportAler
         String desc = etDesc.getText().toString();
 
         if(nom.trim().isEmpty()){
-            etNom.setError(getResources().getString(R.string.AJOUTTROMBI_empty));
+            etNom.setError(getResources().getString(R.string.U_required));
             return;
         }
 

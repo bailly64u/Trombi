@@ -112,9 +112,9 @@ public class ActivityAjoutEleve extends AppCompatActivity {
             public void onChanged(EleveWithGroups eleveWithGroups){
                 if(eleveWithGroups != null){
                     List<Groupe> eleveGroups = eleveWithGroups.getGroupes();
-                    observeGroupsForTrombi(eleveGroups);
+                    observeGroupesForTrombi(eleveGroups);
                 } else{
-                    observeGroupsForTrombi(null);
+                    observeGroupesForTrombi(null);
                 }
 
                 // On a besoin des valeurs une seule fois
@@ -125,14 +125,14 @@ public class ActivityAjoutEleve extends AppCompatActivity {
 
     // GetGroupesForEleve appelle cette fonction, et luis pass la liste des groupes
     // auxquels l'élève appartient
-    private void observeGroupsForTrombi(List<Groupe> groupsToCheck){
+    private void observeGroupesForTrombi(List<Groupe> groupsToCheck){
         trombiViewModel.getGroupesByTrombi(idTrombi).observe(this, new Observer<List<Groupe>>() {
             @Override
             public void onChanged(List<Groupe> groupes){
+                // La liste des groupes n'est pas vide et il n'y a pas de chips déja insérées
                 if(groupes.size() != 0){
-                    Executors.newSingleThreadExecutor().execute(() -> {
-                        setChips(groupes, groupsToCheck);
-                    });
+                    Executors.newSingleThreadExecutor().execute(() ->
+                            setChips(groupes, groupsToCheck));
                 } else{
                     emptyTextView.setVisibility(View.VISIBLE);
                 }
@@ -143,7 +143,7 @@ public class ActivityAjoutEleve extends AppCompatActivity {
         });
     }
 
-    // Appellé par observeGroupsForTrombi en passant la liste des groupes du trombi
+    // Appellé par observeGroupesForTrombi en passant la liste des groupes du trombi
     // et la liste de groupes auxquels l'élève appartient
     // Ne pas exécuter sur le ThreadUI
     private void setChips(List<Groupe> groups, List<Groupe> groupsToCheck){
@@ -171,7 +171,7 @@ public class ActivityAjoutEleve extends AppCompatActivity {
     private void updateData(){
         // Cas de la création d'élève puis de la modification
         if(nomPrenomEleve == null){
-            fab.setText(R.string.AJOUTELEVE_btnValider);
+            fab.setText(R.string.U_valider);
         } else{
             inputEditText.setText(nomPrenomEleve);
         }

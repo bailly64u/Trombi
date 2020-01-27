@@ -1,6 +1,7 @@
 package com.ufrst.app.trombi;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
@@ -27,8 +28,13 @@ import com.ufrst.app.trombi.database.TrombiViewModel;
 import java.util.List;
 
 import static com.ufrst.app.trombi.ActivityMain.EXTRA_ID;
+import static com.ufrst.app.trombi.ActivityMain.EXTRA_ID_G;
+import static com.ufrst.app.trombi.ActivityMain.EXTRA_NOM_G;
 
 public class ActivityListGroupe extends AppCompatActivity {
+
+    public static final int REQUETE_AJOUT_GROUPE = 1;
+    public static final int REQUETE_EDITE_GROUPE = 2;
 
     private CoordinatorLayout coordinatorLayout;
     private TrombiViewModel trombiViewModel;
@@ -76,7 +82,7 @@ public class ActivityListGroupe extends AppCompatActivity {
                 Intent intent = new Intent(ActivityListGroupe.this, ActivityAjoutGroupe.class);
                 intent.putExtra(EXTRA_ID, idTrombi);
 
-                startActivity(intent);
+                startActivityForResult(intent, REQUETE_AJOUT_GROUPE);
             }
         });
     }
@@ -169,14 +175,36 @@ public class ActivityListGroupe extends AppCompatActivity {
         adapteur.setOnItemClickListener(new AdapteurGroupe.OnItemClickListener() {
             @Override
             public void onItemClick(Groupe groupe){
-
+                this.onItemLongClick(groupe);
             }
 
             @Override
             public void onItemLongClick(Groupe groupe){
+                Intent intent = new Intent(ActivityListGroupe.this, ActivityAjoutGroupe.class);
+                intent.putExtra(EXTRA_ID, idTrombi);
+                intent.putExtra(EXTRA_ID_G, groupe.getIdGroupe());
+                intent.putExtra(EXTRA_NOM_G, groupe.getNomGroupe());
 
+                startActivityForResult(intent, REQUETE_EDITE_GROUPE);
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data){
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(data != null){
+            if(requestCode == REQUETE_AJOUT_GROUPE && resultCode == RESULT_OK){
+                Snackbar.make(coordinatorLayout,
+                        R.string.LISTg_groupeAjoute,
+                        Snackbar.LENGTH_LONG).show();
+            } else if(requestCode == REQUETE_EDITE_GROUPE && resultCode == RESULT_OK){
+                Snackbar.make(coordinatorLayout,
+                        R.string.LISTg_groupeModifie,
+                        Snackbar.LENGTH_LONG).show();
+            }
+        }
     }
 
     @Override

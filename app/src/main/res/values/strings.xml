@@ -4,6 +4,9 @@
     <string name="U_annuler">Annuler</string>
     <string name="U_erreur">Une erreur est survenue</string>
     <string name="U_remplacer">Remplacer</string>
+    <string name="U_required">Champ requis</string>
+    <string name="U_valider">Valider</string>
+    <string name="U_enregistrer">Enregistrer</string>
 
     <string name="DRAWER_item1">Item 1</string>
     <string name="DRAWER_item2">Item 2</string>
@@ -19,8 +22,6 @@
 
     <string name="AJOUTTROMBI_title">Ajouter un trombinoscope</string>
     <string name="AJOUTTROMBI_titleVar">Modifier un trombinoscope</string>
-    <string name="AJOUTTROMBI_btnValider">VALIDER</string>
-    <string name="AJOUTTROMBI_btnEnregistrer">ENREGISTRER</string>
     <string name="AJOUTTROMBI_importer">Importer</string>
     <string name="AJOUTTROMBI_hint1">Nom</string>
     <string name="AJOUTTROMBI_hint2">Description</string>
@@ -29,7 +30,6 @@
     <string name="AJOUTTROMBI_menu2">Choisir un fichier</string>
     <string name="AJOUTTROMBI_contentDesc1">Nom du trombinoscope</string>
     <string name="AJOUTTROMBI_contentDesc2">Description du trombinoscope</string>
-    <string name="AJOUTTROMBI_empty">Champ requis</string>
     <string name="AJOUTTROMBI_importTitle">Importer une liste</string>
     <string name="AJOUTTROMBI_listeImportee">La liste a été importée</string>
     <string name="AJOUTTROMBI_listeImporteeErr">Le nom du trombinoscope doit être renseigné</string>
@@ -66,8 +66,6 @@
     <string name="AJOUTELEVE_hint2">Sélectionnez les groupes auxquels l\'élève appartient</string>
     <string name="AJOUTELEVE_contentDesc1">Nom prénom de l\'élève</string>
     <string name="AJOUTELEVE_contentDesc2">Groupes auxquels l\élève appartient</string>
-    <string name="AJOUTELEVE_btnValider">VALIDER</string>
-    <string name="AJOUTELEVE_btnEnregistrer">ENREGISTRER</string>
     <string name="AJOUTELEVE_empty">Champ requis</string>
     <string name="AJOUTELEVE_emptyGroup">Aucun groupe dans ce trombinoscope :/ .</string>
     <string name="AJOUTELEVE_handleGroup">Gérer les groupes</string>
@@ -75,6 +73,12 @@
     <string name="LISTg_title">Gérer les groupes</string>
     <string name="LISTg_emptyRecyclerView">Aucun groupe dans ce trombinoscope : | .</string>
     <string name="LISTg_groupeSuppr">Le groupe a été supprimé</string>
+    <string name="LISTg_groupeAjoute">Le groupe a été ajouté</string>
+    <string name="LISTg_groupeModifie">Le groupe a été modifié</string>
+
+    <string name="AJOUTGROUPE_title">Ajouter un groupe</string>
+    <string name="AJOUTGROUPE_hint1">Nom</string>
+    <string name="AJOUTGROUPE_contentDesc1">Nom du groupe</string>
 
     <!-- ID pour chips -->
     <string name="TAG_CHIPS_ID">com.ufrst.app.trombi.TAG_CHIPS_ID</string>
