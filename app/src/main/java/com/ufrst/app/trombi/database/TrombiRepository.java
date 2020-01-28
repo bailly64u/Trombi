@@ -92,6 +92,7 @@ public class TrombiRepository {
 
     int getElevesNumberByTrombi(long idTrombi){return eleveDao.getElevesNumberByTrombi(idTrombi);}
 
+    // TODO: Remplace avec CompletableFuture
     // Voir TrombiRepository#insertAndRetrieveId(Trombinoscope trombi)
     long insertAndRetrieveId(Eleve eleve){
         Callable<Long> callable = () -> eleveDao.insert(eleve);
@@ -118,6 +119,9 @@ public class TrombiRepository {
     LiveData<List<GroupeWithEleves>> getGroupesWithEleves(){return joinDao.getGroupesWithEleves();}
     LiveData<GroupeWithEleves> getGroupeByIdWithEleves(long idGroupe){return joinDao.getGroupeByIdWithEleves(idGroupe);}
     LiveData<EleveWithGroups> getEleveByIdWithGroups(long idEleve){return joinDao.getEleveByIdWithGroups(idEleve);}
+
+    // Pas de LiveData, ne pas exécuter sur le ThreadUI
+    EleveWithGroups getEleveByIdWithGroupsNotLive(long idEleve){return joinDao.getEleveByIdWithGroupsNotLive(idEleve);}
 
 
 

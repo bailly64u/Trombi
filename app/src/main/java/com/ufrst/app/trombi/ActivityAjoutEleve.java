@@ -1,5 +1,6 @@
 package com.ufrst.app.trombi;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
@@ -25,7 +26,10 @@ import com.ufrst.app.trombi.database.Groupe;
 import com.ufrst.app.trombi.database.TrombiViewModel;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ForkJoinPool;
 
 import static com.ufrst.app.trombi.ActivityMain.EXTRA_ID;
 import static com.ufrst.app.trombi.ActivityMain.EXTRA_ID_E;
@@ -68,6 +72,7 @@ public class ActivityAjoutEleve extends AppCompatActivity {
     private void getExtras(){
         Intent intent = getIntent();
         idTrombi = intent.getLongExtra(EXTRA_ID, -1);
+
         if(intent.hasExtra(EXTRA_NOM_E) && intent.hasExtra(EXTRA_ID_E)){
             isEditMode = true;
             nomPrenomEleve = intent.getStringExtra(EXTRA_NOM_E);
@@ -107,49 +112,39 @@ public class ActivityAjoutEleve extends AppCompatActivity {
         });
     }
 
-    // TODO: AntiPettern, observer d'observer, la liste des groupes fait n'importe quoi car
-    //  elle est observé en cascade dès qu'il y a une modification. Remplacer par une transformation
-
-    // Récupère les groupes auxquels l'élève appartient
+    // Récupère les groupes auxquels l'élève appartient et déclenche l'observation des groupes
     private void getGroupesForEleve(){
         trombiViewModel = ViewModelProviders.of(this).get(TrombiViewModel.class);
 
-        trombiViewModel.getEleveByIdWithGroups(idEleve).observe(this, new Observer<EleveWithGroups>() {
-            @Override
-            public void onChanged(EleveWithGroups eleveWithGroups){
-                if(eleveWithGroups != null){
-                    List<Groupe> eleveGroups = eleveWithGroups.getGroupes();
-                    observeGroupesForTrombi(eleveGroups);
-                } else{
-                    observeGroupesForTrombi(null);
-                }
-
-                // On a besoin des valeurs une seule fois
-                trombiViewModel.getEleveByIdWithGroups(idEleve).removeObserver(this);
-            }
-        });
+        // Si on ajoute un nouvel élève, il n'a pas d'id et le CompletableFuture ne se
+        // terminerait jamais, donc l'observation des groupes ne se ferait pas non plus,
+        // donc on lance la métohde manuellement
+        if(!isEditMode){
+            observeGroupesForTrombi(null);
+        } else{
+            // CompletableFuture qui va récupérer de manière asynchrone les groupes de l'élève
+            CompletableFuture.supplyAsync((() ->
+                    trombiViewModel.getEleveByIdWithGroupsNotLive(idEleve)))
+                    .thenApply(EleveWithGroups::getGroupes)                                         // Récupérer les groupes de l'objet EleveWithGroupes
+                    .thenAccept(groups -> runOnUiThread( () -> observeGroupesForTrombi(groups)));   // Déclencher l'observation des groupes du trombi en passant la liste des groupes
+        }
     }
 
     // GetGroupesForEleve appelle cette fonction, et lui passe la liste des groupes
     // auxquels l'élève appartient
-    private void observeGroupesForTrombi(List<Groupe> groupsToCheck){
+    private void observeGroupesForTrombi(@Nullable List<Groupe> groupsToCheck){
         trombiViewModel.getGroupesByTrombi(idTrombi).observe(this, new Observer<List<Groupe>>() {
             @Override
             public void onChanged(List<Groupe> groupes){
-                //---------------------------------
-                // SOLUTION TEMPORAIRE, suppression de toutes les vues avant de les remettre
-                // pour éviter les résidus des manipulations précédentes
-                //---------------------------------
+                // Supprime les potentielles précédentes chips
                 chipGroup.post(() -> chipGroup.removeAllViews());
 
                 // La liste des groupes n'est pas vide
                 if(groupes.size() != 0){
-                    Executors.newSingleThreadExecutor().execute(() -> {
-                            setChips(groupes, groupsToCheck);
-                            //testCheckChips();
-                            });
+                    emptyTextView.setVisibility(View.GONE);
 
-
+                    Executors.newSingleThreadExecutor().execute(() ->
+                            setChips(groupes, groupsToCheck));
                 } else{
                     emptyTextView.setVisibility(View.VISIBLE);
                 }
@@ -163,9 +158,7 @@ public class ActivityAjoutEleve extends AppCompatActivity {
     // Appellé par observeGroupesForTrombi en passant la liste des groupes du trombi
     // et la liste de groupes auxquels l'élève appartient
     // Ne pas exécuter sur le ThreadUI
-    private void setChips(List<Groupe> groups, List<Groupe> groupsToCheck){
-        Log.v("_________________________", Thread.currentThread().toString());
-
+    private void setChips(List<Groupe> groups, @Nullable List<Groupe> groupsToCheck){
         for(Groupe g : groups){
             // Inflate la chips d'après mon layout customisé, afin de pouvoir changer l'apparence de la chips lors de la sélection
             Chip c = (Chip) getLayoutInflater()
@@ -185,8 +178,6 @@ public class ActivityAjoutEleve extends AppCompatActivity {
             // Ajout de la chips dans le groupe de chips
             chipGroup.post(() -> chipGroup.addView(c));
         }
-
-        testCheckChips();
     }
 
     private void updateData(){
@@ -248,41 +239,6 @@ public class ActivityAjoutEleve extends AppCompatActivity {
             }
         }
     }
-
-    private void testCheckChips(){
-        try{
-            // fonctionne avec sleep 100, mais pas sans
-            Thread.sleep(0);
-            Log.v("_________________________", Thread.currentThread().toString());
-        } catch(InterruptedException e){
-            e.printStackTrace();
-        }
-
-        for(int i=0; i < chipGroup.getChildCount(); i++ ){
-            Chip c;
-            Log.v("_è___________________________", "AHHHHHHH");
-            try{
-                c = (Chip) chipGroup.getChildAt(i);
-            } catch(ClassCastException e){
-                // Nothing
-                continue;
-            }
-
-            //c.setChecked(true);
-
-            //c.setChecked(true);
-            c.post( () -> c.setChecked(true));
-        }
-    }
-
-    /*@Override
-    public void onWindowFocusChanged(boolean hasFocus){
-        super.onWindowFocusChanged(hasFocus);
-
-        if(hasFocus){
-            Executors.newSingleThreadExecutor().execute(() -> testCheckChips());
-        }
-    }*/
 
     @Override
     public boolean onSupportNavigateUp(){

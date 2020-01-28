@@ -55,5 +55,9 @@ public interface EleveGroupeJoinDao {
     @Query("SELECT * FROM table_eleve WHERE id_eleve=:idEleve")
     LiveData<EleveWithGroups> getEleveByIdWithGroups(long idEleve);
 
+    @Transaction
+    @Query("SELECT * FROM table_eleve WHERE id_eleve=:idEleve")
+    EleveWithGroups getEleveByIdWithGroupsNotLive(long idEleve);
+
     //TODO: Requête pour supprimer les XREf inutiles
 }
