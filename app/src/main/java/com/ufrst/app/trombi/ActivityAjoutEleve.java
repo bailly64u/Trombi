@@ -188,19 +188,21 @@ public class ActivityAjoutEleve extends AppCompatActivity {
             return;
         }
 
-        // Instanciation d'un élève
-        Eleve eleve = new Eleve(nom, idTrombi, "");
+        Executors.newSingleThreadExecutor().execute(() -> {
+            // Instanciation d'un élève
+            Eleve eleve = new Eleve(nom, idTrombi, "");
 
-        // Cas de l'ajout de l'élève, puis de la modification
-        if(!isEditMode){
-            // Insertion d'un élève et récupération de son ID dans la BD
-            long idEleve = trombiViewModel.insertAndRetrieveId(eleve);
-            setGroupForEleve(idEleve);
-        } else {
-            eleve.setIdEleve(idEleve);
-            trombiViewModel.update(eleve);
-            setGroupForEleve(idEleve);
-        }
+            // Cas de l'ajout de l'élève, puis de la modification
+            if(!isEditMode){
+                // Insertion d'un élève et récupération de son ID dans la BD
+                long idEleve = trombiViewModel.insertAndRetrieveId(eleve);
+                setGroupForEleve(idEleve);
+            } else {
+                eleve.setIdEleve(idEleve);
+                trombiViewModel.update(eleve);
+                setGroupForEleve(idEleve);
+            }
+        });
 
         // Retour à l'activitré appelante
         Intent data = new Intent();

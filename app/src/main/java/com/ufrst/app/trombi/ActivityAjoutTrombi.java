@@ -14,6 +14,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -188,8 +189,6 @@ public class ActivityAjoutTrombi extends AppCompatActivity implements ImportAler
     // Traite le texte saisi par l'utilisateur lors de l'import d'un trombinoscope
     private void importTrombiText(final String nomTrombi, final String descTrombi, final String liste){
         Executors.newSingleThreadExecutor().execute(() -> {
-            Log.v("________________", Thread.currentThread().toString());
-
             String[] split = liste.split("\n");
             Trombinoscope trombi = new Trombinoscope(nomTrombi, descTrombi);
             long id = trombiViewModel.insertAndRetrieveId(trombi);
@@ -198,11 +197,15 @@ public class ActivityAjoutTrombi extends AppCompatActivity implements ImportAler
                 trombiViewModel.insert(new Eleve(eleve, id, ""));
             }
 
-            runOnUiThread(() -> Toast.makeText(ActivityAjoutTrombi.this,
-                    R.string.AJOUTTROMBI_listeImportee,
-                    Toast.LENGTH_SHORT).show());
-            finish();
+            showToast(getResources().getText(R.string.AJOUTTROMBI_listeImportee));
         });
+
+        finish();
+    }
+
+    // Crée des Toast
+    private void showToast(CharSequence text){
+        runOnUiThread( () -> Toast.makeText(this, text, Toast.LENGTH_LONG).show());
     }
 
     @Override
@@ -314,17 +317,13 @@ public class ActivityAjoutTrombi extends AppCompatActivity implements ImportAler
                             trombiViewModel.insert(new Eleve(line, id, ""));
                         }
 
-                        Snackbar.make(coordinatorLayout,
-                                R.string.AJOUTTROMBI_listeImportee,
-                                Snackbar.LENGTH_LONG).show();
+                        showToast(getResources().getText(R.string.AJOUTTROMBI_fichierImporte));
                     } catch(IOException e){
-                        e.printStackTrace();
-                        Snackbar.make(coordinatorLayout,
-                                R.string.AJOUTTROMBI_fichierImporteErr,
-                                Snackbar.LENGTH_LONG).show();
+                        showToast(getResources().getText(R.string.AJOUTTROMBI_fichierImporteErr));
                     }
                 });
 
+                finish();
             }
         }
     }

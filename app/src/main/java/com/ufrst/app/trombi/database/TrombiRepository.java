@@ -51,7 +51,7 @@ public class TrombiRepository {
     // Mais il est ignoré dans la méthode insert de cette classe (pour des raisons de performances)
     // Cette méthode permet de récupérer l'ID de l'élément inséré sur le champ.
     long insertAndRetrieveId(Trombinoscope trombi){
-        Callable<Long> callable = () -> trombiDao.insert(trombi);
+        /*Callable<Long> callable = () -> trombiDao.insert(trombi);
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Future<Long> future = executor.submit(callable);
         long id = 0;
@@ -61,9 +61,9 @@ public class TrombiRepository {
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
-        return id;
+        return id;*/
 
-        //return trombiDao.insert(trombi);
+        return trombiDao.insert(trombi);
     }
 
 
@@ -95,10 +95,9 @@ public class TrombiRepository {
 
     int getElevesNumberByTrombi(long idTrombi){return eleveDao.getElevesNumberByTrombi(idTrombi);}
 
-    // TODO: Remplace avec CompletableFuture
     // Voir TrombiRepository#insertAndRetrieveId(Trombinoscope trombi)
     long insertAndRetrieveId(Eleve eleve){
-        Callable<Long> callable = () -> eleveDao.insert(eleve);
+        /*Callable<Long> callable = () -> eleveDao.insert(eleve);
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Future<Long> future = executor.submit(callable);
         long id = 0;
@@ -108,7 +107,9 @@ public class TrombiRepository {
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
-        return id;
+        return id;*/
+
+        return eleveDao.insert(eleve);
     }
 
 
