@@ -1,17 +1,10 @@
 package com.ufrst.app.trombi;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.fragment.app.DialogFragment;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
-
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -20,6 +13,14 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.fragment.app.DialogFragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -34,6 +35,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
+import java.util.concurrent.Executors;
 
 import static com.ufrst.app.trombi.ActivityMain.EXTRA_DESC;
 import static com.ufrst.app.trombi.ActivityMain.EXTRA_ID;
@@ -185,16 +187,22 @@ public class ActivityAjoutTrombi extends AppCompatActivity implements ImportAler
 
     // Traite le texte saisi par l'utilisateur lors de l'import d'un trombinoscope
     private void importTrombiText(final String nomTrombi, final String descTrombi, final String liste){
-        String[] split = liste.split("\n");
-        Trombinoscope trombi = new Trombinoscope(nomTrombi, descTrombi);
-        long id = trombiViewModel.insertAndRetrieveId(trombi);
+        Executors.newSingleThreadExecutor().execute(() -> {
+            Log.v("________________", Thread.currentThread().toString());
 
-        for(String eleve : split){
-            trombiViewModel.insert(new Eleve(eleve, id, ""));
-        }
+            String[] split = liste.split("\n");
+            Trombinoscope trombi = new Trombinoscope(nomTrombi, descTrombi);
+            long id = trombiViewModel.insertAndRetrieveId(trombi);
 
-        Toast.makeText(this, R.string.AJOUTTROMBI_listeImportee, Toast.LENGTH_SHORT).show();
-        finish();
+            for(String eleve : split){
+                trombiViewModel.insert(new Eleve(eleve, id, ""));
+            }
+
+            runOnUiThread(() -> Toast.makeText(ActivityAjoutTrombi.this,
+                    R.string.AJOUTTROMBI_listeImportee,
+                    Toast.LENGTH_SHORT).show());
+            finish();
+        });
     }
 
     @Override
@@ -238,7 +246,7 @@ public class ActivityAjoutTrombi extends AppCompatActivity implements ImportAler
     }
 
     @Override
-    public void onDialogPositiveClick(DialogFragment dialog) {
+    public void onDialogPositiveClick(DialogFragment dialog){
         Dialog d = dialog.getDialog();
         EditText etImportNom;
         EditText etImportDesc;
@@ -266,54 +274,57 @@ public class ActivityAjoutTrombi extends AppCompatActivity implements ImportAler
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data){
         super.onActivityResult(requestCode, resultCode, data);
 
         if(requestCode == PICKFILE_RESULT_CODE){
             if(resultCode == RESULT_OK && data.getData() != null){
-                String filename = null;
+                Executors.newSingleThreadExecutor().execute( () ->{
+                    String filename = null;
 
-                // Récupération du nom du fichier
-                if(data.getData().getLastPathSegment() != null){
-                    String[] split = data.getData().getLastPathSegment().split("/");
-                    filename = split[split.length - 1];
-                }
-
-                try (BufferedReader reader =
-                             new BufferedReader(
-                                     new InputStreamReader(
-                                             new FileInputStream(
-                                                     getExternalFilesDir(null) +
-                                                     "/" + filename
-                                             )
-                                     )
-                             )
-                ){
-                    trombiViewModel = ViewModelProviders.of(this).get(TrombiViewModel.class);
-                    String nomTrombi = null;
-
-                    // Récupère le nom du fichier sans fioritures
-                    if(data.getData().getLastPathSegment() != null && filename != null){
-                        nomTrombi = filename.split("-")[0];
+                    // Récupération du nom du fichier
+                    if(data.getData().getLastPathSegment() != null){
+                        String[] split = data.getData().getLastPathSegment().split("/");
+                        filename = split[split.length - 1];
                     }
 
-                    Trombinoscope trombi = new Trombinoscope(nomTrombi, "");
-                    long id = trombiViewModel.insertAndRetrieveId(trombi);
+                    try(BufferedReader reader =
+                                new BufferedReader(
+                                        new InputStreamReader(
+                                                new FileInputStream(
+                                                        getExternalFilesDir(null) +
+                                                                "/" + filename
+                                                )
+                                        )
+                                )
+                    ){
+                        trombiViewModel = ViewModelProviders.of(this).get(TrombiViewModel.class);
+                        String nomTrombi = null;
 
-                    String line;
-                    while((line = reader.readLine()) != null){
-                        trombiViewModel.insert(new Eleve(line, id, ""));
+                        // Récupère le nom du fichier sans fioritures
+                        if(data.getData().getLastPathSegment() != null && filename != null){
+                            nomTrombi = filename.split("-")[0];
+                        }
+
+                        Trombinoscope trombi = new Trombinoscope(nomTrombi, "");
+                        long id = trombiViewModel.insertAndRetrieveId(trombi);
+
+                        String line;
+                        while((line = reader.readLine()) != null){
+                            trombiViewModel.insert(new Eleve(line, id, ""));
+                        }
+
+                        Snackbar.make(coordinatorLayout,
+                                R.string.AJOUTTROMBI_listeImportee,
+                                Snackbar.LENGTH_LONG).show();
+                    } catch(IOException e){
+                        e.printStackTrace();
+                        Snackbar.make(coordinatorLayout,
+                                R.string.AJOUTTROMBI_fichierImporteErr,
+                                Snackbar.LENGTH_LONG).show();
                     }
+                });
 
-                    Snackbar.make(coordinatorLayout,
-                            R.string.AJOUTTROMBI_listeImportee,
-                            Snackbar.LENGTH_LONG).show();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    Snackbar.make(coordinatorLayout,
-                            R.string.AJOUTTROMBI_fichierImporteErr,
-                            Snackbar.LENGTH_LONG).show();
-                }
             }
         }
     }

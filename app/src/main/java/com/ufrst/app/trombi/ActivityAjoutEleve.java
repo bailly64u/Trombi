@@ -37,12 +37,10 @@ import static com.ufrst.app.trombi.ActivityMain.EXTRA_NOM_E;
 
 public class ActivityAjoutEleve extends AppCompatActivity {
 
-    private CoordinatorLayout coordinatorLayout;
     private ExtendedFloatingActionButton fab;
     private TrombiViewModel trombiViewModel;
     private TextInputEditText inputEditText;
     private MaterialButton buttonGroup;
-    private LinearLayout linearLayout;
     private TextView emptyTextView;
     private ChipGroup chipGroup;
     private Toolbar toolbar;
@@ -83,8 +81,6 @@ public class ActivityAjoutEleve extends AppCompatActivity {
     }
 
     private void findViews(){
-        coordinatorLayout = findViewById(R.id.AJOUTELEVE_coordinator);
-        linearLayout = findViewById(R.id.AJOUTELEVE_chipsLayout);
         buttonGroup = findViewById(R.id.AJOUTELEVE_buttonGroup);
         inputEditText = findViewById(R.id.AJOUTELEVE_entrerNom);
         chipGroup = findViewById(R.id.AJOUTELEVE_chipsGroup);
@@ -116,18 +112,12 @@ public class ActivityAjoutEleve extends AppCompatActivity {
     private void getGroupesForEleve(){
         trombiViewModel = ViewModelProviders.of(this).get(TrombiViewModel.class);
 
-        // Si on ajoute un nouvel élève, il n'a pas d'id et le CompletableFuture ne se
-        // terminerait jamais, donc l'observation des groupes ne se ferait pas non plus,
-        // donc on lance la métohde manuellement
-        if(!isEditMode){
-            observeGroupesForTrombi(null);
-        } else{
-            // CompletableFuture qui va récupérer de manière asynchrone les groupes de l'élève
-            CompletableFuture.supplyAsync((() ->
-                    trombiViewModel.getEleveByIdWithGroupsNotLive(idEleve)))
-                    .thenApply(EleveWithGroups::getGroupes)                                         // Récupérer les groupes de l'objet EleveWithGroupes
-                    .thenAccept(groups -> runOnUiThread( () -> observeGroupesForTrombi(groups)));   // Déclencher l'observation des groupes du trombi en passant la liste des groupes
-        }
+        // CompletableFuture qui va récupérer de manière asynchrone les groupes de l'élève
+        CompletableFuture.supplyAsync(() ->
+                trombiViewModel.getEleveByIdWithGroupsNotLive(idEleve))
+                .thenApply(EleveWithGroups::getGroupes)                                         // Récupérer les groupes de l'objet EleveWithGroupes
+                .exceptionally(throwable -> null)                                               // Si erreur (cas de l'ajout, l'id -1 n'existe pas) alors on continue avec null en tant que liste de groupes
+                .thenAccept(groups -> runOnUiThread( () -> observeGroupesForTrombi(groups)));   // Déclencher l'observation des groupes du trombi en passant la liste des groupes
     }
 
     // GetGroupesForEleve appelle cette fonction, et lui passe la liste des groupes
