@@ -65,6 +65,7 @@ public class TrombiViewModel extends AndroidViewModel {
 
     public LiveData<List<Eleve>> getAllEleves(){return repository.getAllEleves();}
     public LiveData<List<Eleve>> getElevesByTrombi(long idTrombi){return repository.getElevesByTrombi(idTrombi);}
+    public LiveData<Eleve> getEleveById(long idEleve){return repository.getEleveById(idEleve);}
     public void deleteElevesForTrombi(long idTrombi){repository.deleteElevesForTrombi(idTrombi);}
     public void softDeleteEleve(long idEleve){repository.softDeleteEleve(idEleve);}
     public void softDeleteElevesForTrombi(long idTrombi){repository.softDeleteElevesForTrombi(idTrombi);}

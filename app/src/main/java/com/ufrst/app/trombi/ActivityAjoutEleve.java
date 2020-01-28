@@ -204,7 +204,7 @@ public class ActivityAjoutEleve extends AppCompatActivity {
             }
         });
 
-        // Retour à l'activitré appelante
+        // Retour à l'activité appelante
         Intent data = new Intent();
         setResult(RESULT_OK, data);
 

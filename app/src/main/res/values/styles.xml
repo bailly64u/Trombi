@@ -12,6 +12,7 @@
         <item name="backgroundApp">@color/background</item>
         <item name="onBackground">@color/onBackground</item>
 
+        <item name="onPrimary">@color/onPrimary</item>
         <item name="onSecondary">@color/onSecondary</item>
 
         <item name="textHighEmphasis">@color/textHighEmphasis</item>
@@ -33,6 +34,7 @@
         <item name="backgroundApp">@color/backgroundDark</item>
         <item name="onBackground">@color/onBackgroundDark</item>
 
+        <item name="onPrimary">@color/onPrimaryDark</item>
         <item name="onSecondary">@color/onSecondaryDark</item>
 
         <item name="textHighEmphasis">@color/textHighEmphasisDark</item>

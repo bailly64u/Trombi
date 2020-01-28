@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/LISTe_gererGroupe"
+        android:icon="@drawable/ic_people"
+        android:title="@string/AJOUTTROMBI_importer"
+        android:iconTint="?attr/onPrimary"
+        app:showAsAction="ifRoom" />
+</menu>

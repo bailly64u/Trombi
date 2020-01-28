@@ -34,6 +34,10 @@ public interface EleveDao {
     @Query("SELECT COUNT(*) FROM table_eleve WHERE id_trombi=:idTrombi AND is_deleted = 0")
     int getElevesNumberByTrombi(long idTrombi);
 
+    // Récupère un élève selon l'id demandé
+    @Query("SELECT * FROM table_eleve WHERE id_eleve=:idEleve")
+    LiveData<Eleve> getEleveById(long idEleve);
+
     // Supprime les Eleves appertenant à un certain Trombinoscope
     @Query("DELETE FROM table_eleve WHERE id_trombi=:idTrombi")
     void deleteElevesForTrombi(long idTrombi);

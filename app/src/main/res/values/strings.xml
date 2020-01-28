@@ -60,6 +60,8 @@
     <string name="LISTe_eleveAjoute">L\'élève a été ajouté</string>
     <string name="LISTe_eleveModifie">L\'élève a été modifié</string>
 
+    <string name="ELEVEITEM_contentDesc1">Prendre une photo pour cet élève</string>
+
     <string name="AJOUTELEVE_title">Ajouter un élève</string>
     <string name="AJOUTELEVE_titleVar">Modifier un élève</string>
     <string name="AJOUTELEVE_hint1">Nom prénom</string>

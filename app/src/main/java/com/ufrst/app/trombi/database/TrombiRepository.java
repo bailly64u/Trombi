@@ -87,7 +87,8 @@ public class TrombiRepository {
     void delete(Eleve eleve){Executors.newSingleThreadExecutor().execute(() -> eleveDao.delete(eleve));}
 
     LiveData<List<Eleve>> getAllEleves(){return eleveDao.getAllEleves();}
-    LiveData<List<Eleve>> getElevesByTrombi(long idTrombi) {return eleveDao.getElevesByTrombi(idTrombi);}
+    LiveData<List<Eleve>> getElevesByTrombi(long idTrombi){return eleveDao.getElevesByTrombi(idTrombi);}
+    LiveData<Eleve> getEleveById(long idEleve){return eleveDao.getEleveById(idEleve);}
     void deleteElevesForTrombi(long idTrombi){Executors.newSingleThreadExecutor().execute(() -> eleveDao.deleteElevesForTrombi(idTrombi));}
     void softDeleteEleve(long idEleve){Executors.newSingleThreadExecutor().execute(() -> eleveDao.softDeleteEleve(idEleve));}
     void softDeleteElevesForTrombi(long idTrombi){Executors.newSingleThreadExecutor().execute(() -> eleveDao.softDeleteElevesForTrombi(idTrombi));}

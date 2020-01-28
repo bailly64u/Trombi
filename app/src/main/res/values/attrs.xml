@@ -5,6 +5,7 @@
         <attr name="backgroundApp" format="color"/>
         <attr name="onBackground" format="color"/>
         <attr name="colorPrimaryLighter" format="color"/>
+        <attr name="onPrimary" format="color"/>
         <attr name="onSecondary" format="color"/>
         <attr name="textHighEmphasis" format="color"/>
         <attr name="textMediumEmphasis" format="color"/>

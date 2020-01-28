@@ -16,10 +16,14 @@ import android.content.Intent;
 import android.graphics.Canvas;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.ufrst.app.trombi.database.Eleve;
@@ -96,7 +100,7 @@ public class ActivityListEleve extends AppCompatActivity {
 
     private void setRecyclerViewAndViewModel(){
         // Définir l'adapteur du RecyclerView
-        adapteur = new AdapteurEleve();
+        adapteur = new AdapteurEleve(Glide.with(this));
 
         // Mise en place du RecyclerView
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -183,7 +187,7 @@ public class ActivityListEleve extends AppCompatActivity {
         adapteur.setOnItemClickListener(new AdapteurEleve.OnItemClickListener() {
             @Override
             public void onItemClick(Eleve eleve){
-
+                onItemLongClick(eleve);
             }
 
             @Override
@@ -197,16 +201,36 @@ public class ActivityListEleve extends AppCompatActivity {
             }
 
             @Override
-            public void onGroupClick(Eleve eleve){
-
-            }
-
-            @Override
             public void onPhotoClick(Eleve eleve){
                 Intent intent = new Intent(ActivityListEleve.this, ActivityCapture.class);
+                intent.putExtra(EXTRA_ID_E, eleve.getIdEleve());
+
                 startActivity(intent);
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.list_eleve_menu, menu);
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item){
+        switch(item.getItemId()){
+            case R.id.LISTe_gererGroupe:
+                Intent intent = new Intent(ActivityListEleve.this, ActivityListGroupe.class);
+                intent.putExtra(EXTRA_ID, idTrombi);
+
+                startActivity(intent);
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override

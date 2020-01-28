@@ -1,5 +1,7 @@
 package com.ufrst.app.trombi;
 
+import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +15,8 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
 import com.google.android.material.button.MaterialButton;
 import com.ufrst.app.trombi.database.Eleve;
 import com.ufrst.app.trombi.database.Trombinoscope;
@@ -23,9 +27,11 @@ public class AdapteurEleve extends ListAdapter<Eleve, AdapteurEleve.EleveHolder>
 
     private OnItemClickListener listener;
     private LayoutInflater inflater;
+    private RequestManager glide;           // Permet d'utiliser Glide dans l'adapteur
 
-    public AdapteurEleve(){
+    public AdapteurEleve(RequestManager glide){
         super(DIFF_CALLBACK);
+        this.glide = glide;
     }
 
     private static final DiffUtil.ItemCallback<Eleve> DIFF_CALLBACK =
@@ -61,6 +67,12 @@ public class AdapteurEleve extends ListAdapter<Eleve, AdapteurEleve.EleveHolder>
         holder.tvNomPrenom.setText(currentEleve.getNomPrenom());
 
         //TODO: mettre l'image à l'aide de Glide
+        if(currentEleve.getPhoto() != null && !currentEleve.getPhoto().trim().isEmpty()){
+            Log.v("__________________P__________________", "path: " + Uri.parse(currentEleve.getPhoto()));
+            glide.load(Uri.parse(currentEleve.getPhoto()))
+                    .centerCrop()
+                    .into(holder.ivPortrait);
+        }
     }
 
     // Retourne l'Eleve d'une certaine position
@@ -69,7 +81,7 @@ public class AdapteurEleve extends ListAdapter<Eleve, AdapteurEleve.EleveHolder>
     }
 
     class EleveHolder extends RecyclerView.ViewHolder{
-        private ImageButton bGroupe, bPhoto;
+        private ImageButton bPhoto;
         private ImageView ivPortrait;
         private TextView tvNomPrenom;
 
@@ -78,7 +90,6 @@ public class AdapteurEleve extends ListAdapter<Eleve, AdapteurEleve.EleveHolder>
 
             tvNomPrenom = itemView.findViewById(R.id.ELEVEITEM_nomPrenom);
             ivPortrait = itemView.findViewById(R.id.ELEVEITEM_portrait);
-            bGroupe = itemView.findViewById(R.id.ELEVEITEM_gererGroupe);
             bPhoto = itemView.findViewById(R.id.ELEVEITEM_prendrePhoto);
 
             // Listeners
@@ -116,17 +127,6 @@ public class AdapteurEleve extends ListAdapter<Eleve, AdapteurEleve.EleveHolder>
                     }
                 }
             });
-
-            bGroupe.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view){
-                    int pos = getAdapterPosition();                 // Récupération position item cliqué
-
-                    if(listener != null && pos != RecyclerView.NO_POSITION){
-                        listener.onGroupClick(getItem(pos));        // Récupération objet dans la liste
-                    }
-                }
-            });
         }
     }
 
@@ -139,7 +139,6 @@ public class AdapteurEleve extends ListAdapter<Eleve, AdapteurEleve.EleveHolder>
     public interface OnItemClickListener{
         void onItemClick(Eleve eleve);
         void onItemLongClick(Eleve eleve);
-        void onGroupClick(Eleve eleve);
         void onPhotoClick(Eleve eleve);
     }
 
