@@ -1,5 +1,6 @@
 package com.ufrst.app.trombi.database;
 
+import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
@@ -35,6 +36,7 @@ public class Eleve {
     @ColumnInfo(name = "is_deleted")
     private boolean isDeleted = false;      // Soft delete
 
+    @NonNull
     private String photo;
 
     

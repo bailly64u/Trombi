@@ -3,7 +3,10 @@ package com.ufrst.app.trombi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -34,6 +37,7 @@ import com.ufrst.app.trombi.database.GroupeWithEleves;
 import com.ufrst.app.trombi.database.TrombiViewModel;
 
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -310,10 +314,23 @@ public class ActivityVueTrombi extends AppCompatActivity {
                 try{
                     eleve = listeEleves.get(index++);
 
-                    if(eleve.getPhoto() != null){
-                        sb.append("<td>").append(eleve.getNomPrenom()).append("</td>");
+                    if(eleve != null){
+                        Log.v("____________e___________", "nonnull");
+                        sb.append("<td>").append(eleve.getNomPrenom());
+
+                        if(eleve.getPhoto() != null && !eleve.getPhoto().trim().isEmpty()){
+                            Log.v("____________e___________", "photo: " + eleve.getPhoto());
+                            sb.append("<img src=\"data:image/jpg;base64,")
+                                    .append(eleve.getPhoto())
+                                    .append("/>");
+                        }
+
+                        sb.append("</td>");
+
+                        Log.v("____________e___________", "pas de photo");
                     }
                 } catch(IndexOutOfBoundsException e){              // Fin de la liste atteinte, sortie
+                    Log.v("____________e___________", "exception");
                     isLastRow = true;
                     break;
                 }
@@ -401,6 +418,23 @@ public class ActivityVueTrombi extends AppCompatActivity {
                     R.string.VUETROMBI_listeExporteeErr,
                     Snackbar.LENGTH_SHORT).show();
         }
+    }
+
+    // Transforme la photo en base64 pour l'afficher dans le HTML
+    public String parsePhoto(@NonNull Eleve eleve){
+        if(eleve.getPhoto() != null && !eleve.getPhoto().trim().isEmpty()){
+            Log.v("___________________________", "Chemin de la photo:" + eleve.getPhoto());
+            Bitmap bm = BitmapFactory.decodeFile(eleve.getPhoto());
+
+            if(bm != null){
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                bm.compress(Bitmap.CompressFormat.JPEG, 100, baos); //bm is the bitmap object
+                return Base64.encodeToString(baos.toByteArray(), Base64.DEFAULT);
+
+            }
+        }
+
+        return null;
     }
 
     @Override

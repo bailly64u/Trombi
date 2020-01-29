@@ -9,7 +9,7 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
-@Database(entities = {Trombinoscope.class,Groupe.class, Eleve.class, EleveGroupeJoin.class}, exportSchema = false, version = 8)
+@Database(entities = {Trombinoscope.class,Groupe.class, Eleve.class, EleveGroupeJoin.class}, exportSchema = false, version = 9)
 public abstract class TrombiDatabase extends RoomDatabase {
 
     private static TrombiDatabase instance;
@@ -89,17 +89,17 @@ public abstract class TrombiDatabase extends RoomDatabase {
             groupeDao.insert(g7);
             groupeDao.insert(g8);
 
-            Eleve e1 = new Eleve("Henry Dupont", 1, "Bruh");
-            Eleve e2 = new Eleve("Isabelle Henry", 1, "Bruh");
-            Eleve e3 = new Eleve("Nom prénom", 1, "Bruh");
-            Eleve e4 = new Eleve("Jean Jacques", 1, "Bruh");
-            Eleve e5 = new Eleve("Billy the kid", 1, "Bruh");
-            Eleve e6 = new Eleve("Patrick", 1, "Bruh");
-            Eleve e7 = new Eleve("Maria Durand", 1, "Bruh");
+            Eleve e1 = new Eleve("Henry Dupont", 1, "");
+            Eleve e2 = new Eleve("Isabelle Henry", 1, "");
+            Eleve e3 = new Eleve("Nom prénom", 1, "");
+            Eleve e4 = new Eleve("Jean Jacques", 1, "");
+            Eleve e5 = new Eleve("Billy the kid", 1, "");
+            Eleve e6 = new Eleve("Patrick", 1, "");
+            Eleve e7 = new Eleve("Maria Durand", 1, "");
 
-            Eleve e8 = new Eleve("Bailly Louis", 2, "Bruh");
-            Eleve e9 = new Eleve("Niclass Maria", 2, "Bruh");
-            Eleve e10 = new Eleve("Nom prénom", 2, "Bruh");
+            Eleve e8 = new Eleve("Bailly Louis", 2, "");
+            Eleve e9 = new Eleve("Niclass Maria", 2, "");
+            Eleve e10 = new Eleve("Nom prénom", 2, "");
 
             eleveDao.insert(e1);
             eleveDao.insert(e2);

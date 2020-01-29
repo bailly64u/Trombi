@@ -63,11 +63,13 @@ public class AdapteurEleve extends ListAdapter<Eleve, AdapteurEleve.EleveHolder>
         holder.tvNomPrenom.setText(currentEleve.getNomPrenom());
 
         // Mise en place de l'image
-        glide.load(Uri.parse(currentEleve.getPhoto()))
-                .error(R.drawable.ic_person)
-                .centerCrop()
-                .placeholder(R.drawable.ic_person)
-                .into(holder.ivPortrait);
+        if(currentEleve.getPhoto() != null){
+            glide.load(Uri.parse(currentEleve.getPhoto()))
+                    .error(R.drawable.ic_person)
+                    .centerCrop()
+                    .placeholder(R.drawable.ic_person)
+                    .into(holder.ivPortrait);
+        }
     }
 
     // Retourne l'Eleve d'une certaine position
