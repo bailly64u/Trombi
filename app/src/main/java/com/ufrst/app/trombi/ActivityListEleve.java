@@ -35,6 +35,7 @@ import static com.ufrst.app.trombi.ActivityMain.EXTRA_GROUPE_E;
 import static com.ufrst.app.trombi.ActivityMain.EXTRA_ID;
 import static com.ufrst.app.trombi.ActivityMain.EXTRA_ID_E;
 import static com.ufrst.app.trombi.ActivityMain.EXTRA_NOM_E;
+import static com.ufrst.app.trombi.ActivityMain.EXTRA_PHOTO_E;
 
 public class ActivityListEleve extends AppCompatActivity {
 
@@ -196,6 +197,7 @@ public class ActivityListEleve extends AppCompatActivity {
                 intent.putExtra(EXTRA_ID, idTrombi);
                 intent.putExtra(EXTRA_NOM_E, eleve.getNomPrenom());
                 intent.putExtra(EXTRA_ID_E, eleve.getIdEleve());
+                intent.putExtra(EXTRA_PHOTO_E, eleve.getPhoto());
 
                 startActivityForResult(intent, REQUETE_EDITE_ELEVE);
             }

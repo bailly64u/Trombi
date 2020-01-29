@@ -1,7 +1,6 @@
 package com.ufrst.app.trombi;
 
 import android.net.Uri;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,11 +14,8 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
-import com.google.android.material.button.MaterialButton;
 import com.ufrst.app.trombi.database.Eleve;
-import com.ufrst.app.trombi.database.Trombinoscope;
 
 import java.util.List;
 
@@ -66,13 +62,12 @@ public class AdapteurEleve extends ListAdapter<Eleve, AdapteurEleve.EleveHolder>
         Eleve currentEleve = getItem(position);
         holder.tvNomPrenom.setText(currentEleve.getNomPrenom());
 
-        //TODO: mettre l'image à l'aide de Glide
-        if(currentEleve.getPhoto() != null && !currentEleve.getPhoto().trim().isEmpty()){
-            Log.v("__________________P__________________", "path: " + Uri.parse(currentEleve.getPhoto()));
-            glide.load(Uri.parse(currentEleve.getPhoto()))
-                    .centerCrop()
-                    .into(holder.ivPortrait);
-        }
+        // Mise en place de l'image
+        glide.load(Uri.parse(currentEleve.getPhoto()))
+                .error(R.drawable.ic_person)
+                .centerCrop()
+                .placeholder(R.drawable.ic_person)
+                .into(holder.ivPortrait);
     }
 
     // Retourne l'Eleve d'une certaine position

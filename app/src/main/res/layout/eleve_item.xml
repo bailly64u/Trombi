@@ -22,10 +22,7 @@
                 android:id="@+id/ELEVEITEM_portrait"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
-                android:background="?attr/colorPrimary"
-                android:contentDescription="@string/LISTe_imgView"
-                android:src="@drawable/ic_person"
-                android:tint="?attr/onSecondary" />
+                android:contentDescription="@string/LISTe_imgView" />
 
             <TextView
                 android:id="@+id/ELEVEITEM_nomPrenom"

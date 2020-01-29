@@ -34,6 +34,7 @@ import java.util.concurrent.ForkJoinPool;
 import static com.ufrst.app.trombi.ActivityMain.EXTRA_ID;
 import static com.ufrst.app.trombi.ActivityMain.EXTRA_ID_E;
 import static com.ufrst.app.trombi.ActivityMain.EXTRA_NOM_E;
+import static com.ufrst.app.trombi.ActivityMain.EXTRA_PHOTO_E;
 
 public class ActivityAjoutEleve extends AppCompatActivity {
 
@@ -46,6 +47,7 @@ public class ActivityAjoutEleve extends AppCompatActivity {
     private Toolbar toolbar;
 
     private String nomPrenomEleve;
+    private String photoPath;
     boolean isEditMode = false;                 // false: ajout, true: modification élève
     private long idTrombi;
     private long idEleve;
@@ -71,12 +73,15 @@ public class ActivityAjoutEleve extends AppCompatActivity {
         Intent intent = getIntent();
         idTrombi = intent.getLongExtra(EXTRA_ID, -1);
 
-        if(intent.hasExtra(EXTRA_NOM_E) && intent.hasExtra(EXTRA_ID_E)){
+        if(intent.hasExtra(EXTRA_NOM_E) && intent.hasExtra(EXTRA_ID_E)
+                && intent.hasExtra(EXTRA_PHOTO_E)){
             isEditMode = true;
             nomPrenomEleve = intent.getStringExtra(EXTRA_NOM_E);
             idEleve = intent.getLongExtra(EXTRA_ID_E, -1);
+            photoPath = intent.getStringExtra(EXTRA_PHOTO_E);
         } else{
-            nomPrenomEleve = null;
+            nomPrenomEleve = "";
+            photoPath = "";
         }
     }
 
@@ -199,6 +204,7 @@ public class ActivityAjoutEleve extends AppCompatActivity {
                 setGroupForEleve(idEleve);
             } else {
                 eleve.setIdEleve(idEleve);
+                eleve.setPhoto(photoPath);
                 trombiViewModel.update(eleve);
                 setGroupForEleve(idEleve);
             }
