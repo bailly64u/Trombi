@@ -1,10 +1,9 @@
-package com.ufrst.app.trombi;
+package com.ufrst.app.trombi.ui;
 
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -14,7 +13,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -26,6 +24,8 @@ import androidx.lifecycle.ViewModelProviders;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
+import com.ufrst.app.trombi.ImportAlertDialog;
+import com.ufrst.app.trombi.R;
 import com.ufrst.app.trombi.database.Eleve;
 import com.ufrst.app.trombi.database.Groupe;
 import com.ufrst.app.trombi.database.TrombiViewModel;
@@ -38,9 +38,9 @@ import java.io.InputStreamReader;
 import java.util.List;
 import java.util.concurrent.Executors;
 
-import static com.ufrst.app.trombi.ActivityMain.EXTRA_DESC;
-import static com.ufrst.app.trombi.ActivityMain.EXTRA_ID;
-import static com.ufrst.app.trombi.ActivityMain.EXTRA_NOM;
+import static com.ufrst.app.trombi.ui.ActivityMain.EXTRA_DESC;
+import static com.ufrst.app.trombi.ui.ActivityMain.EXTRA_ID;
+import static com.ufrst.app.trombi.ui.ActivityMain.EXTRA_NOM;
 
 public class ActivityAjoutTrombi extends AppCompatActivity implements ImportAlertDialog.ImportDialogListener {
 

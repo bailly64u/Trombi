@@ -14,21 +14,21 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ActivityAjoutGroupe"/>
-        <activity android:name=".ActivityListGroupe" />
-        <activity android:name=".ActivityAjoutEleve" />
-        <activity android:name=".ActivityListEleve" />
-        <activity android:name=".ActivityCapture" />
-        <activity android:name=".ActivityBDTest" />
-        <activity android:name=".ActivityMain">
+        <activity android:name=".ui.ActivityAjoutGroupe"/>
+        <activity android:name=".ui.ActivityListGroupe" />
+        <activity android:name=".ui.ActivityAjoutEleve" />
+        <activity android:name=".ui.ActivityListEleve" />
+        <activity android:name=".ui.ActivityCapture" />
+        <activity android:name=".ui.ActivityBDTest" />
+        <activity android:name=".ui.ActivityMain">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ActivityAjoutTrombi" />
-        <activity android:name=".ActivityVueTrombi"
+        <activity android:name=".ui.ActivityAjoutTrombi" />
+        <activity android:name=".ui.ActivityVueTrombi"
             android:screenOrientation="portrait"/>
     </application>
 

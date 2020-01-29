@@ -1,4 +1,4 @@
-package com.ufrst.app.trombi;
+package com.ufrst.app.trombi.ui;
 
 import android.content.Context;
 import android.content.Intent;
@@ -31,6 +31,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.snackbar.Snackbar;
+import com.ufrst.app.trombi.R;
 import com.ufrst.app.trombi.database.Eleve;
 import com.ufrst.app.trombi.database.Groupe;
 import com.ufrst.app.trombi.database.GroupeWithEleves;
@@ -52,10 +53,10 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 
-import static com.ufrst.app.trombi.ActivityMain.EXTRA_DESC;
-import static com.ufrst.app.trombi.ActivityMain.EXTRA_ID;
-import static com.ufrst.app.trombi.ActivityMain.EXTRA_NOM;
-import static com.ufrst.app.trombi.ActivityMain.PREFS_NBCOLS;
+import static com.ufrst.app.trombi.ui.ActivityMain.EXTRA_DESC;
+import static com.ufrst.app.trombi.ui.ActivityMain.EXTRA_ID;
+import static com.ufrst.app.trombi.ui.ActivityMain.EXTRA_NOM;
+import static com.ufrst.app.trombi.ui.ActivityMain.PREFS_NBCOLS;
 
 public class ActivityVueTrombi extends AppCompatActivity {
 
@@ -274,6 +275,10 @@ public class ActivityVueTrombi extends AppCompatActivity {
     private void showHTML(boolean withDescription){
         // Génère le HTML dans un autre Thread, puis l'affiche dans le ThreadUI (obligatoire)
         CompletableFuture.supplyAsync(() -> generateHTML(withDescription))
+                .exceptionally(throwable -> {
+                    throwable.printStackTrace();
+                    return "Une erreur s'est produite";
+                })
                 .thenAccept(htmlText ->
                         runOnUiThread(() -> webView.loadData(htmlText, "text/html", "UTF-8")));
     }
@@ -315,19 +320,18 @@ public class ActivityVueTrombi extends AppCompatActivity {
                     eleve = listeEleves.get(index++);
 
                     if(eleve != null){
-                        Log.v("____________e___________", "nonnull");
                         sb.append("<td>").append(eleve.getNomPrenom());
 
                         if(eleve.getPhoto() != null && !eleve.getPhoto().trim().isEmpty()){
-                            Log.v("____________e___________", "photo: " + eleve.getPhoto());
+                            Log.v("____________e___________", "photo: " + parsePhoto(eleve));
                             sb.append("<img src=\"data:image/jpg;base64,")
-                                    .append(eleve.getPhoto())
-                                    .append("/>");
+                                    .append(parsePhoto(eleve))
+                                    .append("\" />");
+
+                            Log.v("______________________", "fin if lul");
                         }
 
                         sb.append("</td>");
-
-                        Log.v("____________e___________", "pas de photo");
                     }
                 } catch(IndexOutOfBoundsException e){              // Fin de la liste atteinte, sortie
                     Log.v("____________e___________", "exception");
@@ -341,8 +345,6 @@ public class ActivityVueTrombi extends AppCompatActivity {
 
         sb.append("</table>");
         sb.append("</body></html>");
-
-        Log.v("_______________________", Thread.currentThread().toString());
 
         return sb.toString();
     }
@@ -422,19 +424,25 @@ public class ActivityVueTrombi extends AppCompatActivity {
 
     // Transforme la photo en base64 pour l'afficher dans le HTML
     public String parsePhoto(@NonNull Eleve eleve){
-        if(eleve.getPhoto() != null && !eleve.getPhoto().trim().isEmpty()){
-            Log.v("___________________________", "Chemin de la photo:" + eleve.getPhoto());
-            Bitmap bm = BitmapFactory.decodeFile(eleve.getPhoto());
+        if(!eleve.getPhoto().trim().isEmpty()){
+            File f = new File(getExternalFilesDir(null).getPath()
+                    + "/" + 150010 + ".jpeg");
+            Log.v("___________________________", "Chemin de la photo:" + f.getAbsolutePath());
+            Bitmap bm = BitmapFactory.decodeFile(f.getAbsolutePath());
+
+            // Test nul
+            //ImageView iv = findViewById(R.id.ppp);
+            //iv.setImageURI(Uri.parse(f.getAbsolutePath()));
 
             if(bm != null){
+                Log.v("___________________________", "!= null");
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                bm.compress(Bitmap.CompressFormat.JPEG, 100, baos); //bm is the bitmap object
+                bm.compress(Bitmap.CompressFormat.JPEG, 10, baos); //100
                 return Base64.encodeToString(baos.toByteArray(), Base64.DEFAULT);
-
             }
         }
 
-        return null;
+        return "";
     }
 
     @Override

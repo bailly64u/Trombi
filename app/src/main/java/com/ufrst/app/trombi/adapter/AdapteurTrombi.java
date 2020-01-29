@@ -1,4 +1,4 @@
-package com.ufrst.app.trombi;
+package com.ufrst.app.trombi.adapter;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.ufrst.app.trombi.R;
 import com.ufrst.app.trombi.database.Trombinoscope;
 
 import java.util.List;

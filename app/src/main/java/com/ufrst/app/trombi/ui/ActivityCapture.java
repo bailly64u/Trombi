@@ -1,10 +1,9 @@
-package com.ufrst.app.trombi;
+package com.ufrst.app.trombi.ui;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -25,6 +24,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.ufrst.app.trombi.R;
 import com.ufrst.app.trombi.database.Eleve;
 import com.ufrst.app.trombi.database.TrombiViewModel;
 
@@ -34,7 +34,7 @@ import java.util.Date;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 
-import static com.ufrst.app.trombi.ActivityMain.EXTRA_ID_E;
+import static com.ufrst.app.trombi.ui.ActivityMain.EXTRA_ID_E;
 
 public class ActivityCapture extends AppCompatActivity {
 

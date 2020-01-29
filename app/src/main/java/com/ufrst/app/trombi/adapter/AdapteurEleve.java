@@ -1,4 +1,4 @@
-package com.ufrst.app.trombi;
+package com.ufrst.app.trombi.adapter;
 
 import android.net.Uri;
 import android.view.LayoutInflater;
@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.RequestManager;
+import com.ufrst.app.trombi.R;
 import com.ufrst.app.trombi.database.Eleve;
 
 import java.util.List;
@@ -63,11 +64,16 @@ public class AdapteurEleve extends ListAdapter<Eleve, AdapteurEleve.EleveHolder>
         holder.tvNomPrenom.setText(currentEleve.getNomPrenom());
 
         // Mise en place de l'image
-        if(currentEleve.getPhoto() != null){
+        if(currentEleve.getPhoto() != null && !currentEleve.getPhoto().trim().isEmpty()){
             glide.load(Uri.parse(currentEleve.getPhoto()))
                     .error(R.drawable.ic_person)
                     .centerCrop()
                     .placeholder(R.drawable.ic_person)
+                    .into(holder.ivPortrait);
+        } else{
+            // Pas obligatoire mais évite à glide de lancer des exceptions h24S
+            glide.load(R.drawable.ic_person)
+                    .centerCrop()
                     .into(holder.ivPortrait);
         }
     }

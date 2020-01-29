@@ -1,4 +1,4 @@
-package com.ufrst.app.trombi;
+package com.ufrst.app.trombi.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -7,19 +7,16 @@ import androidx.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
+import com.ufrst.app.trombi.R;
 import com.ufrst.app.trombi.database.Groupe;
 import com.ufrst.app.trombi.database.TrombiViewModel;
 
-import static com.ufrst.app.trombi.ActivityMain.EXTRA_GROUPE_E;
-import static com.ufrst.app.trombi.ActivityMain.EXTRA_ID;
-import static com.ufrst.app.trombi.ActivityMain.EXTRA_ID_E;
-import static com.ufrst.app.trombi.ActivityMain.EXTRA_ID_G;
-import static com.ufrst.app.trombi.ActivityMain.EXTRA_NOM_E;
-import static com.ufrst.app.trombi.ActivityMain.EXTRA_NOM_G;
+import static com.ufrst.app.trombi.ui.ActivityMain.EXTRA_ID;
+import static com.ufrst.app.trombi.ui.ActivityMain.EXTRA_ID_G;
+import static com.ufrst.app.trombi.ui.ActivityMain.EXTRA_NOM_G;
 
 public class ActivityAjoutGroupe extends AppCompatActivity {
 

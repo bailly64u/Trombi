@@ -1,4 +1,4 @@
-package com.ufrst.app.trombi;
+package com.ufrst.app.trombi.ui;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,38 +15,32 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
-import com.ufrst.app.trombi.database.Eleve;
+import com.ufrst.app.trombi.adapter.AdapteurGroupe;
+import com.ufrst.app.trombi.R;
+import com.ufrst.app.trombi.database.Groupe;
 import com.ufrst.app.trombi.database.TrombiViewModel;
 
 import java.util.List;
 
-import static com.ufrst.app.trombi.ActivityMain.EXTRA_GROUPE_E;
-import static com.ufrst.app.trombi.ActivityMain.EXTRA_ID;
-import static com.ufrst.app.trombi.ActivityMain.EXTRA_ID_E;
-import static com.ufrst.app.trombi.ActivityMain.EXTRA_NOM_E;
-import static com.ufrst.app.trombi.ActivityMain.EXTRA_PHOTO_E;
+import static com.ufrst.app.trombi.ui.ActivityMain.EXTRA_ID;
+import static com.ufrst.app.trombi.ui.ActivityMain.EXTRA_ID_G;
+import static com.ufrst.app.trombi.ui.ActivityMain.EXTRA_NOM_G;
 
-public class ActivityListEleve extends AppCompatActivity {
+public class ActivityListGroupe extends AppCompatActivity {
 
-    public static final int REQUETE_AJOUT_ELEVE = 1;
-    public static final int REQUETE_EDITE_ELEVE = 2;
+    public static final int REQUETE_AJOUT_GROUPE = 1;
+    public static final int REQUETE_EDITE_GROUPE = 2;
 
     private CoordinatorLayout coordinatorLayout;
     private TrombiViewModel trombiViewModel;
     private RecyclerView recyclerView;
     private FloatingActionButton fab;
-    private AdapteurEleve adapteur;
+    private AdapteurGroupe adapteur;
     private TextView tvEmpty;
     private Toolbar toolbar;
 
@@ -55,68 +49,62 @@ public class ActivityListEleve extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_list_eleve);
+        setContentView(R.layout.activity_list_groupe);
 
-        setTitle(R.string.LISTe_title);
-
-        getExtras();
         findViews();
+        getExtras();
         setListeners();
         setRecyclerViewAndViewModel();
 
         // Toolbar
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        setTitle(R.string.LISTg_title);
+    }
+
+    private void findViews(){
+        coordinatorLayout = findViewById(R.id.LISTg_coordinator);
+        tvEmpty = findViewById(R.id.LISTg_emptyRecyclerView);
+        recyclerView = findViewById(R.id.LISTg_recyclerView);
+        toolbar = findViewById(R.id.LISTg_toolbar);
+        fab = findViewById(R.id.LISTg_fab);
     }
 
     private void getExtras(){
         Intent intent = getIntent();
         idTrombi = intent.getLongExtra(EXTRA_ID, -1);
-
-        if(idTrombi == -1){
-            Toast.makeText(this, R.string.LISTe_fatalError, Toast.LENGTH_SHORT).show();
-            finish();
-        }
-    }
-
-    private void findViews(){
-        tvEmpty = findViewById(R.id.LISTe_emptyRecyclerView);
-        coordinatorLayout = findViewById(R.id.LISTe_coordinator);
-        recyclerView = findViewById(R.id.LISTe_recyclerView);
-        toolbar = findViewById(R.id.LISTe_toolbar);
-        fab = findViewById(R.id.LISTe_fab);
     }
 
     private void setListeners(){
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view){
-                Intent intent = new Intent(ActivityListEleve.this, ActivityAjoutEleve.class);
+                Intent intent = new Intent(ActivityListGroupe.this, ActivityAjoutGroupe.class);
                 intent.putExtra(EXTRA_ID, idTrombi);
 
-                startActivityForResult(intent, REQUETE_AJOUT_ELEVE);
+                startActivityForResult(intent, REQUETE_AJOUT_GROUPE);
             }
         });
     }
 
     private void setRecyclerViewAndViewModel(){
         // Définir l'adapteur du RecyclerView
-        adapteur = new AdapteurEleve(Glide.with(this));
+        adapteur = new AdapteurGroupe();
 
         // Mise en place du RecyclerView
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(adapteur);
 
-        // Récupérer le ViewModel et observer la liste d'Eleves
+        // Récupérer le ViewModel et observer la liste de Groupes
         trombiViewModel = ViewModelProviders.of(this).get(TrombiViewModel.class);
-        trombiViewModel.getElevesByTrombi(idTrombi).observe(this, new Observer<List<Eleve>>() {
+        trombiViewModel.getGroupesByTrombi(idTrombi).observe(this, new Observer<List<Groupe>>() {
             @Override
-            public void onChanged(List<Eleve> eleves){
-                adapteur.submitList(eleves);
+            public void onChanged(List<Groupe> groupes){
+                adapteur.submitList(groupes);
 
                 // Afficher le placeholder en cas de liste vide
-                if(eleves.isEmpty()){
+                if(groupes.isEmpty()){
                     tvEmpty.setVisibility(View.VISIBLE);
                 } else{
                     tvEmpty.setVisibility(View.GONE);
@@ -151,20 +139,20 @@ public class ActivityListEleve extends AppCompatActivity {
 
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction){
-                final long idEleveSuppr = adapteur.getEleveAt(viewHolder.getAdapterPosition()).getIdEleve();
-                trombiViewModel.softDeleteEleve(idEleveSuppr);
-                Log.v("_________________", "ID: " + idEleveSuppr + " NOM: " + adapteur.getEleveAt(viewHolder.getAdapterPosition()).getNomPrenom());
+                final Groupe groupeSuppr = adapteur.getGroupeAt(viewHolder.getAdapterPosition());
+                trombiViewModel.delete(groupeSuppr);
+
                 // TODO: Gérer les cross reference à supprimer
 
                 // Snackbar avec possibilité d'annuler
-                Snackbar.make(coordinatorLayout, R.string.LISTe_eleveSuppr, Snackbar.LENGTH_INDEFINITE)
+                Snackbar.make(coordinatorLayout, R.string.LISTg_groupeSuppr, Snackbar.LENGTH_INDEFINITE)
                         .setAction(R.string.U_annuler, new View.OnClickListener() {
                             @Override
                             public void onClick(View v){
-                                trombiViewModel.softDeleteEleve(idEleveSuppr);
+                                trombiViewModel.insert(groupeSuppr);
                             }
                         })
-                        .setActionTextColor(ContextCompat.getColor(ActivityListEleve.this, R.color.colorAccent))
+                        .setActionTextColor(ContextCompat.getColor(ActivityListGroupe.this, R.color.colorAccent))
                         .setDuration(8000)
                         .show();
             }
@@ -184,55 +172,22 @@ public class ActivityListEleve extends AppCompatActivity {
             }
         });
 
-        // Implémentation de notre interface pour gérer les cliques
-        adapteur.setOnItemClickListener(new AdapteurEleve.OnItemClickListener() {
+        adapteur.setOnItemClickListener(new AdapteurGroupe.OnItemClickListener() {
             @Override
-            public void onItemClick(Eleve eleve){
-                onItemLongClick(eleve);
+            public void onItemClick(Groupe groupe){
+                this.onItemLongClick(groupe);
             }
 
             @Override
-            public void onItemLongClick(Eleve eleve){
-                Intent intent = new Intent(ActivityListEleve.this, ActivityAjoutEleve.class);
+            public void onItemLongClick(Groupe groupe){
+                Intent intent = new Intent(ActivityListGroupe.this, ActivityAjoutGroupe.class);
                 intent.putExtra(EXTRA_ID, idTrombi);
-                intent.putExtra(EXTRA_NOM_E, eleve.getNomPrenom());
-                intent.putExtra(EXTRA_ID_E, eleve.getIdEleve());
-                intent.putExtra(EXTRA_PHOTO_E, eleve.getPhoto());
+                intent.putExtra(EXTRA_ID_G, groupe.getIdGroupe());
+                intent.putExtra(EXTRA_NOM_G, groupe.getNomGroupe());
 
-                startActivityForResult(intent, REQUETE_EDITE_ELEVE);
-            }
-
-            @Override
-            public void onPhotoClick(Eleve eleve){
-                Intent intent = new Intent(ActivityListEleve.this, ActivityCapture.class);
-                intent.putExtra(EXTRA_ID_E, eleve.getIdEleve());
-
-                startActivity(intent);
+                startActivityForResult(intent, REQUETE_EDITE_GROUPE);
             }
         });
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu){
-        MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.list_eleve_menu, menu);
-
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item){
-        switch(item.getItemId()){
-            case R.id.LISTe_gererGroupe:
-                Intent intent = new Intent(ActivityListEleve.this, ActivityListGroupe.class);
-                intent.putExtra(EXTRA_ID, idTrombi);
-
-                startActivity(intent);
-                return true;
-
-            default:
-                return super.onOptionsItemSelected(item);
-        }
     }
 
     @Override
@@ -240,13 +195,13 @@ public class ActivityListEleve extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if(data != null){
-            if(requestCode == REQUETE_AJOUT_ELEVE && resultCode == RESULT_OK){
+            if(requestCode == REQUETE_AJOUT_GROUPE && resultCode == RESULT_OK){
                 Snackbar.make(coordinatorLayout,
-                        R.string.LISTe_eleveAjoute,
+                        R.string.LISTg_groupeAjoute,
                         Snackbar.LENGTH_LONG).show();
-            } else if(requestCode == REQUETE_EDITE_ELEVE && resultCode == RESULT_OK){
+            } else if(requestCode == REQUETE_EDITE_GROUPE && resultCode == RESULT_OK){
                 Snackbar.make(coordinatorLayout,
-                        R.string.LISTe_eleveModifie,
+                        R.string.LISTg_groupeModifie,
                         Snackbar.LENGTH_LONG).show();
             }
         }
