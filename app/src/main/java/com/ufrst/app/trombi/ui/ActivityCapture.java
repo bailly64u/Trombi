@@ -164,7 +164,7 @@ public class ActivityCapture extends AppCompatActivity {
                                             Toast.LENGTH_LONG).show());
                                     //Log.v("_______________________________", Uri.fromFile(f).toString());
                                     currentEleve.setPhoto(Uri.fromFile(f).toString());
-
+                                    //currentEleve.setPhoto(f.getPath());
                                     trombiViewModel.update(currentEleve);
                                 }
 

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
@@ -36,6 +37,8 @@ import com.ufrst.app.trombi.database.Eleve;
 import com.ufrst.app.trombi.database.Groupe;
 import com.ufrst.app.trombi.database.GroupeWithEleves;
 import com.ufrst.app.trombi.database.TrombiViewModel;
+import com.ufrst.app.trombi.util.HTMLProvider;
+import com.ufrst.app.trombi.util.Logger;
 
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
@@ -51,6 +54,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 
 import static com.ufrst.app.trombi.ui.ActivityMain.EXTRA_DESC;
@@ -274,31 +278,49 @@ public class ActivityVueTrombi extends AppCompatActivity {
     // Insère le HTML dans la WebView de manière Asynchrone (évite les freeze)
     private void showHTML(boolean withDescription){
         // Génère le HTML dans un autre Thread, puis l'affiche dans le ThreadUI (obligatoire)
-        CompletableFuture.supplyAsync(() -> generateHTML(withDescription))
+        /*CompletableFuture.supplyAsync(() -> generateHTML(withDescription))
                 .exceptionally(throwable -> {
-                    throwable.printStackTrace();
+                    Logger.handleException(throwable);
+
+                    // Nouvelle valeur utilisée pour thenAccept()
                     return "Une erreur s'est produite";
                 })
                 .thenAccept(htmlText ->
-                        runOnUiThread(() -> webView.loadData(htmlText, "text/html", "UTF-8")));
+                        runOnUiThread(() -> webView.loadData(htmlText, "text/html", "UTF-8")));*/
+
+        HTMLProvider htmlProvider = new HTMLProvider.Builder()
+                .hasDescription(withDescription)
+                .setDescTrombi(descTrombi)
+                .setListeEleves(listeEleves)
+                .setNomTrombi(nomTrombi)
+                .setNbCols(nbCols)
+                .build();
+
+        htmlProvider.doHTML();
     }
 
     // Génère le HTML à afficher, ne pas appeler depuis le ThreadUI de préférence
-    private String generateHTML(boolean withDescription){
+    /*private String generateHTML(boolean withDescription){
         boolean isLastRow = false;              // Détermine si la dernière ligne affichée était la dernière
         int index = 0;                          // Indexe a chosir dans la liste d'élèves
 
         // Ne peut pas se produire, sauf si l'API du téléphone est inférieure à 26
         // Les APIs inférieures à 26 ne supportent pas l'attribut "min" des Seekbar
         if(nbCols == -1){
-            return "";
+            return "Erreur nombre de colonnes";
         }
 
         StringBuilder sb = new StringBuilder();
         sb.append("<html>")
                 .append("<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">")
                 .append("<style>")
-                .append("@page {size:A4; margin:1cm;} html, body{width:210mm}")
+                .append("@page {size:A4; margin:1cm;}")                     // Page
+                .append("html, body{width:210mm;}")                         // <html>, <body>
+                .append("img{width:").append(100/(nbCols + 1)).append("%;}")  // <img>
+                .append("h1{font-size: 3em; text-align:center;}")           // <h1>
+                .append("h2{font-size: 2.8em; text-align:center;}")         // <h2>
+                .append("table{width: 100%;}")                              // <table>
+                .append("td{background-color:red;}")
                 .append("</style></head>")
                 .append("<body><h1>").append(nomTrombi).append("</h1>");
 
@@ -323,18 +345,14 @@ public class ActivityVueTrombi extends AppCompatActivity {
                         sb.append("<td>").append(eleve.getNomPrenom());
 
                         if(eleve.getPhoto() != null && !eleve.getPhoto().trim().isEmpty()){
-                            Log.v("____________e___________", "photo: " + parsePhoto(eleve));
                             sb.append("<img src=\"data:image/jpg;base64,")
                                     .append(parsePhoto(eleve))
                                     .append("\" />");
-
-                            Log.v("______________________", "fin if lul");
                         }
 
                         sb.append("</td>");
                     }
                 } catch(IndexOutOfBoundsException e){              // Fin de la liste atteinte, sortie
-                    Log.v("____________e___________", "exception");
                     isLastRow = true;
                     break;
                 }
@@ -347,7 +365,7 @@ public class ActivityVueTrombi extends AppCompatActivity {
         sb.append("</body></html>");
 
         return sb.toString();
-    }
+    }*/
 
     // Demande à l'utilisateur si la liste doit être exportée
     // Un fichier correspondant à cette liste peut déjà exister
@@ -423,26 +441,29 @@ public class ActivityVueTrombi extends AppCompatActivity {
     }
 
     // Transforme la photo en base64 pour l'afficher dans le HTML
-    public String parsePhoto(@NonNull Eleve eleve){
-        if(!eleve.getPhoto().trim().isEmpty()){
-            File f = new File(getExternalFilesDir(null).getPath()
-                    + "/" + 150010 + ".jpeg");
-            Log.v("___________________________", "Chemin de la photo:" + f.getAbsolutePath());
-            Bitmap bm = BitmapFactory.decodeFile(f.getAbsolutePath());
+    private String parsePhoto(@NonNull Eleve eleve){
+        Log.v("__________________", Thread.currentThread().toString());
 
-            // Test nul
-            //ImageView iv = findViewById(R.id.ppp);
-            //iv.setImageURI(Uri.parse(f.getAbsolutePath()));
+        if(!eleve.getPhoto().trim().isEmpty()){
+            // Récupération de l'URI sous une autre forme
+            String filePath = Uri.parse(eleve.getPhoto()).getPath();
+            Bitmap bm = BitmapFactory.decodeFile(filePath);
 
             if(bm != null){
-                Log.v("___________________________", "!= null");
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                bm.compress(Bitmap.CompressFormat.JPEG, 10, baos); //100
+                bm.compress(Bitmap.CompressFormat.JPEG, 10, baos); //50 OK, voire plus
+                try{
+                    baos.close();
+                } catch(IOException e){
+                    Logger.handleException(e);
+                }
+
+                bm = null;
                 return Base64.encodeToString(baos.toByteArray(), Base64.DEFAULT);
             }
         }
 
-        return "";
+        return "image error";
     }
 
     @Override

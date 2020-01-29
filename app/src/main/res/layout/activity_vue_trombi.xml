@@ -181,11 +181,6 @@
                 android:layout_marginBottom="24dp"
                 android:background="?attr/dividerColor" />
 
-            <ImageView
-                android:id="@+id/ppp"
-                android:layout_width="match_parent"
-                android:layout_height="100dp" />
-
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
