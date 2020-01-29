@@ -17,7 +17,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.WorkerThread;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
@@ -46,6 +45,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 
 import static com.ufrst.app.trombi.ActivityMain.EXTRA_DESC;
@@ -86,6 +86,7 @@ public class ActivityVueTrombi extends AppCompatActivity {
         getExtras();
         retrieveSharedPrefs();
         findViews();
+        initializeWebView();
         getGroupesAndEleves();
         setListeners();
 
@@ -127,6 +128,12 @@ public class ActivityVueTrombi extends AppCompatActivity {
         seekBar = findViewById(R.id.VUETROMBI_seekBar);
         toolbar = findViewById(R.id.VUETROMBI_toolbar);
         webView = findViewById(R.id.VUETROMBI_webView);
+    }
+
+    // Définit les paramètres de la WebView
+    private void initializeWebView(){
+        webView.setInitialScale(1);
+        webView.getSettings().setUseWideViewPort(true);
     }
 
     // Récupère les informations sur le trombinoscope sélectionné dans l'activité précédente
@@ -259,31 +266,38 @@ public class ActivityVueTrombi extends AppCompatActivity {
         });
     }
 
-    // Insère le HTML dans la WebView
+    // Insère le HTML dans la WebView de manière Asynchrone (évite les freeze)
     private void showHTML(boolean withDescription){
+        // Génère le HTML dans un autre Thread, puis l'affiche dans le ThreadUI (obligatoire)
+        CompletableFuture.supplyAsync(() -> generateHTML(withDescription))
+                .thenAccept(htmlText ->
+                        runOnUiThread(() -> webView.loadData(htmlText, "text/html", "UTF-8")));
+    }
+
+    // Génère le HTML à afficher, ne pas appeler depuis le ThreadUI de préférence
+    private String generateHTML(boolean withDescription){
         boolean isLastRow = false;              // Détermine si la dernière ligne affichée était la dernière
         int index = 0;                          // Indexe a chosir dans la liste d'élèves
 
         // Ne peut pas se produire, sauf si l'API du téléphone est inférieure à 26
         // Les APIs inférieures à 26 ne supportent pas l'attribut "min" des Seekbar
         if(nbCols == -1){
-            return;
+            return "";
         }
 
         StringBuilder sb = new StringBuilder();
-        sb.append("<html><body>")
-                .append("<h1>").append(nomTrombi).append("</h1>");
+        sb.append("<html>")
+                .append("<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">")
+                .append("<style>")
+                .append("@page {size:A4; margin:1cm;} html, body{width:210mm}")
+                .append("</style></head>")
+                .append("<body><h1>").append(nomTrombi).append("</h1>");
 
         if(withDescription){
             sb.append("<h2>").append(descTrombi).append("</h2>");
         }
 
         sb.append("<table>");
-
-        //A changer; supprimer
-        for(int k = 0; k < listeEleves.size(); k++){
-            Log.v("_________E__________", listeEleves.get(k).getNomPrenom());
-        }
 
         // Lignes
         while(!isLastRow){
@@ -311,7 +325,9 @@ public class ActivityVueTrombi extends AppCompatActivity {
         sb.append("</table>");
         sb.append("</body></html>");
 
-        webView.loadData(sb.toString(), "text/html", "UTF-8");
+        Log.v("_______________________", Thread.currentThread().toString());
+
+        return sb.toString();
     }
 
     // Demande à l'utilisateur si la liste doit être exportée

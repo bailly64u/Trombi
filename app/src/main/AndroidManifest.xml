@@ -14,7 +14,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ActivityAjoutGroupe"></activity>
+        <activity android:name=".ActivityAjoutGroupe"/>
         <activity android:name=".ActivityListGroupe" />
         <activity android:name=".ActivityAjoutEleve" />
         <activity android:name=".ActivityListEleve" />
@@ -28,7 +28,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".ActivityAjoutTrombi" />
-        <activity android:name=".ActivityVueTrombi" />
+        <activity android:name=".ActivityVueTrombi"
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>
