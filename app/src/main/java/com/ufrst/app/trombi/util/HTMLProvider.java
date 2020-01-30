@@ -12,8 +12,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executors;
 
 // Classe utilitaire pour générer le HTML et charger les images en parallèle. Builder Pattern
 public class HTMLProvider {
@@ -55,9 +53,8 @@ public class HTMLProvider {
         return generateHTML(list);
     }
 
+    // TODO: remplacer avec un stream ?
     private String generateHTML(List<String> listeBase64){
-        Log.v("_____________________________", "generateHTML");
-
         boolean isLastRow = false;              // Détermine si la dernière ligne affichée était la dernière
         int index = 0;                          // Indexe a chosir dans la liste d'élèves
 
@@ -115,7 +112,7 @@ public class HTMLProvider {
                     break;
                 }
 
-                index ++;
+                index++;
             }
 
             sb.append("</tr>");
@@ -128,61 +125,14 @@ public class HTMLProvider {
     }
 
 
-    // TODO: optimiser
-    // Charge les images sous forme base64
+    // TODO: optimiser, bannir la mutabilité partagée sur listNamePhoto,
+    //  retirer l'objet EleveImage et créer une map à la place
+    // Charge les images sous forme base64 et retourne une liste ordonnée des images
     private List<String> loadHTLMImages(){
         Log.v("__________________", Thread.currentThread().toString());
 
         // ArrayList contenant des objets pouvant être triés
         ArrayList<EleveImage> listNameAndPhotoBase64 = new ArrayList<>();
-
-        /*listeEleves.forEach(eleve -> Executors.newSingleThreadExecutor().execute(() -> {
-                    Log.v("_________Computing_____", Thread.currentThread().toString());
-                    if(!eleve.getPhoto().trim().isEmpty()){
-                        // Récupération de l'URI sous une autre forme
-                        String filePath = Uri.parse(eleve.getPhoto()).getPath();
-                        Bitmap bm = BitmapFactory.decodeFile(filePath);
-
-                        if(bm != null){
-                            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                            bm.compress(Bitmap.CompressFormat.JPEG, 50, baos); //50 OK, voire plus
-                            try{
-                                baos.close();
-                            } catch(IOException e){
-                                //handleException(e);
-                            }
-
-                            bm = null;
-                            listNameAndPhotoBase64.add(Base64.encodeToString(baos.toByteArray(), Base64.DEFAULT));
-                        }
-                    }
-
-                    listNameAndPhotoBase64.add("image error");
-                }));*/
-
-        /*listeEleves.stream()
-                .parallel()
-                .forEach(eleve -> {
-                    Log.v("_________Computing_____", Thread.currentThread().toString());
-                    if(!eleve.getPhoto().trim().isEmpty()){
-                        // Récupération de l'URI sous une autre forme
-                        String filePath = Uri.parse(eleve.getPhoto()).getPath();
-                        Bitmap bm = BitmapFactory.decodeFile(filePath);
-
-                        if(bm != null){
-                            Log.v("_____________D_____________", "Bitmap exists");
-                            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                            bm.compress(Bitmap.CompressFormat.JPEG, 10, baos); //50 OK, voire plus
-                            try{
-                                baos.close();
-                            } catch(IOException e){
-                                Logger.handleException(e);
-                            }
-
-                            listNameAndPhotoBase64.add(new EleveImage(Base64.encodeToString(baos.toByteArray(), Base64.DEFAULT), eleve.getNomPrenom()));
-                        }
-                    }
-                });*/
 
         // Stream parallèlisé pour les performances. Pour chaque eleve, on crée un objet EleveImage
         // qui peut être trié. Cette opération nous retourne les images dans le désordre
@@ -196,22 +146,22 @@ public class HTMLProvider {
 
         // Résultat
         ArrayList<String> base64List = new ArrayList<>();
-
-        // Ajout dans la liste
         listNameAndPhotoBase64.forEach(eleveImage -> base64List.add(eleveImage.getBase64Image()));
 
         return base64List;
     }
 
+    // TODO: vérifier si les images peuvent effectivement etre vides
+    // Convertit l'image d'un élève en image Base64, pour l'afficher dans le HTML
     private EleveImage convertToBase64(Eleve eleve){
         // Récupération de l'URI sous une autre forme
         String filePath = Uri.parse(eleve.getPhoto()).getPath();
         Bitmap bm = BitmapFactory.decodeFile(filePath);
 
         if(bm != null){
-            Log.v("_____________D_____________", Thread.currentThread().toString());
+            Log.v("_________________________", Thread.currentThread().toString());
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            bm.compress(Bitmap.CompressFormat.JPEG, 10, baos); //50 OK, voire plus
+            bm.compress(Bitmap.CompressFormat.JPEG, 10, baos);
             try{
                 baos.close();
             } catch(IOException e){
@@ -221,6 +171,7 @@ public class HTMLProvider {
         }
 
         // Image vide
+        Log.v("_____________________________", "image vide");
         return new EleveImage("", eleve.getNomPrenom());
     }
 
@@ -277,7 +228,7 @@ public class HTMLProvider {
 
     // Objet contenant le nomPrenom d'un élève et sa photo en base 64
     // Permet de classer les élèves pour récupérer les photos dans l'ordre
-    private class EleveImage implements Comparable<EleveImage>{
+    private class EleveImage implements Comparable<EleveImage> {
         String base64Image;
         String nomPrenom;
 
@@ -291,9 +242,12 @@ public class HTMLProvider {
             return this.nomPrenom.compareTo(o.getNomPrenom());
         }
 
-        public String getBase64Image(){ return base64Image;}
-        public void setBase64Image(String base64Image){ this.base64Image = base64Image; }
-        public String getNomPrenom(){ return nomPrenom;}
-        public void setNomPrenom(String nomPrenom){ this.nomPrenom = nomPrenom; }
+        String getBase64Image(){
+            return base64Image;
+        }
+
+        String getNomPrenom(){
+            return nomPrenom;
+        }
     }
 }
