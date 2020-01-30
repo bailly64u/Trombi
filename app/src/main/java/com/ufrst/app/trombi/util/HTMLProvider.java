@@ -133,7 +133,8 @@ public class HTMLProvider {
     private List<String> loadHTLMImages(){
         Log.v("__________________", Thread.currentThread().toString());
 
-        ArrayList<EleveImage> base64List = new ArrayList<>();
+        // ArrayList contenant des objets pouvant être triés
+        ArrayList<EleveImage> listNameAndPhotoBase64 = new ArrayList<>();
 
         /*listeEleves.forEach(eleve -> Executors.newSingleThreadExecutor().execute(() -> {
                     Log.v("_________Computing_____", Thread.currentThread().toString());
@@ -152,14 +153,14 @@ public class HTMLProvider {
                             }
 
                             bm = null;
-                            base64List.add(Base64.encodeToString(baos.toByteArray(), Base64.DEFAULT));
+                            listNameAndPhotoBase64.add(Base64.encodeToString(baos.toByteArray(), Base64.DEFAULT));
                         }
                     }
 
-                    base64List.add("image error");
+                    listNameAndPhotoBase64.add("image error");
                 }));*/
 
-        listeEleves.stream()
+        /*listeEleves.stream()
                 .parallel()
                 .forEach(eleve -> {
                     Log.v("_________Computing_____", Thread.currentThread().toString());
@@ -178,31 +179,49 @@ public class HTMLProvider {
                                 Logger.handleException(e);
                             }
 
-                            base64List.add(new EleveImage(Base64.encodeToString(baos.toByteArray(), Base64.DEFAULT), eleve.getNomPrenom()));
+                            listNameAndPhotoBase64.add(new EleveImage(Base64.encodeToString(baos.toByteArray(), Base64.DEFAULT), eleve.getNomPrenom()));
                         }
                     }
+                });*/
 
-                    //base64List.add("image error");
-                });
+        // Stream parallèlisé pour les performances. Pour chaque eleve, on crée un objet EleveImage
+        // qui peut être trié. Cette opération nous retourne les images dans le désordre
+        listeEleves.stream()
+                .parallel()                                             // Parallèlisé
+                .filter(eleve -> !eleve.getPhoto().trim().isEmpty())    // L'élève a une photo
+                .forEach(eleve -> listNameAndPhotoBase64.add(convertToBase64(eleve)));
 
+        // Tri de la liste pour mettre les photos dans l'ordre
+        listNameAndPhotoBase64.sort(EleveImage::compareTo);
 
-        /*try{
-            Thread.sleep(5000);
-        } catch(InterruptedException e){
-            e.printStackTrace();
-        }*/
+        // Résultat
+        ArrayList<String> base64List = new ArrayList<>();
 
-        Log.v("____________________", "taille de la liste base64: " + base64List.size());
+        // Ajout dans la liste
+        listNameAndPhotoBase64.forEach(eleveImage -> base64List.add(eleveImage.getBase64Image()));
 
-        base64List.sort(EleveImage::compareTo);
+        return base64List;
+    }
 
-        ArrayList<String> base64List2 = new ArrayList<>();
+    private EleveImage convertToBase64(Eleve eleve){
+        // Récupération de l'URI sous une autre forme
+        String filePath = Uri.parse(eleve.getPhoto()).getPath();
+        Bitmap bm = BitmapFactory.decodeFile(filePath);
 
-        for(EleveImage e : base64List){
-            base64List2.add(e.getBase64Image());
+        if(bm != null){
+            Log.v("_____________D_____________", Thread.currentThread().toString());
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            bm.compress(Bitmap.CompressFormat.JPEG, 10, baos); //50 OK, voire plus
+            try{
+                baos.close();
+            } catch(IOException e){
+                Logger.handleException(e);
+            }
+            return new EleveImage(Base64.encodeToString(baos.toByteArray(), Base64.DEFAULT), eleve.getNomPrenom());
         }
 
-        return base64List2;
+        // Image vide
+        return new EleveImage("", eleve.getNomPrenom());
     }
 
     public static class Builder {
@@ -255,6 +274,9 @@ public class HTMLProvider {
         }
     }
 
+
+    // Objet contenant le nomPrenom d'un élève et sa photo en base 64
+    // Permet de classer les élèves pour récupérer les photos dans l'ordre
     private class EleveImage implements Comparable<EleveImage>{
         String base64Image;
         String nomPrenom;
