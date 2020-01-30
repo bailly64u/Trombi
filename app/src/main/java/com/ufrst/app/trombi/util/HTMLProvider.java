@@ -33,7 +33,7 @@ public class HTMLProvider {
     }
 
     // Spécifie l'ordre des traitements à l'aide d'un CompletableFuture
-    public CompletableFuture<String> doHTML(){
+    public String doHTML(){
         /*CompletableFuture.supplyAsync(this::loadImages)
                 .exceptionally(throwable -> {
                     Logger.handleException(throwable);
@@ -41,19 +41,23 @@ public class HTMLProvider {
                 })
                 .thenAccept(this::generateHTML);*/
 
-        CompletableFuture<String> future = new CompletableFuture<>();
+        /*CompletableFuture<String> future = new CompletableFuture<>();
         future.supplyAsync(this::loadHTLMImages)
                 .exceptionally(throwable -> {
                     Logger.handleException(throwable);
                     return null;
                 })
                 .thenApply(this::generateHTML)
-                .thenAccept(s -> Log.v("______________________", s));
+                .thenAccept(s -> Log.v("______________________", s));*/
 
-        return future;
+
+        List<String> list = loadHTLMImages();
+        return generateHTML(list);
     }
 
-    public String generateHTML(List<String> listeBase64){
+    private String generateHTML(List<String> listeBase64){
+        Log.v("_____________________________", "generateHTML");
+
         boolean isLastRow = false;              // Détermine si la dernière ligne affichée était la dernière
         int index = 0;                          // Indexe a chosir dans la liste d'élèves
 
@@ -92,7 +96,7 @@ public class HTMLProvider {
                 Eleve eleve;
 
                 try{
-                    eleve = listeEleves.get(index++);
+                    eleve = listeEleves.get(index);
 
                     if(eleve != null){
                         sb.append("<td>").append(eleve.getNomPrenom());
@@ -106,9 +110,12 @@ public class HTMLProvider {
                         sb.append("</td>");
                     }
                 } catch(IndexOutOfBoundsException e){              // Fin de la liste atteinte, sortie
+                    Logger.handleException(e);
                     isLastRow = true;
                     break;
                 }
+
+                index ++;
             }
 
             sb.append("</tr>");
@@ -120,14 +127,15 @@ public class HTMLProvider {
         return sb.toString();
     }
 
-    // DOit retrouner un completableFuture ?
+
+    // TODO: optimiser
     // Charge les images sous forme base64
-    public List<String> loadHTLMImages(){
+    private List<String> loadHTLMImages(){
         Log.v("__________________", Thread.currentThread().toString());
 
-        ArrayList<String> base64List = new ArrayList<>();
+        ArrayList<EleveImage> base64List = new ArrayList<>();
 
-        listeEleves.forEach(eleve -> Executors.newSingleThreadExecutor().execute(() -> {
+        /*listeEleves.forEach(eleve -> Executors.newSingleThreadExecutor().execute(() -> {
                     Log.v("_________Computing_____", Thread.currentThread().toString());
                     if(!eleve.getPhoto().trim().isEmpty()){
                         // Récupération de l'URI sous une autre forme
@@ -149,16 +157,52 @@ public class HTMLProvider {
                     }
 
                     base64List.add("image error");
-                }));
+                }));*/
+
+        listeEleves.stream()
+                .parallel()
+                .forEach(eleve -> {
+                    Log.v("_________Computing_____", Thread.currentThread().toString());
+                    if(!eleve.getPhoto().trim().isEmpty()){
+                        // Récupération de l'URI sous une autre forme
+                        String filePath = Uri.parse(eleve.getPhoto()).getPath();
+                        Bitmap bm = BitmapFactory.decodeFile(filePath);
+
+                        if(bm != null){
+                            Log.v("_____________D_____________", "Bitmap exists");
+                            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                            bm.compress(Bitmap.CompressFormat.JPEG, 10, baos); //50 OK, voire plus
+                            try{
+                                baos.close();
+                            } catch(IOException e){
+                                Logger.handleException(e);
+                            }
+
+                            base64List.add(new EleveImage(Base64.encodeToString(baos.toByteArray(), Base64.DEFAULT), eleve.getNomPrenom()));
+                        }
+                    }
+
+                    //base64List.add("image error");
+                });
 
 
-        try{
+        /*try{
             Thread.sleep(5000);
         } catch(InterruptedException e){
             e.printStackTrace();
+        }*/
+
+        Log.v("____________________", "taille de la liste base64: " + base64List.size());
+
+        base64List.sort(EleveImage::compareTo);
+
+        ArrayList<String> base64List2 = new ArrayList<>();
+
+        for(EleveImage e : base64List){
+            base64List2.add(e.getBase64Image());
         }
 
-        return base64List;
+        return base64List2;
     }
 
     public static class Builder {
@@ -199,15 +243,35 @@ public class HTMLProvider {
                 throw new IllegalStateException("Le nom ne peut pas être vide !");
             }
 
-            if(this.nbCols < 1){
+            if(this.nbCols < 0){
                 throw new IllegalStateException("Le nombre de colonnes doit être supérieur à 0");
             }
 
-            if(this.listeEleves == null || this.listeEleves.isEmpty()){
-                throw new IllegalStateException("La liste d'élèves ne peut pas être vide !");
+            if(this.listeEleves == null){
+                throw new IllegalStateException("La liste d'élèves ne peut pas être null !");
             }
 
             return new HTMLProvider(this);
         }
+    }
+
+    private class EleveImage implements Comparable<EleveImage>{
+        String base64Image;
+        String nomPrenom;
+
+        EleveImage(String base64Image, String nomPrenom){
+            this.base64Image = base64Image;
+            this.nomPrenom = nomPrenom;
+        }
+
+        @Override
+        public int compareTo(EleveImage o){
+            return this.nomPrenom.compareTo(o.getNomPrenom());
+        }
+
+        public String getBase64Image(){ return base64Image;}
+        public void setBase64Image(String base64Image){ this.base64Image = base64Image; }
+        public String getNomPrenom(){ return nomPrenom;}
+        public void setNomPrenom(String nomPrenom){ this.nomPrenom = nomPrenom; }
     }
 }

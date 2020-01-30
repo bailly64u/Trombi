@@ -80,10 +80,11 @@ public class ActivityVueTrombi extends AppCompatActivity {
     //private Trombinoscope currentTrombi;
     private List<Eleve> listeEleves;
     private SharedPreferences prefs;
+    private boolean isLoading = false;                  // Le chargement d'une webview est en cours
     private String descTrombi;
     private String nomTrombi;
     private long idTrombi;
-    private int nbCols;                               // Nombre de colonnes à afficher dans le webview
+    private int nbCols;                                 // Nombre de colonnes à afficher dans le webview
 
 
     @Override
@@ -276,6 +277,7 @@ public class ActivityVueTrombi extends AppCompatActivity {
     }
 
     // Insère le HTML dans la WebView de manière Asynchrone (évite les freeze)
+    // TODO: Optimisations et affichage de tous les élèves. aussi lors de l'appel d'un groupe, showHTML se déclenche trop de fois
     private void showHTML(boolean withDescription){
         // Génère le HTML dans un autre Thread, puis l'affiche dans le ThreadUI (obligatoire)
         /*CompletableFuture.supplyAsync(() -> generateHTML(withDescription))
@@ -287,16 +289,26 @@ public class ActivityVueTrombi extends AppCompatActivity {
                 })
                 .thenAccept(htmlText ->
                         runOnUiThread(() -> webView.loadData(htmlText, "text/html", "UTF-8")));*/
+        Log.v("_________________________ Liste eleve size, ActivityVUeTrombi", String.valueOf(listeEleves.size()));
 
-        HTMLProvider htmlProvider = new HTMLProvider.Builder()
-                .hasDescription(withDescription)
-                .setDescTrombi(descTrombi)
-                .setListeEleves(listeEleves)
-                .setNomTrombi(nomTrombi)
-                .setNbCols(nbCols)
-                .build();
+        Log.v("________________________", "Futur sur le point de commentcer, check isLoading" + isLoading);
+        if(!isLoading){
+            isLoading = true;
 
-        htmlProvider.doHTML();
+            HTMLProvider htmlProvider = new HTMLProvider.Builder()
+                    .hasDescription(withDescription)
+                    .setDescTrombi(descTrombi)
+                    .setListeEleves(listeEleves)
+                    .setNomTrombi(nomTrombi)
+                    .setNbCols(nbCols)
+                    .build();
+
+            CompletableFuture.supplyAsync(htmlProvider::doHTML)
+                    .thenAccept(htmlText -> //Log.v("____________________", htmlText));
+                            runOnUiThread(() -> webView.loadData(htmlText, "text/html", "UTF-8")))
+                    .thenRun(() -> isLoading = false);
+            Log.v("________________________", "Futur reçu: fini" + isLoading);
+        }
     }
 
     // Génère le HTML à afficher, ne pas appeler depuis le ThreadUI de préférence
