@@ -11,7 +11,9 @@ import com.ufrst.app.trombi.database.Eleve;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 // Classe utilitaire pour générer le HTML et charger les images en parallèle. Builder Pattern
 public class HTMLProvider {
@@ -107,22 +109,18 @@ public class HTMLProvider {
         return sb.toString();
     }
 
-
     // TODO: optimiser, bannir la mutabilité partagée sur listNamePhoto,
     //  retirer l'objet EleveImage et créer une map à la place
     // Charge les images sous forme base64 et retourne une liste ordonnée des images
     private List<String> loadHTLMImages(){
         Log.v("__________________", Thread.currentThread().toString());
 
-        // ArrayList contenant des objets pouvant être triés
-        ArrayList<EleveImage> listNameAndPhotoBase64 = new ArrayList<>();
-
         // Stream parallèlisé pour les performances. Pour chaque eleve, on crée un objet EleveImage
         // qui peut être trié. Cette opération nous retourne les images dans le désordre
-        listeEleves.stream()
+        HashMap<String, String> eleveWithImage = listeEleves.stream()
                 .parallel()                                             // Parallèlisé
                 .filter(eleve -> !eleve.getPhoto().trim().isEmpty())    // L'élève a une photo
-                .forEach(eleve -> listNameAndPhotoBase64.add(convertToBase64(eleve)));
+                .collect(Collectors.groupingBy())
 
         // Tri de la liste pour mettre les photos dans l'ordre
         listNameAndPhotoBase64.sort(EleveImage::compareTo);
