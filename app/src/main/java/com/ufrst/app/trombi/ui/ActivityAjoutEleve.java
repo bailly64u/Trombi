@@ -61,8 +61,8 @@ public class ActivityAjoutEleve extends AppCompatActivity {
 
         // Toolbar
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         setTitle(R.string.AJOUTELEVE_title);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     private void getExtras(){
@@ -114,8 +114,7 @@ public class ActivityAjoutEleve extends AppCompatActivity {
         trombiViewModel = ViewModelProviders.of(this).get(TrombiViewModel.class);
 
         // CompletableFuture qui va récupérer de manière asynchrone les groupes de l'élève
-        CompletableFuture.supplyAsync(() ->
-                trombiViewModel.getEleveByIdWithGroupsNotLive(idEleve))
+        CompletableFuture.supplyAsync(() -> trombiViewModel.getEleveByIdWithGroupsNotLive(idEleve))
                 .thenApply(EleveWithGroups::getGroupes)                                         // Récupérer les groupes de l'objet EleveWithGroupes
                 .exceptionally(throwable -> null)                                               // Si erreur (cas de l'ajout, l'id -1 n'existe pas) alors on continue avec null en tant que liste de groupes
                 .thenAccept(groups -> runOnUiThread( () -> observeGroupesForTrombi(groups)));   // Déclencher l'observation des groupes du trombi en passant la liste des groupes

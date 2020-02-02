@@ -279,20 +279,11 @@ public class ActivityVueTrombi extends AppCompatActivity {
     // Insère le HTML dans la WebView de manière Asynchrone (évite les freeze)
     // TODO: Optimisations et affichage de tous les élèves. aussi lors de l'appel d'un groupe, showHTML se déclenche trop de fois
     private void showHTML(boolean withDescription){
-        // Génère le HTML dans un autre Thread, puis l'affiche dans le ThreadUI (obligatoire)
-        /*CompletableFuture.supplyAsync(() -> generateHTML(withDescription))
-                .exceptionally(throwable -> {
-                    Logger.handleException(throwable);
-
-                    // Nouvelle valeur utilisée pour thenAccept()
-                    return "Une erreur s'est produite";
-                })
-                .thenAccept(htmlText ->
-                        runOnUiThread(() -> webView.loadData(htmlText, "text/html", "UTF-8")));*/
         Log.v("_________________________ Liste eleve size, ActivityVUeTrombi", String.valueOf(listeEleves.size()));
 
         Log.v("________________________", "Futur sur le point de commentcer, check isLoading" + isLoading);
         if(!isLoading){
+            Logger.LogV("isLoading -> true");
             isLoading = true;
 
             HTMLProvider htmlProvider = new HTMLProvider.Builder()
@@ -303,10 +294,15 @@ public class ActivityVueTrombi extends AppCompatActivity {
                     .setNbCols(nbCols)
                     .build();
 
+            // Génère le HTML dans un autre Thread, puis l'affiche dans le ThreadUI (obligatoire)
             CompletableFuture.supplyAsync(htmlProvider::doHTML)
-                    .thenAccept(htmlText -> //Log.v("____________________", htmlText));
+                    .thenAccept(htmlText ->
                             runOnUiThread(() -> webView.loadData(htmlText, "text/html", "UTF-8")))
-                    .thenRun(() -> isLoading = false);
+                    .thenRun(() -> {
+                        Logger.LogV("isLoading -> false");
+                        isLoading = false;
+                    });
+
             Log.v("________________________", "Futur reçu: fini" + isLoading);
         }
     }

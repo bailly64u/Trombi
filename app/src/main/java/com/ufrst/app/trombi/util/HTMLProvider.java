@@ -30,25 +30,8 @@ public class HTMLProvider {
         nbCols = builder.nbCols;
     }
 
-    // Spécifie l'ordre des traitements à l'aide d'un CompletableFuture
+    // Seule méthode publique de cet objet qui permet de retourner le HTML à afficher pour un trombi
     public String doHTML(){
-        /*CompletableFuture.supplyAsync(this::loadImages)
-                .exceptionally(throwable -> {
-                    Logger.handleException(throwable);
-                    return null;
-                })
-                .thenAccept(this::generateHTML);*/
-
-        /*CompletableFuture<String> future = new CompletableFuture<>();
-        future.supplyAsync(this::loadHTLMImages)
-                .exceptionally(throwable -> {
-                    Logger.handleException(throwable);
-                    return null;
-                })
-                .thenApply(this::generateHTML)
-                .thenAccept(s -> Log.v("______________________", s));*/
-
-
         List<String> list = loadHTLMImages();
         return generateHTML(list);
     }

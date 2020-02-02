@@ -6,4 +6,12 @@ public class Logger {
     public static void handleException(Throwable throwable){
         Log.e("_______________E_______________", "Une exception s'est produite: \n\n", throwable);
     }
+
+    public static void LogV(Character clue, String message){
+        Log.v("__________" + clue + "__________", message);
+    }
+
+    public static void LogV(String message){
+        Log.v("____________________", message);
+    }
 }
