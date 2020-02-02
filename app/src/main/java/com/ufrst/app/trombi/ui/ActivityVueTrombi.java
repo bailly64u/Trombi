@@ -86,7 +86,6 @@ public class ActivityVueTrombi extends AppCompatActivity {
     private long idTrombi;
     private int nbCols;                                 // Nombre de colonnes à afficher dans le webview
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);

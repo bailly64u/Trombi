@@ -10,9 +10,11 @@ import com.ufrst.app.trombi.database.Eleve;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 // Classe utilitaire pour générer le HTML et charger les images en parallèle. Builder Pattern
@@ -34,12 +36,11 @@ public class HTMLProvider {
 
     // Seule méthode publique de cet objet qui permet de retourner le HTML à afficher pour un trombi
     public String doHTML(){
-        List<String> list = loadHTLMImages();
-        return generateHTML(list);
+        return generateHTML(loadHTLMImages());
     }
 
-    // TODO: remplacer avec un stream ?
-    private String generateHTML(List<String> listeBase64){
+    // Ecrit les balises HTML en s'adaptant aux attributs de classe
+    private String generateHTML(List<EleveImage> listeBase64){
         boolean isLastRow = false;              // Détermine si la dernière ligne affichée était la dernière
         int index = 0;                          // Indexe a chosir dans la liste d'élèves
 
@@ -75,24 +76,23 @@ public class HTMLProvider {
 
             // Colonnes
             for(int j = 0; j < nbCols + 1; j++){
-                Eleve eleve;
-
                 try{
-                    eleve = listeEleves.get(index);
+                    EleveImage eleveImage = listeBase64.get(index);
 
-                    if(eleve != null){
-                        sb.append("<td>").append(eleve.getNomPrenom());
+                    if(eleveImage != null){
+                        sb.append("<td>").append(eleveImage.getNomPrenom());
 
-                        if(eleve.getPhoto() != null && !eleve.getPhoto().trim().isEmpty()){
+                        // Si l'élève à une image, on ajoute une balise
+                        if(eleveImage.getBase64Image() != null && !eleveImage.getBase64Image().trim().isEmpty()){
                             sb.append("<img src=\"data:image/jpg;base64,")
-                                    .append(listeBase64.get(index))
+                                    .append(eleveImage.getBase64Image())
                                     .append("\" />");
                         }
 
                         sb.append("</td>");
                     }
                 } catch(IndexOutOfBoundsException e){              // Fin de la liste atteinte, sortie
-                    Logger.handleException(e);
+                    //Logger.handleException(e);
                     isLastRow = true;
                     break;
                 }
@@ -109,32 +109,19 @@ public class HTMLProvider {
         return sb.toString();
     }
 
-    // TODO: optimiser, bannir la mutabilité partagée sur listNamePhoto,
-    //  retirer l'objet EleveImage et créer une map à la place
     // Charge les images sous forme base64 et retourne une liste ordonnée des images
-    private List<String> loadHTLMImages(){
+    private List<EleveImage> loadHTLMImages(){
         Log.v("__________________", Thread.currentThread().toString());
 
-        // Stream parallèlisé pour les performances. Pour chaque eleve, on crée un objet EleveImage
-        // qui peut être trié. Cette opération nous retourne les images dans le désordre
-        HashMap<String, String> eleveWithImage = listeEleves.stream()
-                .parallel()                                             // Parallèlisé
-                .filter(eleve -> !eleve.getPhoto().trim().isEmpty())    // L'élève a une photo
-                .collect(Collectors.groupingBy())
-
-        // Tri de la liste pour mettre les photos dans l'ordre
-        listNameAndPhotoBase64.sort(EleveImage::compareTo);
-
-        // Résultat
-        ArrayList<String> base64List = new ArrayList<>();
-        listNameAndPhotoBase64.forEach(eleveImage -> base64List.add(eleveImage.getBase64Image()));
-
-        return base64List;
+        // Stream parallélisé pour générer les images des élèves
+        return listeEleves.stream()
+                .parallel()
+                .map(eleve -> new EleveImage(convertToBase64(eleve), eleve.getNomPrenom()))
+                .collect(Collectors.toList());
     }
 
-    // TODO: vérifier si les images peuvent effectivement etre vides
     // Convertit l'image d'un élève en image Base64, pour l'afficher dans le HTML
-    private EleveImage convertToBase64(Eleve eleve){
+    private String convertToBase64(Eleve eleve){
         // Récupération de l'URI sous une autre forme
         String filePath = Uri.parse(eleve.getPhoto()).getPath();
         Bitmap bm = BitmapFactory.decodeFile(filePath);
@@ -148,12 +135,11 @@ public class HTMLProvider {
             } catch(IOException e){
                 Logger.handleException(e);
             }
-            return new EleveImage(Base64.encodeToString(baos.toByteArray(), Base64.DEFAULT), eleve.getNomPrenom());
+            return Base64.encodeToString(baos.toByteArray(), Base64.DEFAULT);
         }
 
         // Image vide
-        Log.v("_____________________________", "image vide");
-        return new EleveImage("", eleve.getNomPrenom());
+        return "";
     }
 
     public static class Builder {
@@ -205,7 +191,6 @@ public class HTMLProvider {
             return new HTMLProvider(this);
         }
     }
-
 
     // Objet contenant le nomPrenom d'un élève et sa photo en base 64
     // Permet de classer les élèves pour récupérer les photos dans l'ordre
