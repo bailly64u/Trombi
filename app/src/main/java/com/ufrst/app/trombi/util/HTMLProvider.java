@@ -114,22 +114,24 @@ public class HTMLProvider {
         sb.append("</table>");
         sb.append("</body></html>");
 
+        Logger.logV("HTML", sb.toString());
+
         return sb.toString();
     }
 
     // Charge les images sous forme base64 et retourne une liste ordonnée des images
     private List<EleveImage> loadHTLMImages(){
         // Stream parallélisé pour générer les images des élèves
-        Stream<EleveImage> stream = listeEleves.stream()
-                .parallel()
-                .map(eleve -> new EleveImage(convertToBase64(eleve), eleve.getNomPrenom()));
-
-        try{
-            return processStream(stream);
-        } catch(InterruptedException | ExecutionException e){
-            Logger.handleException(e);
-            return Collections.emptyList();
-        }
+        /*Stream<EleveImage> stream = */ return listeEleves.stream()
+                //.parallel()
+                .map(eleve -> new EleveImage(convertToBase64(eleve), eleve.getNomPrenom()))
+                .collect(Collectors.toList());
+//        try{
+//            return processStream(stream);
+//        } catch(InterruptedException | ExecutionException e){
+//            Logger.handleException(e);
+//            return Collections.emptyList();
+//        }
     }
 
     // Execute la méthode terminale du stream dans une FJP défini pour éviter d'utiliser trop de threads

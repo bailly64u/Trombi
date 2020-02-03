@@ -70,7 +70,6 @@ public class ActivityVueTrombi extends AppCompatActivity {
 
     private Observer<List<Eleve>> observerEleve;
     private TrombiViewModel trombiViewModel;
-    //private Trombinoscope currentTrombi;
     private List<Eleve> listeEleves;
     private SharedPreferences prefs;
     private boolean isLoading = false;                  // Le chargement d'une webview est en cours
@@ -145,8 +144,7 @@ public class ActivityVueTrombi extends AppCompatActivity {
         // ou déselection d'un groupe
         observerEleve = eleves -> {
             listeEleves = eleves;
-            HTMLProvider htmlProvider = makeHTMLProvider();
-            showHTML(htmlProvider);
+            showHTML();
         };
 
         trombiViewModel = ViewModelProviders.of(this).get(TrombiViewModel.class);
@@ -185,9 +183,7 @@ public class ActivityVueTrombi extends AppCompatActivity {
             public void onStopTrackingTouch(SeekBar seekBar){
                 if(seekBar.getProgress() != nbCols){
                     nbCols = seekBar.getProgress();
-
-                    HTMLProvider htmlProvider = makeHTMLProvider();
-                    showHTML(htmlProvider);
+                    showHTML();
                 }
             }
         });
@@ -221,8 +217,7 @@ public class ActivityVueTrombi extends AppCompatActivity {
                                 public void onChanged(GroupeWithEleves groupeWithEleves){
                                     listeEleves = groupeWithEleves.getEleves();
 
-                                    HTMLProvider htmlProvider = makeHTMLProvider();
-                                    showHTML(htmlProvider);
+                                    showHTML();
                                 }
                             });
                 } else{
@@ -241,8 +236,7 @@ public class ActivityVueTrombi extends AppCompatActivity {
 
                 withDesc = switchDesc.isChecked();
 
-                HTMLProvider htmlProvider = makeHTMLProvider();
-                showHTML(htmlProvider);
+                showHTML();
             }
         });
     }
@@ -263,27 +257,25 @@ public class ActivityVueTrombi extends AppCompatActivity {
         chipGroup.post(() -> chipGroup.addView(c));
     }
 
-    // Instancie un objet HTMLPRovider selon l'état des composants de l'UI
-    private HTMLProvider makeHTMLProvider(){
-        return new HTMLProvider.Builder()
-                .setNomTrombi(nomTrombi)
-                .setDescTrombi(descTrombi)
-                .setListeEleves(listeEleves)
-                .hasDescription(withDesc)
-                .setNbCols(nbCols)
-                .build();
-    }
-
     // Insère le HTML dans la WebView de manière asynchrone (évite les freezes)
-    private void showHTML(HTMLProvider htmlProvider){
+    private void showHTML(){
         if(!isLoading){
             Logger.logV("isLoading -> true");
             isLoading = true;
 
+            HTMLProvider htmlProvider = new HTMLProvider.Builder()
+                    .setNomTrombi(nomTrombi)
+                    .setDescTrombi(descTrombi)
+                    .setListeEleves(listeEleves)
+                    .setNbCols(nbCols)
+                    .hasDescription(withDesc)
+                    .build();
+
             // Génère le HTML dans un autre Thread, puis l'affiche dans le ThreadUI (obligatoire)
             CompletableFuture.supplyAsync(htmlProvider::doHTML)
-                    .thenAccept(htmlText ->
-                            runOnUiThread(() -> webView.loadData(htmlText, "text/html", "UTF-8")))
+                    .thenAccept(htmlText -> //{webView.loadData(htmlText, "text/html", "UTF-8"); Logger.logV(htmlText);})
+                            runOnUiThread(() -> {webView.loadData(htmlText, "text/html", "UTF-8"); Logger.logV(htmlText);}))
+                    .exceptionally(throwable -> {Logger.handleException(throwable); Logger.logV("ERREUR"); return null;})
                     .thenRun(() -> {
                         Logger.logV("isLoading -> false");
                         isLoading = false;
@@ -327,8 +319,7 @@ public class ActivityVueTrombi extends AppCompatActivity {
     }
 
     // Ecrit une liste d'élèves dans un fichier situé dans le stockage externe de l'app
-    private void writeExportedList(final String filename, final List<Eleve> eleves,
-                                   final boolean doErase){
+    private void writeExportedList(String filename, List<Eleve> eleves, boolean doErase){
         // Le fichier est réécrit, on doit supprimer son contenu actuel
         if(doErase){
             try{
