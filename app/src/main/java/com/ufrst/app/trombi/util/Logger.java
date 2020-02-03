@@ -7,11 +7,11 @@ public class Logger {
         Log.e("_______________E_______________", "Une exception s'est produite: \n\n", throwable);
     }
 
-    public static void LogV(String clue, String message){
+    public static void logV(String clue, String message){
         Log.v("__________" + clue + "__________", message);
     }
 
-    public static void LogV(String message){
+    public static void logV(String message){
         Log.v("____________________", message);
     }
 }

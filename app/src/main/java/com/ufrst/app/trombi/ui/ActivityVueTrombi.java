@@ -74,6 +74,7 @@ public class ActivityVueTrombi extends AppCompatActivity {
     private List<Eleve> listeEleves;
     private SharedPreferences prefs;
     private boolean isLoading = false;                  // Le chargement d'une webview est en cours
+    private boolean withDesc = true;
     private String descTrombi;
     private String nomTrombi;
     private long idTrombi;
@@ -144,7 +145,8 @@ public class ActivityVueTrombi extends AppCompatActivity {
         // ou déselection d'un groupe
         observerEleve = eleves -> {
             listeEleves = eleves;
-            showHTML(true);
+            HTMLProvider htmlProvider = makeHTMLProvider();
+            showHTML(htmlProvider);
         };
 
         trombiViewModel = ViewModelProviders.of(this).get(TrombiViewModel.class);
@@ -167,16 +169,6 @@ public class ActivityVueTrombi extends AppCompatActivity {
 
     // Applique des listeners sur certains éléments
     private void setListeners(){
-        // Floating action button
-        /*FloatingActionButton fab = findViewById(R.id.VUETROMBI_fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v){
-                ModalBottomSheet modalBottomSheet = new ModalBottomSheet();
-                modalBottomSheet.show(getSupportFragmentManager(), modalBottomSheet.getTag());
-            }
-        });*/
-
         // Seekbar
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -193,7 +185,9 @@ public class ActivityVueTrombi extends AppCompatActivity {
             public void onStopTrackingTouch(SeekBar seekBar){
                 if(seekBar.getProgress() != nbCols){
                     nbCols = seekBar.getProgress();
-                    showHTML(switchDesc.isChecked());
+
+                    HTMLProvider htmlProvider = makeHTMLProvider();
+                    showHTML(htmlProvider);
                 }
             }
         });
@@ -226,7 +220,9 @@ public class ActivityVueTrombi extends AppCompatActivity {
                                 @Override
                                 public void onChanged(GroupeWithEleves groupeWithEleves){
                                     listeEleves = groupeWithEleves.getEleves();
-                                    showHTML(switchDesc.isChecked());
+
+                                    HTMLProvider htmlProvider = makeHTMLProvider();
+                                    showHTML(htmlProvider);
                                 }
                             });
                 } else{
@@ -242,7 +238,11 @@ public class ActivityVueTrombi extends AppCompatActivity {
             @Override
             public void onClick(View view){
                 switchDesc.setChecked(!switchDesc.isChecked());
-                showHTML(switchDesc.isChecked());
+
+                withDesc = switchDesc.isChecked();
+
+                HTMLProvider htmlProvider = makeHTMLProvider();
+                showHTML(htmlProvider);
             }
         });
     }
@@ -260,35 +260,32 @@ public class ActivityVueTrombi extends AppCompatActivity {
         c.setText(g.getNomGroupe() + "-" + g.getIdGroupe()); //A changer: enlever + idGroupe
 
         // Ajout de la chips dans le groupe de chips
-        chipGroup.post(new Runnable() {
-            @Override
-            public void run(){
-                chipGroup.addView(c);
-            }
-        });
+        chipGroup.post(() -> chipGroup.addView(c));
     }
 
-    // Insère le HTML dans la WebView de manière Asynchrone (évite les freezes)
-    // TODO: Lors de l'appel d'un groupe, showHTML se déclenche trop de fois?
-    private void showHTML(boolean withDescription){
-        if(!isLoading){
-            Logger.LogV("isLoading -> true");
-            isLoading = true;
+    // Instancie un objet HTMLPRovider selon l'état des composants de l'UI
+    private HTMLProvider makeHTMLProvider(){
+        return new HTMLProvider.Builder()
+                .setNomTrombi(nomTrombi)
+                .setDescTrombi(descTrombi)
+                .setListeEleves(listeEleves)
+                .hasDescription(withDesc)
+                .setNbCols(nbCols)
+                .build();
+    }
 
-            HTMLProvider htmlProvider = new HTMLProvider.Builder()
-                    .hasDescription(withDescription)
-                    .setDescTrombi(descTrombi)
-                    .setListeEleves(listeEleves)
-                    .setNomTrombi(nomTrombi)
-                    .setNbCols(nbCols)
-                    .build();
+    // Insère le HTML dans la WebView de manière asynchrone (évite les freezes)
+    private void showHTML(HTMLProvider htmlProvider){
+        if(!isLoading){
+            Logger.logV("isLoading -> true");
+            isLoading = true;
 
             // Génère le HTML dans un autre Thread, puis l'affiche dans le ThreadUI (obligatoire)
             CompletableFuture.supplyAsync(htmlProvider::doHTML)
                     .thenAccept(htmlText ->
                             runOnUiThread(() -> webView.loadData(htmlText, "text/html", "UTF-8")))
                     .thenRun(() -> {
-                        Logger.LogV("isLoading -> false");
+                        Logger.logV("isLoading -> false");
                         isLoading = false;
                     });
         }

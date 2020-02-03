@@ -4,27 +4,30 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.util.Base64;
-import android.util.Log;
 
 import com.ufrst.app.trombi.database.Eleve;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collector;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 // Classe utilitaire pour générer le HTML et charger les images en parallèle. Builder Pattern
 public class HTMLProvider {
 
-    private List<Eleve> listeEleves;
-    private boolean withDescription;
-    private String descTrombi;
-    private String nomTrombi;
-    private int nbCols;
+    // Nombre recommandé de Thread pour le calcul des images.
+    // Chaque Thread va contenir un bitmap en mémoire, donc ne pas abuser dessus.
+    private final static int NUMBER_OF_THREADS = 3;
+
+    private final List<Eleve> listeEleves;
+    private final boolean withDescription;
+    private final String descTrombi;
+    private final String nomTrombi;
+    private final int nbCols;
 
     private HTMLProvider(final Builder builder){
         withDescription = builder.withDescription;
@@ -55,12 +58,16 @@ public class HTMLProvider {
                 .append("<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">")
                 .append("<style>")
                 .append("@page {size:A4; margin:1cm;}")                     // Page
-                .append("html, body{width:210mm;}")                         // <html>, <body>
-                .append("img{width:").append(100 / (nbCols + 1)).append("%;}")  // <img>
-                .append("h1{font-size: 3em; text-align:center;}")           // <h1>
-                .append("h2{font-size: 2.8em; text-align:center;}")         // <h2>
+                .append("html, body{width: 210mm;}")                         // <html>, <body>
+                //.append("img{width: ").append(100 / (nbCols + 1))
+                .append("img{width: 100")
+                .append("%;margin-right: auto; margin-left: auto;}")          // <img> transform:rotate(90deg);
+                .append("h1{font-size: 3em; text-align: center;}")           // <h1>
+                .append("h2{font-size: 2.8em; text-align: center;}")         // <h2>
                 .append("table{width: 100%;}")                              // <table>
-                .append("td{background-color:red;}")
+                .append("td{padding-bottom: 20px}")
+                .append("td > *{display: block;}")
+                .append("#table td{text-align: center; font-size: 2em}")
                 .append("</style></head>")
                 .append("<body><h1>").append(nomTrombi).append("</h1>");
 
@@ -68,7 +75,7 @@ public class HTMLProvider {
             sb.append("<h2>").append(descTrombi).append("</h2>");
         }
 
-        sb.append("<table>");
+        sb.append("<table id=\"table\">");
 
         // Lignes
         while(!isLastRow){
@@ -79,17 +86,18 @@ public class HTMLProvider {
                 try{
                     EleveImage eleveImage = listeBase64.get(index);
 
+                    // Si l'élève à une image, on ajoute une balise
                     if(eleveImage != null){
-                        sb.append("<td>").append(eleveImage.getNomPrenom());
+                        sb.append("<td>");
 
-                        // Si l'élève à une image, on ajoute une balise
                         if(eleveImage.getBase64Image() != null && !eleveImage.getBase64Image().trim().isEmpty()){
                             sb.append("<img src=\"data:image/jpg;base64,")
                                     .append(eleveImage.getBase64Image())
                                     .append("\" />");
                         }
 
-                        sb.append("</td>");
+                        sb.append(eleveImage.getNomPrenom())
+                                .append("</td>");
                     }
                 } catch(IndexOutOfBoundsException e){              // Fin de la liste atteinte, sortie
                     //Logger.handleException(e);
@@ -111,31 +119,51 @@ public class HTMLProvider {
 
     // Charge les images sous forme base64 et retourne une liste ordonnée des images
     private List<EleveImage> loadHTLMImages(){
-        Log.v("__________________", Thread.currentThread().toString());
-
         // Stream parallélisé pour générer les images des élèves
-        return listeEleves.stream()
+        Stream<EleveImage> stream = listeEleves.stream()
                 .parallel()
-                .map(eleve -> new EleveImage(convertToBase64(eleve), eleve.getNomPrenom()))
-                .collect(Collectors.toList());
+                .map(eleve -> new EleveImage(convertToBase64(eleve), eleve.getNomPrenom()));
+
+        try{
+            return processStream(stream);
+        } catch(InterruptedException | ExecutionException e){
+            Logger.handleException(e);
+            return Collections.emptyList();
+        }
+    }
+
+    // Execute la méthode terminale du stream dans une FJP défini pour éviter d'utiliser trop de threads
+    private List<EleveImage> processStream(Stream<EleveImage> stream)
+            throws ExecutionException, InterruptedException{
+        // Contrôle du nombre de threads dans lesquels le stream va opérer
+        ForkJoinPool pool = new ForkJoinPool(NUMBER_OF_THREADS);
+
+        // Opération du stream dans la pool
+        return pool.submit(() -> stream.collect(Collectors.toList()))
+                .get();
     }
 
     // Convertit l'image d'un élève en image Base64, pour l'afficher dans le HTML
     private String convertToBase64(Eleve eleve){
-        // Récupération de l'URI sous une autre forme
-        String filePath = Uri.parse(eleve.getPhoto()).getPath();
-        Bitmap bm = BitmapFactory.decodeFile(filePath);
+        if(!eleve.getPhoto().trim().isEmpty()){
+            // Récupération de l'URI sous une autre forme
+            String filePath = Uri.parse(eleve.getPhoto()).getPath();
+            Bitmap bm = BitmapFactory.decodeFile(filePath);
 
-        if(bm != null){
-            Log.v("_________________________", Thread.currentThread().toString());
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            bm.compress(Bitmap.CompressFormat.JPEG, 10, baos);
-            try{
-                baos.close();
-            } catch(IOException e){
-                Logger.handleException(e);
+            /*Matrix matrix = new Matrix();
+            matrix.postRotate(90);
+            bm = Bitmap.createBitmap(bm, 0, 0, bm.getWidth(), bm.getHeight(), matrix, true);*/
+
+            if(bm != null){
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                bm.compress(Bitmap.CompressFormat.JPEG, 10, baos);
+                try{
+                    baos.close();
+                } catch(IOException e){
+                    Logger.handleException(e);
+                }
+                return Base64.encodeToString(baos.toByteArray(), Base64.DEFAULT);
             }
-            return Base64.encodeToString(baos.toByteArray(), Base64.DEFAULT);
         }
 
         // Image vide
@@ -143,6 +171,7 @@ public class HTMLProvider {
     }
 
     public static class Builder {
+
         private List<Eleve> listeEleves;
         private boolean withDescription;
         private String descTrombi;
@@ -194,18 +223,14 @@ public class HTMLProvider {
 
     // Objet contenant le nomPrenom d'un élève et sa photo en base 64
     // Permet de classer les élèves pour récupérer les photos dans l'ordre
-    private class EleveImage implements Comparable<EleveImage> {
+    private class EleveImage {
+
         String base64Image;
         String nomPrenom;
 
         EleveImage(String base64Image, String nomPrenom){
             this.base64Image = base64Image;
             this.nomPrenom = nomPrenom;
-        }
-
-        @Override
-        public int compareTo(EleveImage o){
-            return this.nomPrenom.compareTo(o.getNomPrenom());
         }
 
         String getBase64Image(){
