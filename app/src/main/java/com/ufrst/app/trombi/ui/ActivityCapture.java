@@ -5,7 +5,9 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -16,21 +18,27 @@ import androidx.camera.core.ImageCapture;
 import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
+import androidx.cardview.widget.CardView;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.google.android.material.bottomappbar.BottomAppBar;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.ufrst.app.trombi.R;
 import com.ufrst.app.trombi.database.Eleve;
+import com.ufrst.app.trombi.database.EleveWithGroups;
 import com.ufrst.app.trombi.database.TrombiViewModel;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 
@@ -42,12 +50,18 @@ public class ActivityCapture extends AppCompatActivity {
     private static final String[] REQUIRED_PERMISSIONS = new String[]{"android.permission.CAMERA",
             "android.permission.WRITE_EXTERNAL_STORAGE"};
 
-    private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
+    private MaterialButton buttonDismiss, buttonNextIfPhoto;
+    private ImageButton buttonPrevious, buttonNext;
     private CoordinatorLayout coordinatorLayout;
     private TrombiViewModel trombiViewModel;
+    private LinearLayout linearLayout;
+    private FloatingActionButton fab;
     private PreviewView previewView;
+    private BottomAppBar toolbar;
     private ImageView imageView;
+    private CardView banner;
 
+    private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     private Eleve currentEleve;
     private long idEleve;
 
@@ -59,6 +73,8 @@ public class ActivityCapture extends AppCompatActivity {
         findViews();
         getExtras();
         observeEleve();
+        setListeners();
+        checkForExistingPhoto();
 
         if(allPermissionsGranted()){
             startCamera();
@@ -69,9 +85,17 @@ public class ActivityCapture extends AppCompatActivity {
     }
 
     private void findViews(){
+        buttonNextIfPhoto = findViewById(R.id.CAPT_buttonNextIfPhoto);
         coordinatorLayout = findViewById(R.id.CAPT_coordinator);
+        buttonDismiss = findViewById(R.id.CAPT_buttonDismiss);
+        linearLayout = findViewById(R.id.CAPT_linearLayout);
+        buttonPrevious = findViewById(R.id.CAPT_previous);
         previewView = findViewById(R.id.CAPT_previewView);
         imageView = findViewById(R.id.CAPT_imgView);
+        buttonNext = findViewById(R.id.CAPT_next);
+        toolbar = findViewById(R.id.CAPT_toolbar);
+        banner = findViewById(R.id.CAPT_banner);
+        fab = findViewById(R.id.CAPT_takePic);
     }
 
     private void getExtras(){
@@ -146,7 +170,7 @@ public class ActivityCapture extends AppCompatActivity {
                 //.setFlashMode(ImageCapture.FLASH_MODE_ON)
                 .build();
 
-        findViewById(R.id.CAPT_takePic).setOnClickListener(new View.OnClickListener() {
+        fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view){
                 if(getExternalFilesDir(null) != null){
@@ -160,11 +184,10 @@ public class ActivityCapture extends AppCompatActivity {
                                 @Override
                                 public void onImageSaved(@NonNull File file){
                                     previewView.post(() -> Toast.makeText(ActivityCapture.this,
-                                            "Image saved at : " + file.getPath(),
+                                            R.string.CAPT_photoTaken,
                                             Toast.LENGTH_LONG).show());
-                                    //Log.v("_______________________________", Uri.fromFile(f).toString());
+
                                     currentEleve.setPhoto(Uri.fromFile(f).toString());
-                                    //currentEleve.setPhoto(f.getPath());
                                     trombiViewModel.update(currentEleve);
                                 }
 
@@ -173,13 +196,13 @@ public class ActivityCapture extends AppCompatActivity {
                                                     @NonNull String message,
                                                     @Nullable Throwable cause){
                                     previewView.post(() -> Toast.makeText(ActivityCapture.this,
-                                            "ezrro",
+                                            R.string.CAPT_error,
                                             Toast.LENGTH_LONG).show());
                                 }
                             });
                 } else{
                     Snackbar.make(coordinatorLayout,
-                            "Impossible d'accéder au répertoire externe de l'application",
+                            R.string.CAPT_error2,
                             Snackbar.LENGTH_LONG);
                 }
             }
@@ -208,6 +231,74 @@ public class ActivityCapture extends AppCompatActivity {
 
         // Le paramètre imageCapture correspond à un useCase qui envisage la prise d'une photo
         cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageCapture);
+    }
+
+    private void setListeners(){
+        buttonNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view){
+
+            }
+        });
+
+        buttonPrevious.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view){
+                hideBanner();
+            }
+        });
+    }
+
+    // Récupère l'élève dans la base de données et vérifie s'il a une photo
+    private void checkForExistingPhoto(){
+        CompletableFuture.supplyAsync(() -> trombiViewModel.getEleveByIdWithGroupsNotLive(idEleve))
+                .thenApply(EleveWithGroups::getEleves)
+                .thenApply(eleve -> !eleve.getPhoto().trim().equals(""))
+                .thenAccept(hasPhoo -> {
+                    if(hasPhoo)
+                        showBanner();
+                });
+    }
+
+    private void showBanner(){
+        banner.animate()
+                .alpha(1.0f)
+                .setDuration(1000);
+
+        // Le LinearLayout descends de la taille de la bannière
+        banner.post(() -> linearLayout.animate()
+                .translationY(banner.getHeight())
+                .setDuration(300));
+
+        // Mise en place des listeners
+        buttonDismiss.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view){
+                hideBanner();
+            }
+        });
+
+        buttonNextIfPhoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view){
+                Toast.makeText(ActivityCapture.this, "bruh", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void hideBanner(){
+        banner.animate()
+                .translationY(-banner.getHeight())
+                .setDuration(300);
+
+        // Le LinearLayout retourne à la position initiale
+        linearLayout.animate()
+                .translationY(0)
+                .setDuration(300);
+
+        // Retrait des listeners
+        buttonNextIfPhoto.setOnClickListener(null);
+        buttonDismiss.setOnClickListener(null);
     }
 
     // Retourne le Bitmap correspondant à l'image capturée

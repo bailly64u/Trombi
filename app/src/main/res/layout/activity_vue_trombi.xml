@@ -36,151 +36,165 @@
         android:id="@+id/VUETROMBI_bottomSheet"
         android:layout_width="match_parent"
         android:layout_height="350dp"
-        android:paddingTop="16dp"
         android:background="@drawable/rectangle_top_rounded"
-        app:layout_behavior="@string/bottom_sheet_behavior"
+        android:paddingTop="16dp"
         app:behavior_peekHeight="70dp"
+        app:layout_behavior="@string/bottom_sheet_behavior"
         app:layout_insetEdge="bottom">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="12dp"
-            android:orientation="vertical" >
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-            <View
-                android:layout_width="36dp"
-                android:layout_height="4dp"
-                android:layout_gravity="center_horizontal"
-                android:background="@drawable/rectangle_rounded" />
-
-
-            <TextView
+            <ProgressBar
+                android:id="@+id/VUETROMBI_progressBar"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginBottom="20dp"
-                android:padding="16dp"
-                style="@style/TextAppearance.AppCompat.Large"
-                android:text="@string/VUETROMBI_filtre" />
+                android:layout_gravity="center"
+                android:visibility="gone" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginBottom="8dp"
-                android:text="@string/VUETROMBI_choixGroupe"
-                android:textColor="?attr/textMediumEmphasis" />
-
-            <HorizontalScrollView
+            <LinearLayout
+                android:id="@+id/VUETROMBI_layoutParam"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:scrollbars="none">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="60dp"
-                    android:orientation="horizontal"
-                    android:layout_marginEnd="8dp"
-                    android:paddingTop="12dp" >
-
-                    <com.google.android.material.chip.ChipGroup
-                        android:id="@+id/VUETROMBI_chipsGroup"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_marginStart="4dp"
-                        android:layout_marginEnd="4dp"
-                        app:singleSelection="true"
-                        app:singleLine="true" />
-
-                </LinearLayout>
-            </HorizontalScrollView>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
+                android:layout_height="match_parent"
                 android:layout_marginTop="12dp"
-                android:layout_marginBottom="24dp"
-                android:background="?attr/dividerColor" />
+                android:orientation="vertical">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginBottom="8dp"
-                android:text="@string/VUETROMBI_nbColonnes"
-                android:textColor="?attr/textMediumEmphasis" />
+                <View
+                    android:layout_width="36dp"
+                    android:layout_height="4dp"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@drawable/rectangle_rounded" />
 
-            <RelativeLayout
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent">
 
-                <SeekBar
-                    android:id="@+id/VUETROMBI_seekBar"
+                <TextView
+                    style="@style/TextAppearance.AppCompat.Large"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
-                    android:layout_alignParentStart="true"
-                    android:layout_toStartOf="@+id/VUETROMBI_nbCols"
-                    android:layout_centerVertical="true"
-                    style="@style/Widget.AppCompat.SeekBar.Discrete"
-                    android:max="5" />
-
-                <TextView
-                    android:id="@+id/VUETROMBI_nbCols"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="4dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true"
-                    android:textSize="18sp" />
-
-            </RelativeLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="24dp"
-                android:background="?attr/dividerColor" />
-
-            <RelativeLayout
-                android:id="@+id/VUETROMBI_switchDescLayout"
-                android:layout_width="match_parent"
-                android:layout_height="80dp"
-                android:paddingTop="2dp"
-                android:paddingBottom="24dp"
-                android:background="?android:selectableItemBackground">
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="20dp"
+                    android:padding="16dp"
+                    android:text="@string/VUETROMBI_filtre" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
                     android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_centerVertical="true"
-                    android:layout_toStartOf="@+id/VUETROMBI_switchDesc"
-                    android:text="@string/VUETROMBI_afficherDesc"
+                    android:layout_marginBottom="8dp"
+                    android:text="@string/VUETROMBI_choixGroupe"
                     android:textColor="?attr/textMediumEmphasis" />
 
-                <!-- Le listener sera appliqué sur le layout parent, pas sur le switch -->
-                <Switch
-                    android:id="@+id/VUETROMBI_switchDesc"
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:scrollbars="none">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="60dp"
+                        android:layout_marginEnd="8dp"
+                        android:orientation="horizontal"
+                        android:paddingTop="12dp">
+
+                        <com.google.android.material.chip.ChipGroup
+                            android:id="@+id/VUETROMBI_chipsGroup"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_marginStart="4dp"
+                            android:layout_marginEnd="4dp"
+                            app:singleLine="true"
+                            app:singleSelection="true" />
+
+                    </LinearLayout>
+                </HorizontalScrollView>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginBottom="24dp"
+                    android:background="?attr/dividerColor" />
+
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="4dp"
-                    android:layout_centerVertical="true"
-                    android:layout_alignParentEnd="true"
-                    android:checked="true"
-                    android:clickable="false" />
+                    android:layout_marginStart="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="@string/VUETROMBI_nbColonnes"
+                    android:textColor="?attr/textMediumEmphasis" />
 
-            </RelativeLayout>
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent">
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginBottom="24dp"
-                android:background="?attr/dividerColor" />
+                    <SeekBar
+                        android:id="@+id/VUETROMBI_seekBar"
+                        style="@style/Widget.AppCompat.SeekBar.Discrete"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_centerVertical="true"
+                        android:layout_margin="8dp"
+                        android:layout_toStartOf="@+id/VUETROMBI_nbCols"
+                        android:max="5" />
 
+                    <TextView
+                        android:id="@+id/VUETROMBI_nbCols"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginEnd="16dp"
+                        android:textSize="18sp" />
+
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="24dp"
+                    android:background="?attr/dividerColor" />
+
+                <RelativeLayout
+                    android:id="@+id/VUETROMBI_switchDescLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp"
+                    android:background="?android:selectableItemBackground"
+                    android:paddingTop="2dp"
+                    android:paddingBottom="24dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_toStartOf="@+id/VUETROMBI_switchDesc"
+                        android:text="@string/VUETROMBI_afficherDesc"
+                        android:textColor="?attr/textMediumEmphasis" />
+
+                    <!-- Le listener sera appliqué sur le layout parent, pas sur le switch -->
+                    <Switch
+                        android:id="@+id/VUETROMBI_switchDesc"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:layout_margin="4dp"
+                        android:checked="true"
+                        android:clickable="false" />
+
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginBottom="24dp"
+                    android:background="?attr/dividerColor" />
+
+            </LinearLayout>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 

@@ -40,12 +40,90 @@ public class HTMLProvider {
 
     // Seule méthode publique de cet objet qui permet de retourner le HTML à afficher pour un trombi
     public String doHTML(){
-        List<EleveImage> listEleveImage = loadHTLMImages();
-        return generateHTML(listEleveImage);
+        return generateHTML();
+    }
+
+    private String generateHTML(){
+        boolean isLastRow = false;              // Détermine si la dernière ligne affichée était la dernière
+        int index = 0;                          // Indexe a chosir dans la liste d'élèves
+
+        // Ne peut pas se produire, sauf si l'API du téléphone est inférieure à 26
+        // Les APIs inférieures à 26 ne supportent pas l'attribut "min" des Seekbar
+        if(nbCols == -1){
+            return "Erreur nombre de colonnes";
+        }
+
+        StringBuilder sb = new StringBuilder();
+
+        // Style et métadonnées
+        sb.append("<html>")
+                .append("<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">")
+                .append("<style>")
+                .append("@page {size:A4; margin:1cm;}")                     // Page
+                .append("html, body{width: 210mm;}")                        // <html>, <body>
+                .append("img{width: 100%;margin-right: auto; margin-left: auto;}") // <img> transform:rotate(90deg);
+                .append("h1{font-size: 3em; text-align: center;}")          // <h1>
+                .append("h2{font-size: 2.8em; text-align: center;}")        // <h2>
+                .append("table{width: 100%; margin-bottom:100px;}")         // <table>
+                .append("td{padding-bottom: 20px}")                         // <td>
+                .append("td > *{display: block;}")
+                .append("#table td{text-align: center; font-size: 2em}")    // <td>
+                .append("</style></head>")
+                .append("<body><h1>").append(nomTrombi).append("</h1>");
+
+        if(withDescription){
+            sb.append("<h2>").append(descTrombi).append("</h2>");
+        }
+
+        sb.append("<table id=\"table\">");
+
+        // Lignes
+        while(!isLastRow){
+            sb.append("<tr>");
+
+            // Colonnes
+            for(int j = 0; j < nbCols + 1; j++){
+                try{
+                    Eleve eleve = listeEleves.get(index);
+
+                    // Si l'élève à une image, on ajoute une balise
+                    if(eleve != null){
+                        Logger.logV("E", eleve.getNomPrenom());
+
+                        if(eleve.getPhoto() != null && !eleve.getPhoto().trim().isEmpty()){
+                            sb.append("<td>");
+                            sb.append("<img src=\"data:image/jpg;base64,")
+                                    .append(convertToBase64(eleve))
+                                    .append("\" />")
+                                    .append(eleve.getNomPrenom())
+                                    .append("</td>");
+                        } else{
+                            j--;
+                        }
+
+//                        sb.append(eleveImage.getNomPrenom())
+//                                .append("</td>");
+                    }
+                } catch(IndexOutOfBoundsException e){              // Fin de la liste atteinte, sortie
+                    //Logger.handleException(e);
+                    isLastRow = true;
+                    break;
+                }
+
+                index++;
+            }
+
+            sb.append("</tr>");
+        }
+
+        sb.append("</table>");
+        sb.append("</body></html>");
+
+        return sb.toString();
     }
 
     // Ecrit les balises HTML en s'adaptant aux attributs de classe
-    private String generateHTML(List<EleveImage> listeBase64){
+    /*private String generateHTML(List<EleveImage> listeBase64){
         boolean isLastRow = false;              // Détermine si la dernière ligne affichée était la dernière
         int index = 0;                          // Indexe a chosir dans la liste d'élèves
 
@@ -122,20 +200,21 @@ public class HTMLProvider {
         sb.append("</body></html>");
 
         return sb.toString();
-    }
+    }*/
 
     // Charge les images sous forme base64 et retourne une liste ordonnée des images
     private List<EleveImage> loadHTLMImages(){
         // Stream parallélisé pour générer les images des élèves
-        Stream<EleveImage> stream = listeEleves.stream()
-                .parallel()
-                .map(eleve -> new EleveImage(convertToBase64(eleve), eleve.getNomPrenom()));
+        /*Stream<EleveImage> stream = */return listeEleves.stream()
+                //.parallel()
+                .map(eleve -> new EleveImage(convertToBase64(eleve), eleve.getNomPrenom()))
+                .collect(Collectors.toList());
 
-        return processStream(stream);
+        //return processStream(stream);
     }
 
     // Execute la méthode terminale du stream dans une FJP défini pour éviter d'utiliser trop de threads
-    private List<EleveImage> processStream(Stream<EleveImage> stream){
+    /*private List<EleveImage> processStream(Stream<EleveImage> stream){
         // Contrôle du nombre de threads dans lesquels le stream va opérer
         ForkJoinPool pool = new ForkJoinPool(NUMBER_OF_THREADS);
 
@@ -146,7 +225,7 @@ public class HTMLProvider {
             Logger.handleException(e);
             return Collections.emptyList();
         }
-    }
+    }*/
 
     // Convertit l'image d'un élève en image Base64, pour l'afficher dans le HTML
     private String convertToBase64(Eleve eleve){
@@ -155,9 +234,10 @@ public class HTMLProvider {
             String filePath = Uri.parse(eleve.getPhoto()).getPath();
             Bitmap bm = BitmapFactory.decodeFile(filePath);
 
-            /*Matrix matrix = new Matrix();
+            // Rotation de l'image, entraîne des problèmes de performances
+            Matrix matrix = new Matrix();
             matrix.postRotate(90);
-            bm = Bitmap.createBitmap(bm, 0, 0, bm.getWidth(), bm.getHeight(), matrix, true);*/
+            bm = Bitmap.createBitmap(bm, 0, 0, bm.getWidth(), bm.getHeight(), matrix, true);
 
             if(bm != null){
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();

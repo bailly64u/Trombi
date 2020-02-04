@@ -9,6 +9,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.Switch;
@@ -60,6 +62,8 @@ public class ActivityVueTrombi extends AppCompatActivity {
     private BottomSheetBehavior bottomSheetBehavior;
     private CoordinatorLayout coordinatorLayout;
     private RelativeLayout relativeLayout;
+    private LinearLayout linearLayout;
+    private ProgressBar progressBar;
     private ChipGroup chipGroup;
     private TextView tvNbCols;
     private Switch switchDesc;
@@ -123,6 +127,8 @@ public class ActivityVueTrombi extends AppCompatActivity {
     private void findViews(){
         relativeLayout = findViewById(R.id.VUETROMBI_switchDescLayout);
         coordinatorLayout = findViewById(R.id.VUETROMBI_coordinator);
+        linearLayout = findViewById(R.id.VUETROMBI_layoutParam);
+        progressBar = findViewById(R.id.VUETROMBI_progressBar);
         bottomSheet = findViewById(R.id.VUETROMBI_bottomSheet);
         switchDesc = findViewById(R.id.VUETROMBI_switchDesc);
         chipGroup = findViewById(R.id.VUETROMBI_chipsGroup);
@@ -163,6 +169,17 @@ public class ActivityVueTrombi extends AppCompatActivity {
                 trombiViewModel.getGroupesByTrombi(idTrombi).removeObserver(this);
             }
         });
+
+        // Observation des élèves d'un des groupes (voir TrombiViewModel)
+        trombiViewModel.groupesWithEleves
+                .observe(ActivityVueTrombi.this, new Observer<GroupeWithEleves>() {
+                    @Override
+                    public void onChanged(GroupeWithEleves groupeWithEleves){
+                        listeEleves = groupeWithEleves.getEleves();
+                        Logger.logV("L2", String.valueOf(listeEleves.size()));
+                        showHTML();
+                    }
+                });
     }
 
     // Applique des listeners sur certains éléments
@@ -207,19 +224,8 @@ public class ActivityVueTrombi extends AppCompatActivity {
                     Chip c = findViewById(i);
                     Groupe currentGroupe = (Groupe) c.getTag(R.string.TAG_CHIPS_ID);
 
-                    // Changement de l'ID voulu pour la récupération de la méthode getGroupByIdWithEleves
+                    // Changement de l'ID voulu pour la récupération de la méthode TrombiViewModel#getGroupByIdWithEleves
                     trombiViewModel.setIdGroup(currentGroupe.getIdGroupe());
-
-                    // Observation des élèves du Groupe de la chips sélectionnée
-                    trombiViewModel.groupesWithEleves
-                            .observe(ActivityVueTrombi.this, new Observer<GroupeWithEleves>() {
-                                @Override
-                                public void onChanged(GroupeWithEleves groupeWithEleves){
-                                    listeEleves = groupeWithEleves.getEleves();
-
-                                    showHTML();
-                                }
-                            });
                 } else{
                     // On observe la liste de tous les élèves du trombi à nouveau
                     trombiViewModel.getElevesByTrombi(idTrombi)
@@ -262,6 +268,8 @@ public class ActivityVueTrombi extends AppCompatActivity {
         if(!isLoading){
             Logger.logV("isLoading -> true");
             isLoading = true;
+            linearLayout.setVisibility(View.GONE);
+            progressBar.setVisibility(View.VISIBLE);
 
             HTMLProvider htmlProvider = new HTMLProvider.Builder()
                     .setNomTrombi(nomTrombi)
@@ -284,6 +292,10 @@ public class ActivityVueTrombi extends AppCompatActivity {
                     .thenRun(() -> {
                         Logger.logV("isLoading -> false");
                         isLoading = false;
+                        runOnUiThread(() -> {
+                            linearLayout.setVisibility(View.VISIBLE);
+                            progressBar.setVisibility(View.GONE);
+                        });
                     });
         }
     }
