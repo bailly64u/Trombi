@@ -2,6 +2,7 @@ package com.ufrst.app.trombi.util;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.net.Uri;
 import android.util.Base64;
 
@@ -39,7 +40,8 @@ public class HTMLProvider {
 
     // Seule méthode publique de cet objet qui permet de retourner le HTML à afficher pour un trombi
     public String doHTML(){
-        return generateHTML(loadHTLMImages());
+        List<EleveImage> listEleveImage = loadHTLMImages();
+        return generateHTML(listEleveImage);
     }
 
     // Ecrit les balises HTML en s'adaptant aux attributs de classe
@@ -54,20 +56,20 @@ public class HTMLProvider {
         }
 
         StringBuilder sb = new StringBuilder();
+
+        // Style et métadonnées
         sb.append("<html>")
                 .append("<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">")
                 .append("<style>")
                 .append("@page {size:A4; margin:1cm;}")                     // Page
-                .append("html, body{width: 210mm;}")                         // <html>, <body>
-                //.append("img{width: ").append(100 / (nbCols + 1))
-                .append("img{width: 100")
-                .append("%;margin-right: auto; margin-left: auto;}")          // <img> transform:rotate(90deg);
-                .append("h1{font-size: 3em; text-align: center;}")           // <h1>
-                .append("h2{font-size: 2.8em; text-align: center;}")         // <h2>
-                .append("table{width: 100%;}")                              // <table>
-                .append("td{padding-bottom: 20px}")
+                .append("html, body{width: 210mm;}")                        // <html>, <body>
+                .append("img{width: 100%;margin-right: auto; margin-left: auto;}") // <img> transform:rotate(90deg);
+                .append("h1{font-size: 3em; text-align: center;}")          // <h1>
+                .append("h2{font-size: 2.8em; text-align: center;}")        // <h2>
+                .append("table{width: 100%; margin-bottom:100px;}")         // <table>
+                .append("td{padding-bottom: 20px}")                         // <td>
                 .append("td > *{display: block;}")
-                .append("#table td{text-align: center; font-size: 2em}")
+                .append("#table td{text-align: center; font-size: 2em}")    // <td>
                 .append("</style></head>")
                 .append("<body><h1>").append(nomTrombi).append("</h1>");
 
@@ -88,16 +90,21 @@ public class HTMLProvider {
 
                     // Si l'élève à une image, on ajoute une balise
                     if(eleveImage != null){
-                        sb.append("<td>");
+                        Logger.logV("E", eleveImage.getNomPrenom());
 
                         if(eleveImage.getBase64Image() != null && !eleveImage.getBase64Image().trim().isEmpty()){
+                            sb.append("<td>");
                             sb.append("<img src=\"data:image/jpg;base64,")
                                     .append(eleveImage.getBase64Image())
-                                    .append("\" />");
+                                    .append("\" />")
+                                    .append(eleveImage.getNomPrenom())
+                                    .append("</td>");
+                        } else{
+                            j--;
                         }
 
-                        sb.append(eleveImage.getNomPrenom())
-                                .append("</td>");
+//                        sb.append(eleveImage.getNomPrenom())
+//                                .append("</td>");
                     }
                 } catch(IndexOutOfBoundsException e){              // Fin de la liste atteinte, sortie
                     //Logger.handleException(e);
@@ -114,35 +121,31 @@ public class HTMLProvider {
         sb.append("</table>");
         sb.append("</body></html>");
 
-        Logger.logV("HTML", sb.toString());
-
         return sb.toString();
     }
 
     // Charge les images sous forme base64 et retourne une liste ordonnée des images
     private List<EleveImage> loadHTLMImages(){
         // Stream parallélisé pour générer les images des élèves
-        /*Stream<EleveImage> stream = */ return listeEleves.stream()
-                //.parallel()
-                .map(eleve -> new EleveImage(convertToBase64(eleve), eleve.getNomPrenom()))
-                .collect(Collectors.toList());
-//        try{
-//            return processStream(stream);
-//        } catch(InterruptedException | ExecutionException e){
-//            Logger.handleException(e);
-//            return Collections.emptyList();
-//        }
+        Stream<EleveImage> stream = listeEleves.stream()
+                .parallel()
+                .map(eleve -> new EleveImage(convertToBase64(eleve), eleve.getNomPrenom()));
+
+        return processStream(stream);
     }
 
     // Execute la méthode terminale du stream dans une FJP défini pour éviter d'utiliser trop de threads
-    private List<EleveImage> processStream(Stream<EleveImage> stream)
-            throws ExecutionException, InterruptedException{
+    private List<EleveImage> processStream(Stream<EleveImage> stream){
         // Contrôle du nombre de threads dans lesquels le stream va opérer
         ForkJoinPool pool = new ForkJoinPool(NUMBER_OF_THREADS);
 
         // Opération du stream dans la pool
-        return pool.submit(() -> stream.collect(Collectors.toList()))
-                .get();
+        try{
+            return pool.submit(() -> stream.collect(Collectors.toList())).get();
+        } catch(ExecutionException | InterruptedException e){
+            Logger.handleException(e);
+            return Collections.emptyList();
+        }
     }
 
     // Convertit l'image d'un élève en image Base64, pour l'afficher dans le HTML
@@ -158,7 +161,7 @@ public class HTMLProvider {
 
             if(bm != null){
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                bm.compress(Bitmap.CompressFormat.JPEG, 10, baos);
+                bm.compress(Bitmap.CompressFormat.JPEG, 50, baos);
                 try{
                     baos.close();
                 } catch(IOException e){

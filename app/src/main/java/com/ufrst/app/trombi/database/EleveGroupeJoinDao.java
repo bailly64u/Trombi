@@ -36,7 +36,8 @@ public interface EleveGroupeJoinDao {
             "FROM eleve_x_group " +
             "INNER JOIN table_eleve ON table_eleve.id_eleve = eleve_x_group.join_id_eleve " +
             "INNER JOIN table_groupe ON table_groupe.id_groupe = eleve_x_group.join_id_groupe " +
-            "WHERE table_eleve.is_deleted = 0")
+            "WHERE table_eleve.is_deleted = 0 " +
+            "ORDER BY table_eleve.nom_prenom")
     LiveData<List<GroupeWithEleves>> getGroupesWithEleves();
 
     // Retourne un objet GroupeWithEleve avec un groupe d'un certain id

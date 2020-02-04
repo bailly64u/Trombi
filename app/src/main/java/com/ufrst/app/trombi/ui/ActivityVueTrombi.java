@@ -273,9 +273,14 @@ public class ActivityVueTrombi extends AppCompatActivity {
 
             // Génère le HTML dans un autre Thread, puis l'affiche dans le ThreadUI (obligatoire)
             CompletableFuture.supplyAsync(htmlProvider::doHTML)
-                    .thenAccept(htmlText -> //{webView.loadData(htmlText, "text/html", "UTF-8"); Logger.logV(htmlText);})
-                            runOnUiThread(() -> {webView.loadData(htmlText, "text/html", "UTF-8"); Logger.logV(htmlText);}))
-                    .exceptionally(throwable -> {Logger.handleException(throwable); Logger.logV("ERREUR"); return null;})
+                    .thenAccept(htmlText ->
+                            runOnUiThread(() -> webView.loadDataWithBaseURL(
+                                    null,
+                                    htmlText,
+                                    "text/html; charset=UTF-8",
+                                    "UTF-8",
+                                    null)))
+                    .exceptionally(throwable -> null)
                     .thenRun(() -> {
                         Logger.logV("isLoading -> false");
                         isLoading = false;

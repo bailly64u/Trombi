@@ -8,6 +8,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -93,6 +94,7 @@ public class TrombiViewModel extends AndroidViewModel {
         return Transformations.map(liveGroup, group -> {
             List<Eleve> newEleves = group.getEleves().stream()
                     .filter(eleve -> !eleve.isDeleted())
+                    .sorted(Comparator.comparing(Eleve::getNomPrenom))
                     .collect(Collectors.toList());
 
             GroupeWithEleves newGroup = new GroupeWithEleves();
