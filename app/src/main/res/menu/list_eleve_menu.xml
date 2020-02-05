@@ -8,4 +8,12 @@
         android:title="@string/AJOUTTROMBI_importer"
         android:iconTint="?attr/onPrimary"
         app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/LISTe_modeClassePhoto"
+        android:icon="@drawable/ic_take_all_photos"
+        android:title="@string/AJOUTTROMBI_importer"
+        android:iconTint="?attr/onPrimary"
+        app:showAsAction="ifRoom" />
+
 </menu>

@@ -138,8 +138,10 @@ public class ActivityCapture extends AppCompatActivity {
                     trombiViewModel.setIdEleve(listEleves.get(index).getIdEleve());
                 }
             });
-        } else if(mode == TAKE_PHOTO_MODE){
+        } else if(mode == TAKE_PHOTO_MODE){ // || mode == EDIT_MODE ?
             trombiViewModel.setIdEleve(idEleve);
+            buttonNext.setVisibility(View.GONE);
+            buttonPrevious.setVisibility(View.GONE);
         }
 
         // eleveForPhoto est une transformation, voir TrombiViewModel pour plus d'informations
@@ -147,6 +149,7 @@ public class ActivityCapture extends AppCompatActivity {
             @Override
             public void onChanged(Eleve eleve){
                 currentEleve = eleve;
+                updateUI();
             }
         });
 
@@ -158,10 +161,9 @@ public class ActivityCapture extends AppCompatActivity {
             @Override
             public void onClick(View view){
                 switchMode(TAKE_ALL_PHOTO_MODE);
-                updateUI();
+                //updateUI();
                 index++;
                 trombiViewModel.setIdEleve(listEleves.get(index).getIdEleve());
-                Logger.logV("incrémentation", "indexe incrémenté: " + String.valueOf(index));
             }
         });
 
@@ -169,8 +171,9 @@ public class ActivityCapture extends AppCompatActivity {
             @Override
             public void onClick(View view){
                 switchMode(TAKE_ALL_PHOTO_MODE);
-                updateUI();
+                //updateUI();
                 index--;
+                trombiViewModel.setIdEleve(listEleves.get(index).getIdEleve());
             }
         });
     }
@@ -355,11 +358,12 @@ public class ActivityCapture extends AppCompatActivity {
         return false;
     }
 
+    // TODO : déguelasse
     // Attribue les bonnes valeures aux champs de l'UI
     private void updateUI(){
         Executors.newSingleThreadExecutor().execute(() -> {
             try{
-                Thread.sleep(5000);
+                Thread.sleep(100);
             } catch(InterruptedException e){
                 e.printStackTrace();
             }

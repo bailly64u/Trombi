@@ -35,6 +35,7 @@ import java.util.List;
 
 import static com.ufrst.app.trombi.ui.ActivityCapture.EXTRA_MODE;
 import static com.ufrst.app.trombi.ui.ActivityCapture.TAKE_ALL_PHOTO_MODE;
+import static com.ufrst.app.trombi.ui.ActivityCapture.TAKE_PHOTO_MODE;
 import static com.ufrst.app.trombi.ui.ActivityMain.EXTRA_ID;
 import static com.ufrst.app.trombi.ui.ActivityMain.EXTRA_ID_E;
 import static com.ufrst.app.trombi.ui.ActivityMain.EXTRA_NOM_E;
@@ -210,7 +211,7 @@ public class ActivityListEleve extends AppCompatActivity {
                 Intent intent = new Intent(ActivityListEleve.this, ActivityCapture.class);
                 intent.putExtra(EXTRA_ID_E, eleve.getIdEleve());
                 intent.putExtra(EXTRA_ID, idTrombi);
-                intent.putExtra(EXTRA_MODE, TAKE_ALL_PHOTO_MODE); //A changer: takephotomode
+                intent.putExtra(EXTRA_MODE, TAKE_PHOTO_MODE); //A changer: takephotomode
 
                 startActivity(intent);
             }
@@ -233,6 +234,15 @@ public class ActivityListEleve extends AppCompatActivity {
                 intent.putExtra(EXTRA_ID, idTrombi);
 
                 startActivity(intent);
+                return true;
+
+            case R.id.LISTe_modeClassePhoto:
+                Intent intent1 = new Intent(ActivityListEleve.this, ActivityCapture.class);
+                intent1.putExtra(EXTRA_ID, idTrombi);
+                // idEleve ?
+                intent1.putExtra(EXTRA_MODE, TAKE_ALL_PHOTO_MODE);
+
+                startActivity(intent1);
                 return true;
 
             default:
