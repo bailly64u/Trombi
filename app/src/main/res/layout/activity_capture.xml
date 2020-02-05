@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/CAPT_coordinator"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#121212">
 
     <FrameLayout
         android:id="@+id/CAPT_frameLyt"
@@ -14,6 +15,17 @@
             android:id="@+id/CAPT_previewView"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
+
+<!--        <ImageView-->
+<!--            android:id="@+id/CAPT_resultImage"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent" />-->
+
+        <com.theartofdev.edmodo.cropper.CropImageView
+            android:id="@+id/CAPT_resultImage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone" />
 
         <ImageView
             android:id="@+id/CAPT_imgView"
@@ -51,7 +63,7 @@
                     android:layout_marginStart="12dp"
                     android:layout_marginTop="12dp"
                     style="@style/TextAppearance.AppCompat"
-                    android:text="Une photo est déjà enregistrée pour cet élève." />
+                    android:text="@string/CAPT_bannerMessage" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/CAPT_buttonNextIfPhoto"
@@ -60,7 +72,7 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/CAPT_tvBanner"
                     android:layout_alignParentEnd="true"
-                    android:text="Suivant" />
+                    android:text="@string/CAPT_bannerNext" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/CAPT_buttonDismiss"
@@ -69,7 +81,7 @@
                     android:layout_below="@+id/CAPT_tvBanner"
                     android:layout_toStartOf="@+id/CAPT_buttonNextIfPhoto"
                     style="@style/Widget.MaterialComponents.Button.TextButton"
-                    android:text="Ignorer" />
+                    android:text="@string/CAPT_bannerDismiss" />
 
             </RelativeLayout>
 

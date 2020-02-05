@@ -18,7 +18,8 @@
         <activity android:name=".ui.ActivityListGroupe" />
         <activity android:name=".ui.ActivityAjoutEleve" />
         <activity android:name=".ui.ActivityListEleve" />
-        <activity android:name=".ui.ActivityCapture" />
+        <activity android:name=".ui.ActivityCapture"
+            android:screenOrientation="portrait"/>
         <activity android:name=".ui.ActivityBDTest" />
         <activity android:name=".ui.ActivityMain">
             <intent-filter>

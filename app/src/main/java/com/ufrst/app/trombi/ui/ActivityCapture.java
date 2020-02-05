@@ -2,6 +2,7 @@ package com.ufrst.app.trombi.ui;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
@@ -15,6 +16,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageCapture;
+import androidx.camera.core.ImageProxy;
 import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
@@ -28,16 +30,16 @@ import androidx.lifecycle.ViewModelProviders;
 import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.theartofdev.edmodo.cropper.CropImageView;
 import com.ufrst.app.trombi.R;
 import com.ufrst.app.trombi.database.Eleve;
 import com.ufrst.app.trombi.database.EleveWithGroups;
 import com.ufrst.app.trombi.database.TrombiViewModel;
+import com.ufrst.app.trombi.util.ImageUtil;
+import com.ufrst.app.trombi.util.Logger;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
@@ -46,6 +48,8 @@ import static com.ufrst.app.trombi.ui.ActivityMain.EXTRA_ID_E;
 
 public class ActivityCapture extends AppCompatActivity {
 
+    private static final int EDIT_MODE = 2;
+    private static final int TAKE_PHOTO_MODE = 1;
     private static final int REQUEST_CODE_PERMISSIONS = 1;
     private static final String[] REQUIRED_PERMISSIONS = new String[]{"android.permission.CAMERA",
             "android.permission.WRITE_EXTERNAL_STORAGE"};
@@ -57,13 +61,15 @@ public class ActivityCapture extends AppCompatActivity {
     private LinearLayout linearLayout;
     private FloatingActionButton fab;
     private PreviewView previewView;
+    private ImageView helperFrame;
     private BottomAppBar toolbar;
-    private ImageView imageView;
+    private CropImageView editImage;
     private CardView banner;
 
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     private Eleve currentEleve;
     private long idEleve;
+    private int mode = TAKE_PHOTO_MODE;                 // Détermine si l'on modifie ou prend une photo
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -76,6 +82,7 @@ public class ActivityCapture extends AppCompatActivity {
         setListeners();
         checkForExistingPhoto();
 
+        // Vérification des permissions accordées
         if(allPermissionsGranted()){
             startCamera();
         } else{
@@ -91,7 +98,8 @@ public class ActivityCapture extends AppCompatActivity {
         linearLayout = findViewById(R.id.CAPT_linearLayout);
         buttonPrevious = findViewById(R.id.CAPT_previous);
         previewView = findViewById(R.id.CAPT_previewView);
-        imageView = findViewById(R.id.CAPT_imgView);
+        editImage = findViewById(R.id.CAPT_resultImage);
+        helperFrame = findViewById(R.id.CAPT_imgView);
         buttonNext = findViewById(R.id.CAPT_next);
         toolbar = findViewById(R.id.CAPT_toolbar);
         banner = findViewById(R.id.CAPT_banner);
@@ -115,6 +123,35 @@ public class ActivityCapture extends AppCompatActivity {
                 trombiViewModel.getEleveById(idEleve).removeObserver(this);
             }
         });
+    }
+
+    // Listener du fab dans ActivityCapture#bindPreview
+    private void setListeners(){
+        buttonNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view){
+
+            }
+        });
+
+        buttonPrevious.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view){
+                hideBanner();
+            }
+        });
+    }
+
+    // Récupère l'élève dans la base de données et vérifie s'il a une photo
+    private void checkForExistingPhoto(){
+        CompletableFuture.supplyAsync(() -> trombiViewModel.getEleveByIdWithGroupsNotLive(idEleve))
+                .thenApply(EleveWithGroups::getEleves)
+                .thenApply(eleve -> !eleve.getPhoto().trim().equals(""))
+                .thenAccept(hasPhoto -> {
+                    if(hasPhoto)
+                        showBanner();
+                });
+        //.thenRun(() -> Logger.logV("t", "Le futur est terminé"));
     }
 
     // Vérifie si les permission nécessaires sont accordées, sinon on les demande
@@ -173,38 +210,14 @@ public class ActivityCapture extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view){
-                if(getExternalFilesDir(null) != null){
-                    String timeStamp = new SimpleDateFormat("HHmmss").format(new Date());
-                    File f = new File(getExternalFilesDir(null).getPath()
-                            + "/" + timeStamp + ".jpeg");
+                if(mode == EDIT_MODE)
+                    saveEditedImage();
 
-                    imageCapture.takePicture(f,
-                            Executors.newSingleThreadExecutor(),
-                            new ImageCapture.OnImageSavedCallback() {
-                                @Override
-                                public void onImageSaved(@NonNull File file){
-                                    previewView.post(() -> Toast.makeText(ActivityCapture.this,
-                                            R.string.CAPT_photoTaken,
-                                            Toast.LENGTH_LONG).show());
+                else if(mode == TAKE_PHOTO_MODE)
+                    saveImage(imageCapture);
 
-                                    currentEleve.setPhoto(Uri.fromFile(f).toString());
-                                    trombiViewModel.update(currentEleve);
-                                }
-
-                                @Override
-                                public void onError(int imageCaptureError,
-                                                    @NonNull String message,
-                                                    @Nullable Throwable cause){
-                                    previewView.post(() -> Toast.makeText(ActivityCapture.this,
-                                            R.string.CAPT_error,
-                                            Toast.LENGTH_LONG).show());
-                                }
-                            });
-                } else{
-                    Snackbar.make(coordinatorLayout,
-                            R.string.CAPT_error2,
-                            Snackbar.LENGTH_LONG);
-                }
+                else
+                    throw new IllegalStateException("Mode inconnu");
             }
         });
 
@@ -233,31 +246,77 @@ public class ActivityCapture extends AppCompatActivity {
         cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageCapture);
     }
 
-    private void setListeners(){
-        buttonNext.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view){
+    // Enregistre l'image prise depuis la caméra
+    private void saveImage(ImageCapture imageCapture){
+        if(getExternalFilesDir(null) != null){
+            String path = ImageUtil.getPathNameForEleve(
+                    getExternalFilesDir(null).getPath(),
+                    currentEleve);
 
-            }
-        });
+            File f = new File(path);
 
-        buttonPrevious.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view){
-                hideBanner();
-            }
+            imageCapture.takePicture(f,
+                    Executors.newSingleThreadExecutor(),
+                    new ImageCapture.OnImageSavedCallback() {
+                        @Override
+                        public void onImageSaved(@NonNull File file){
+                            //showToast(getResources().getText(R.string.CAPT_photoTaken));
+
+                            changeElevePhoto(f);
+                            loadImageEditor(Uri.fromFile(f));
+                        }
+
+                        @Override
+                        public void onError(int imageCaptureError,
+                                            @NonNull String message,
+                                            @Nullable Throwable cause){
+                            showToast(getResources().getText(R.string.CAPT_error));
+                        }
+                    });
+        } else{
+            showToast(getResources().getText(R.string.CAPT_error2));
+        }
+    }
+
+    // Fait apparaître l'outil d'édition de la photo prise
+    private void loadImageEditor(Uri capturedImage){
+        switchMode(EDIT_MODE);
+
+        runOnUiThread(() -> {
+            editImage.setCropShape(CropImageView.CropShape.OVAL);
+            editImage.setImageUriAsync(capturedImage);
         });
     }
 
-    // Récupère l'élève dans la base de données et vérifie s'il a une photo
-    private void checkForExistingPhoto(){
-        CompletableFuture.supplyAsync(() -> trombiViewModel.getEleveByIdWithGroupsNotLive(idEleve))
-                .thenApply(EleveWithGroups::getEleves)
-                .thenApply(eleve -> !eleve.getPhoto().trim().equals(""))
-                .thenAccept(hasPhoo -> {
-                    if(hasPhoo)
-                        showBanner();
-                });
+    private void saveEditedImage(){
+        Bitmap bitmap = editImage.getCroppedImage();
+        ImageUtil imageUtil = new ImageUtil();
+
+        CompletableFuture.supplyAsync(() ->
+                imageUtil.saveImage(bitmap, getExternalFilesDir(null).getPath(), currentEleve))
+                .exceptionally(throwable -> null)
+                .thenApply(this::changeElevePhoto)
+                .thenAccept(this::alertImageSaved);
+    }
+
+    // Avertit l'utilisateur lors de la sauvegarde d'une image modifiée
+    private void alertImageSaved(boolean isImageSaved){
+        runOnUiThread(() -> {
+            if(isImageSaved)
+                Toast.makeText(this, R.string.CAPT_photoModified, Toast.LENGTH_SHORT).show();
+            else
+                Toast.makeText(this, R.string.U_erreur, Toast.LENGTH_SHORT).show();
+        });
+    }
+
+    private boolean changeElevePhoto(File photo){
+        if(photo != null){
+            currentEleve.setPhoto(Uri.fromFile(photo).toString());
+            trombiViewModel.update(currentEleve);
+            return true;
+        }
+
+        return false;
     }
 
     private void showBanner(){
@@ -301,6 +360,35 @@ public class ActivityCapture extends AppCompatActivity {
         buttonDismiss.setOnClickListener(null);
     }
 
+    private void switchMode(int newMode){
+        mode = newMode;
+
+        // La modification des vues se fait sur le ThreadUI
+        if(mode == EDIT_MODE){
+            runOnUiThread(() -> {
+                previewView.setVisibility(View.GONE);
+                helperFrame.setVisibility(View.GONE);
+                editImage.setVisibility(View.VISIBLE);
+
+                fab.hide();
+                fab.postDelayed(() -> fab.setImageResource(R.drawable.ic_valid), 500);
+                fab.postDelayed(() -> fab.show(), 1200);
+            });
+        } else if(mode == TAKE_PHOTO_MODE){
+            runOnUiThread(() -> {
+                previewView.setVisibility(View.VISIBLE);
+                helperFrame.setVisibility(View.VISIBLE);
+                editImage.setVisibility(View.GONE);
+
+                fab.hide();
+                fab.postDelayed(() -> fab.setImageResource(R.drawable.ic_photo), 500);
+                fab.postDelayed(() -> fab.show(), 1500);
+            });
+        } else {
+            throw new IllegalStateException("Mode inconnu");
+        }
+    }
+
     // Retourne le Bitmap correspondant à l'image capturée
     /*private Bitmap getBitmap(ImageProxy imageProxy){
         Image i = imageProxy.getImage();
@@ -327,6 +415,20 @@ public class ActivityCapture extends AppCompatActivity {
         byte[] imageBytes = out.toByteArray();
         return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
     }*/
+
+    // Crée des Toast
+    private void showToast(CharSequence text){
+        runOnUiThread( () -> Toast.makeText(this, text, Toast.LENGTH_SHORT).show());
+    }
+
+    @Override
+    public void onBackPressed(){
+        if(mode == EDIT_MODE){
+            switchMode(TAKE_PHOTO_MODE);
+        } else{
+            super.onBackPressed();
+        }
+    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults){

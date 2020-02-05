@@ -52,11 +52,15 @@
 
     <string name="CAPT_requestDenied">L\'application doit disposer de ces dorits pour fonctionner.</string>
     <string name="CAPT_photoTaken">Photo capturée !</string>
+    <string name="CAPT_photoModified">Photo sauvegardée !</string>
     <string name="CAPT_error">La prise de photo a échouée</string>
     <string name="CAPT_error2">L\'application ne peut pas accéder au répertoire externe de l\'application !</string>
     <string name="CAPT_contentDesc1">Aide pour le cadrage</string>
     <string name="CAPT_contentDesc2">Précédent</string>
     <string name="CAPT_contentDesc3">Suivant</string>
+    <string name="CAPT_bannerMessage">Une photo est déjà enregistrée pour cet élève.</string>
+    <string name="CAPT_bannerDismiss">Ignorer</string>
+    <string name="CAPT_bannerNext">Suivant</string>
 
     <string name="LISTe_title">Gérer les élèves</string>
     <string name="LISTe_emptyRecyclerView">Aucun élève dans ce trombinoscope :O .</string>
