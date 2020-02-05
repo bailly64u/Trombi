@@ -24,6 +24,10 @@ public class TrombiViewModel extends AndroidViewModel {
     public final LiveData<GroupeWithEleves> groupesWithEleves =
             Transformations.switchMap(requestedIdGroupe, this::getGroupeByIdWithEleves);
 
+    private final MutableLiveData<Long> requestedIdEleve = new MutableLiveData<>();
+    public final LiveData<Eleve> eleveForPhoto =
+            Transformations.switchMap(requestedIdEleve, id -> repository.getEleveById(id));
+
     public TrombiViewModel(@NonNull Application application){
         super(application);
 
@@ -31,9 +35,11 @@ public class TrombiViewModel extends AndroidViewModel {
     }
 
     // Permet de changer l'id du groupe observé : cf groupesWithEleves
-    public void setIdGroup(long idGroupe){
-        requestedIdGroupe.setValue(idGroupe);
-    }
+    public void setIdGroup(long idGroupe){ requestedIdGroupe.setValue(idGroupe); }
+
+    // Change la l'élève contenu dans les livedata selon un id contenu dans requestedIdELeve
+    // Utilisé pour connaitre l'élève à prendre en photo dans le mode TAKE_ALL_PHOTO
+    public void setIdEleve(long idEleve){ requestedIdEleve.setValue(idEleve);}
 
 
     // Trombinoscope________________________________________________________________________________

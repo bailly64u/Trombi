@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -16,7 +17,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageCapture;
-import androidx.camera.core.ImageProxy;
 import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
@@ -40,16 +40,21 @@ import com.ufrst.app.trombi.util.ImageUtil;
 import com.ufrst.app.trombi.util.Logger;
 
 import java.io.File;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 
+import static com.ufrst.app.trombi.ui.ActivityMain.EXTRA_ID;
 import static com.ufrst.app.trombi.ui.ActivityMain.EXTRA_ID_E;
 
 public class ActivityCapture extends AppCompatActivity {
 
-    private static final int EDIT_MODE = 2;
-    private static final int TAKE_PHOTO_MODE = 1;
+    public static final String EXTRA_MODE = "com.ufrst.app.trombi.EXTRA_MODE";
+    public static final int TAKE_PHOTO_MODE = 1;
+    public static final int TAKE_ALL_PHOTO_MODE = 2;
+
+    private static final int EDIT_MODE = 3;
     private static final int REQUEST_CODE_PERMISSIONS = 1;
     private static final String[] REQUIRED_PERMISSIONS = new String[]{"android.permission.CAMERA",
             "android.permission.WRITE_EXTERNAL_STORAGE"};
@@ -64,12 +69,16 @@ public class ActivityCapture extends AppCompatActivity {
     private ImageView helperFrame;
     private BottomAppBar toolbar;
     private CropImageView editImage;
+    private TextView tvName;
     private CardView banner;
 
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
+    private List<Eleve> listEleves;
     private Eleve currentEleve;
+    private long idTrombi;              // Utile seulement si on est en mode TAKE_ALL_PHOTO
     private long idEleve;
-    private int mode = TAKE_PHOTO_MODE;                 // Détermine si l'on modifie ou prend une photo
+    private int index = 0;              // Détermine l'élève à modifier si le mode est TAKE_ALL_PHOTO
+    private int mode;                   // Détermine si l'on modifie ou prend une photo
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -81,6 +90,7 @@ public class ActivityCapture extends AppCompatActivity {
         observeEleve();
         setListeners();
         checkForExistingPhoto();
+        updateUI();
 
         // Vérification des permissions accordées
         if(allPermissionsGranted()){
@@ -102,6 +112,7 @@ public class ActivityCapture extends AppCompatActivity {
         helperFrame = findViewById(R.id.CAPT_imgView);
         buttonNext = findViewById(R.id.CAPT_next);
         toolbar = findViewById(R.id.CAPT_toolbar);
+        tvName = findViewById(R.id.CAPT_tvName);
         banner = findViewById(R.id.CAPT_banner);
         fab = findViewById(R.id.CAPT_takePic);
     }
@@ -109,20 +120,36 @@ public class ActivityCapture extends AppCompatActivity {
     private void getExtras(){
         Intent intent = getIntent();
         idEleve = intent.getLongExtra(EXTRA_ID_E, -1);
+        idTrombi = intent.getLongExtra(EXTRA_ID, -1);
+        mode = intent.getIntExtra(EXTRA_MODE, TAKE_PHOTO_MODE);
     }
 
     private void observeEleve(){
         trombiViewModel = ViewModelProviders.of(this).get(TrombiViewModel.class);
 
-        trombiViewModel.getEleveById(idEleve).observe(this, new Observer<Eleve>() {
+        // Observer la liste de tous les élèves du trombi si on est dans le mode correspondant
+        if(mode == TAKE_ALL_PHOTO_MODE){
+            // Cet observeur regarde la liste de tous les élèves, puis actualise la valeur
+            // de l'élève à observé selon l'attribut index de la classe (voir bloc suivant)
+            trombiViewModel.getElevesByTrombi(idTrombi).observe(this, new Observer<List<Eleve>>() {
+                @Override
+                public void onChanged(List<Eleve> eleves){
+                    listEleves = eleves;
+                    trombiViewModel.setIdEleve(listEleves.get(index).getIdEleve());
+                }
+            });
+        } else if(mode == TAKE_PHOTO_MODE){
+            trombiViewModel.setIdEleve(idEleve);
+        }
+
+        // eleveForPhoto est une transformation, voir TrombiViewModel pour plus d'informations
+        trombiViewModel.eleveForPhoto.observe(ActivityCapture.this, new Observer<Eleve>() {
             @Override
             public void onChanged(Eleve eleve){
                 currentEleve = eleve;
-
-                // On a besoin de la valeur qu'une seule fois
-                trombiViewModel.getEleveById(idEleve).removeObserver(this);
             }
         });
+
     }
 
     // Listener du fab dans ActivityCapture#bindPreview
@@ -130,14 +157,20 @@ public class ActivityCapture extends AppCompatActivity {
         buttonNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view){
-
+                switchMode(TAKE_ALL_PHOTO_MODE);
+                updateUI();
+                index++;
+                trombiViewModel.setIdEleve(listEleves.get(index).getIdEleve());
+                Logger.logV("incrémentation", "indexe incrémenté: " + String.valueOf(index));
             }
         });
 
         buttonPrevious.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view){
-                hideBanner();
+                switchMode(TAKE_ALL_PHOTO_MODE);
+                updateUI();
+                index--;
             }
         });
     }
@@ -151,7 +184,6 @@ public class ActivityCapture extends AppCompatActivity {
                     if(hasPhoto)
                         showBanner();
                 });
-        //.thenRun(() -> Logger.logV("t", "Le futur est terminé"));
     }
 
     // Vérifie si les permission nécessaires sont accordées, sinon on les demande
@@ -213,7 +245,7 @@ public class ActivityCapture extends AppCompatActivity {
                 if(mode == EDIT_MODE)
                     saveEditedImage();
 
-                else if(mode == TAKE_PHOTO_MODE)
+                else if(mode == TAKE_PHOTO_MODE || mode == TAKE_ALL_PHOTO_MODE)
                     saveImage(imageCapture);
 
                 else
@@ -248,6 +280,8 @@ public class ActivityCapture extends AppCompatActivity {
 
     // Enregistre l'image prise depuis la caméra
     private void saveImage(ImageCapture imageCapture){
+        Logger.logV("Current eleve", currentEleve.getNomPrenom());
+
         if(getExternalFilesDir(null) != null){
             String path = ImageUtil.getPathNameForEleve(
                     getExternalFilesDir(null).getPath(),
@@ -289,6 +323,8 @@ public class ActivityCapture extends AppCompatActivity {
     }
 
     private void saveEditedImage(){
+        Logger.logV("Current eleve", currentEleve.getNomPrenom());
+
         Bitmap bitmap = editImage.getCroppedImage();
         ImageUtil imageUtil = new ImageUtil();
 
@@ -317,6 +353,25 @@ public class ActivityCapture extends AppCompatActivity {
         }
 
         return false;
+    }
+
+    // Attribue les bonnes valeures aux champs de l'UI
+    private void updateUI(){
+        Executors.newSingleThreadExecutor().execute(() -> {
+            try{
+                Thread.sleep(5000);
+            } catch(InterruptedException e){
+                e.printStackTrace();
+            }
+
+            runOnUiThread(() -> {
+                if(mode == TAKE_PHOTO_MODE){
+                    tvName.setText(currentEleve.getNomPrenom());
+                } else if(mode == TAKE_ALL_PHOTO_MODE){
+                    tvName.setText(currentEleve.getNomPrenom());
+                }
+            });
+        });
     }
 
     private void showBanner(){
@@ -360,6 +415,7 @@ public class ActivityCapture extends AppCompatActivity {
         buttonDismiss.setOnClickListener(null);
     }
 
+    // Change l'UI pour refléter le mode édition ou prise de photo
     private void switchMode(int newMode){
         mode = newMode;
 
@@ -372,9 +428,9 @@ public class ActivityCapture extends AppCompatActivity {
 
                 fab.hide();
                 fab.postDelayed(() -> fab.setImageResource(R.drawable.ic_valid), 500);
-                fab.postDelayed(() -> fab.show(), 1200);
+                fab.postDelayed(() -> fab.show(), 1000);
             });
-        } else if(mode == TAKE_PHOTO_MODE){
+        } else if(mode == TAKE_PHOTO_MODE || mode == TAKE_ALL_PHOTO_MODE){
             runOnUiThread(() -> {
                 previewView.setVisibility(View.VISIBLE);
                 helperFrame.setVisibility(View.VISIBLE);
@@ -384,7 +440,7 @@ public class ActivityCapture extends AppCompatActivity {
                 fab.postDelayed(() -> fab.setImageResource(R.drawable.ic_photo), 500);
                 fab.postDelayed(() -> fab.show(), 1500);
             });
-        } else {
+        } else{
             throw new IllegalStateException("Mode inconnu");
         }
     }
@@ -418,7 +474,7 @@ public class ActivityCapture extends AppCompatActivity {
 
     // Crée des Toast
     private void showToast(CharSequence text){
-        runOnUiThread( () -> Toast.makeText(this, text, Toast.LENGTH_SHORT).show());
+        runOnUiThread(() -> Toast.makeText(this, text, Toast.LENGTH_SHORT).show());
     }
 
     @Override

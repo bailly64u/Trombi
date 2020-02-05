@@ -72,6 +72,7 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/CAPT_tvBanner"
                     android:layout_alignParentEnd="true"
+                    android:textColor="?attr/colorAccent"
                     android:text="@string/CAPT_bannerNext" />
 
                 <com.google.android.material.button.MaterialButton
@@ -81,6 +82,7 @@
                     android:layout_below="@+id/CAPT_tvBanner"
                     android:layout_toStartOf="@+id/CAPT_buttonNextIfPhoto"
                     style="@style/Widget.MaterialComponents.Button.TextButton"
+                    android:textColor="?attr/colorAccent"
                     android:text="@string/CAPT_bannerDismiss" />
 
             </RelativeLayout>
@@ -99,11 +101,11 @@
             android:background="?attr/colorPrimary">
 
             <TextView
+                android:id="@+id/CAPT_tvName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
                 android:gravity="center_horizontal"
-                android:text="Bailly Louis"
                 android:textColor="?attr/onPrimary"
                 android:textSize="22sp" />
 
