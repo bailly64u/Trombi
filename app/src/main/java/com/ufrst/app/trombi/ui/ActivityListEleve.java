@@ -239,7 +239,6 @@ public class ActivityListEleve extends AppCompatActivity {
             case R.id.LISTe_modeClassePhoto:
                 Intent intent1 = new Intent(ActivityListEleve.this, ActivityCapture.class);
                 intent1.putExtra(EXTRA_ID, idTrombi);
-                // idEleve ?
                 intent1.putExtra(EXTRA_MODE, TAKE_ALL_PHOTO_MODE);
 
                 startActivity(intent1);

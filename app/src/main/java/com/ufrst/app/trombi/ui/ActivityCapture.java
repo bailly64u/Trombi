@@ -89,8 +89,7 @@ public class ActivityCapture extends AppCompatActivity {
         getExtras();
         observeEleve();
         setListeners();
-        checkForExistingPhoto();
-        updateUI();
+        //updateUI();
 
         // Vérification des permissions accordées
         if(allPermissionsGranted()){
@@ -135,6 +134,14 @@ public class ActivityCapture extends AppCompatActivity {
                 @Override
                 public void onChanged(List<Eleve> eleves){
                     listEleves = eleves;
+
+                    // Le mode capture de classe est lancé alors qu'il n'y a pas d'élève dans le trombi
+                    if(eleves.isEmpty()){
+                        showToast(getResources().getText(R.string.CAPT_noEleve));
+                        finish();
+                        return;
+                    }
+
                     trombiViewModel.setIdEleve(listEleves.get(index).getIdEleve());
                 }
             });
@@ -149,6 +156,7 @@ public class ActivityCapture extends AppCompatActivity {
             @Override
             public void onChanged(Eleve eleve){
                 currentEleve = eleve;
+                checkForExistingPhoto();
                 updateUI();
             }
         });
@@ -161,9 +169,15 @@ public class ActivityCapture extends AppCompatActivity {
             @Override
             public void onClick(View view){
                 switchMode(TAKE_ALL_PHOTO_MODE);
-                //updateUI();
                 index++;
-                trombiViewModel.setIdEleve(listEleves.get(index).getIdEleve());
+
+                // Changement de l'id de l'élève à observer, donc changement de la valeur currentEleve
+                if(index < listEleves.size()){
+                    trombiViewModel.setIdEleve(listEleves.get(index).getIdEleve());
+                } else{
+                    showToast(getResources().getText(R.string.CAPT_lastEleve));
+                    index--;
+                }
             }
         });
 
@@ -171,21 +185,30 @@ public class ActivityCapture extends AppCompatActivity {
             @Override
             public void onClick(View view){
                 switchMode(TAKE_ALL_PHOTO_MODE);
-                //updateUI();
                 index--;
-                trombiViewModel.setIdEleve(listEleves.get(index).getIdEleve());
+
+                // Changement de l'id de l'élève à observer, donc changement de la valeur currentEleve
+                if(index >= 0){
+                    trombiViewModel.setIdEleve(listEleves.get(index).getIdEleve());
+                } else{
+                    showToast(getResources().getText(R.string.CAPT_firstEleve));
+                    index++;
+                }
             }
         });
     }
 
     // Récupère l'élève dans la base de données et vérifie s'il a une photo
     private void checkForExistingPhoto(){
-        CompletableFuture.supplyAsync(() -> trombiViewModel.getEleveByIdWithGroupsNotLive(idEleve))
+        CompletableFuture.supplyAsync(() ->
+                trombiViewModel.getEleveByIdWithGroupsNotLive(currentEleve.getIdEleve()))
                 .thenApply(EleveWithGroups::getEleves)
                 .thenApply(eleve -> !eleve.getPhoto().trim().equals(""))
                 .thenAccept(hasPhoto -> {
                     if(hasPhoto)
                         showBanner();
+                    else
+                        hideBanner();
                 });
     }
 
@@ -319,10 +342,13 @@ public class ActivityCapture extends AppCompatActivity {
     private void loadImageEditor(Uri capturedImage){
         switchMode(EDIT_MODE);
 
-        runOnUiThread(() -> {
-            editImage.setCropShape(CropImageView.CropShape.OVAL);
-            editImage.setImageUriAsync(capturedImage);
-        });
+        //editImage.setShowCropOverlay(false);
+        editImage.post(() -> editImage.setImageUriAsync(capturedImage));
+
+        /*runOnUiThread(() -> {
+            //editImage.setCropShape(CropImageView.CropShape.OVAL);     // https://github.com/ArthurHub/Android-Image-Cropper/issues/553
+
+        });*/
     }
 
     private void saveEditedImage(){
@@ -358,30 +384,32 @@ public class ActivityCapture extends AppCompatActivity {
         return false;
     }
 
-    // TODO : déguelasse
-    // Attribue les bonnes valeures aux champs de l'UI
+    // Attribue les bonnes valeures aux champs de l'UI et déclenche une animation
+    // isNextDétermine le sens de l'animation, 1 pour suivant, ou -1 pour précédent
     private void updateUI(){
-        Executors.newSingleThreadExecutor().execute(() -> {
-            try{
-                Thread.sleep(100);
-            } catch(InterruptedException e){
-                e.printStackTrace();
-            }
+        tvName.setText(currentEleve.getNomPrenom());
 
-            runOnUiThread(() -> {
-                if(mode == TAKE_PHOTO_MODE){
-                    tvName.setText(currentEleve.getNomPrenom());
-                } else if(mode == TAKE_ALL_PHOTO_MODE){
-                    tvName.setText(currentEleve.getNomPrenom());
-                }
-            });
-        });
+        tvName.animate()
+                .translationY(tvName.getHeight())
+                .setDuration(0);
+
+        tvName.postDelayed(() -> tvName.animate()
+                .translationY(0)
+                .setDuration(500), 100);
     }
 
     private void showBanner(){
+        // Pas de bannière en mode photo unique ou edite
+        if(mode == TAKE_PHOTO_MODE || mode == EDIT_MODE){
+            return;
+        }
+
+        // Animations
         banner.animate()
                 .alpha(1.0f)
                 .setDuration(1000);
+
+        linearLayout.clearAnimation();
 
         // Le LinearLayout descends de la taille de la bannière
         banner.post(() -> linearLayout.animate()
@@ -399,7 +427,8 @@ public class ActivityCapture extends AppCompatActivity {
         buttonNextIfPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view){
-                Toast.makeText(ActivityCapture.this, "bruh", Toast.LENGTH_SHORT).show();
+                // Si on est en photo de classe, on passe à l'élève suivant sinon on sort
+                buttonNext.callOnClick();
             }
         });
     }
@@ -408,6 +437,8 @@ public class ActivityCapture extends AppCompatActivity {
         banner.animate()
                 .translationY(-banner.getHeight())
                 .setDuration(300);
+
+        banner.postDelayed(() -> banner.animate().translationY(0).alpha(0.0f).setDuration(0), 400);
 
         // Le LinearLayout retourne à la position initiale
         linearLayout.animate()

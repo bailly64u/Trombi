@@ -61,6 +61,9 @@
     <string name="CAPT_bannerMessage">Une photo est déjà enregistrée pour cet élève.</string>
     <string name="CAPT_bannerDismiss">Ignorer</string>
     <string name="CAPT_bannerNext">Suivant</string>
+    <string name="CAPT_firstEleve">C\'est le premier élève de la liste</string>
+    <string name="CAPT_lastEleve">C\'est le dernier élève de la liste</string>
+    <string name="CAPT_noEleve">Aucun élève pour ce trombinoscope !</string>
 
     <string name="LISTe_title">Gérer les élèves</string>
     <string name="LISTe_emptyRecyclerView">Aucun élève dans ce trombinoscope :O .</string>
