@@ -352,8 +352,6 @@ public class ActivityCapture extends AppCompatActivity {
     }
 
     private void saveEditedImage(){
-        Logger.logV("Current eleve", currentEleve.getNomPrenom());
-
         Bitmap bitmap = editImage.getCroppedImage();
         ImageUtil imageUtil = new ImageUtil();
 

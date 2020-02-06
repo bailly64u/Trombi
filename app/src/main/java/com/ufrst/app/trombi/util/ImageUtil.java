@@ -1,6 +1,7 @@
 package com.ufrst.app.trombi.util;
 
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
 
 import com.ufrst.app.trombi.database.Eleve;
 
@@ -20,6 +21,11 @@ public class ImageUtil {
     // Sauvegarde une image pour un élève donné à une certaine position. Ne pas exécuter sur l'UI
     public File saveImage(Bitmap bitmap, String externalDirPath, Eleve eleve){
         File f = new File(getPathNameForEleve(externalDirPath, eleve));
+
+        /*Matrix matrix = new Matrix();
+        matrix.postRotate(90);
+
+        bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);*/
 
         try{
             FileOutputStream fos = new FileOutputStream(f);

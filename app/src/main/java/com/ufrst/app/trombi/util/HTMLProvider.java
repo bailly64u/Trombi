@@ -235,9 +235,9 @@ public class HTMLProvider {
             Bitmap bm = BitmapFactory.decodeFile(filePath);
 
             // Rotation de l'image, entraîne des problèmes de performances
-            Matrix matrix = new Matrix();
+            /*Matrix matrix = new Matrix();
             matrix.postRotate(90);
-            bm = Bitmap.createBitmap(bm, 0, 0, bm.getWidth(), bm.getHeight(), matrix, true);
+            bm = Bitmap.createBitmap(bm, 0, 0, bm.getWidth(), bm.getHeight(), matrix, true);*/
 
             if(bm != null){
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
