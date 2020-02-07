@@ -17,10 +17,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.RequestManager;
 import com.ufrst.app.trombi.R;
 import com.ufrst.app.trombi.database.Eleve;
+import com.ufrst.app.trombi.util.Logger;
 
 import java.util.List;
 
-public class AdapteurEleve extends ListAdapter<Eleve, AdapteurEleve.EleveHolder>{
+public class AdapteurEleve extends ListAdapter<Eleve, AdapteurEleve.EleveHolder> {
 
     private OnItemClickListener listener;
     private LayoutInflater inflater;
@@ -71,7 +72,7 @@ public class AdapteurEleve extends ListAdapter<Eleve, AdapteurEleve.EleveHolder>
                     .placeholder(R.drawable.ic_person)
                     .into(holder.ivPortrait);
         } else{
-            // Pas obligatoire mais évite à glide de lancer des exceptions h24S
+            // Pas obligatoire mais évite à glide de lancer des exceptions h24
             glide.load(R.drawable.ic_person)
                     .centerCrop()
                     .into(holder.ivPortrait);
@@ -83,7 +84,8 @@ public class AdapteurEleve extends ListAdapter<Eleve, AdapteurEleve.EleveHolder>
         return getItem(pos);
     }
 
-    class EleveHolder extends RecyclerView.ViewHolder{
+    class EleveHolder extends RecyclerView.ViewHolder {
+
         private ImageButton bPhoto;
         private ImageView ivPortrait;
         private TextView tvNomPrenom;
@@ -139,9 +141,12 @@ public class AdapteurEleve extends ListAdapter<Eleve, AdapteurEleve.EleveHolder>
     }
 
     // Interface permettant de gérer le clique dans l'activité principale et son contexte
-    public interface OnItemClickListener{
+    public interface OnItemClickListener {
+
         void onItemClick(Eleve eleve);
+
         void onItemLongClick(Eleve eleve);
+
         void onPhotoClick(Eleve eleve);
     }
 
