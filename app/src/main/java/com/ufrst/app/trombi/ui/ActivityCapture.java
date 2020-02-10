@@ -155,9 +155,13 @@ public class ActivityCapture extends AppCompatActivity {
         trombiViewModel.eleveForPhoto.observe(ActivityCapture.this, new Observer<Eleve>() {
             @Override
             public void onChanged(Eleve eleve){
+                // Ne pas déclencher l'animation si on est sur le même élève et qu'il reçoit une photo
+                if(currentEleve == null || eleve.getIdEleve() != currentEleve.getIdEleve())
+                    updateUI(eleve);
+
                 currentEleve = eleve;
                 checkForExistingPhoto();
-                updateUI();
+
             }
         });
 
@@ -168,7 +172,9 @@ public class ActivityCapture extends AppCompatActivity {
         buttonNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view){
-                switchMode(TAKE_ALL_PHOTO_MODE);
+                if(mode != TAKE_ALL_PHOTO_MODE)
+                    switchMode(TAKE_ALL_PHOTO_MODE);
+
                 index++;
 
                 // Changement de l'id de l'élève à observer, donc changement de la valeur currentEleve
@@ -184,7 +190,9 @@ public class ActivityCapture extends AppCompatActivity {
         buttonPrevious.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view){
-                switchMode(TAKE_ALL_PHOTO_MODE);
+                if(mode != TAKE_ALL_PHOTO_MODE)
+                    switchMode(TAKE_ALL_PHOTO_MODE);
+
                 index--;
 
                 // Changement de l'id de l'élève à observer, donc changement de la valeur currentEleve
@@ -322,7 +330,7 @@ public class ActivityCapture extends AppCompatActivity {
                         public void onImageSaved(@NonNull File file){
                             //showToast(getResources().getText(R.string.CAPT_photoTaken));
 
-                            changeElevePhoto(f);
+                            //changeElevePhoto(f);
                             loadImageEditor(Uri.fromFile(f));
                         }
 
@@ -344,6 +352,10 @@ public class ActivityCapture extends AppCompatActivity {
 
         //editImage.setShowCropOverlay(false);
         editImage.post(() -> editImage.setImageUriAsync(capturedImage));
+
+        // A mettre dans les paramètres ?
+        editImage.setAspectRatio(1, 1);
+        editImage.setFixedAspectRatio(true);
 
         /*runOnUiThread(() -> {
             //editImage.setCropShape(CropImageView.CropShape.OVAL);     // https://github.com/ArthurHub/Android-Image-Cropper/issues/553
@@ -384,8 +396,8 @@ public class ActivityCapture extends AppCompatActivity {
 
     // Attribue les bonnes valeures aux champs de l'UI et déclenche une animation
     // isNextDétermine le sens de l'animation, 1 pour suivant, ou -1 pour précédent
-    private void updateUI(){
-        tvName.setText(currentEleve.getNomPrenom());
+    private void updateUI(Eleve eleve){
+        tvName.setText(eleve.getNomPrenom());
 
         tvName.animate()
                 .translationY(tvName.getHeight())
@@ -407,8 +419,6 @@ public class ActivityCapture extends AppCompatActivity {
                 .alpha(1.0f)
                 .setDuration(1000);
 
-        linearLayout.clearAnimation();
-
         // Le LinearLayout descends de la taille de la bannière
         banner.post(() -> linearLayout.animate()
                 .translationY(banner.getHeight())
@@ -426,6 +436,7 @@ public class ActivityCapture extends AppCompatActivity {
             @Override
             public void onClick(View view){
                 // Si on est en photo de classe, on passe à l'élève suivant sinon on sort
+                Logger.logV("Bannière", "callOnCLick()");
                 buttonNext.callOnClick();
             }
         });
@@ -436,7 +447,10 @@ public class ActivityCapture extends AppCompatActivity {
                 .translationY(-banner.getHeight())
                 .setDuration(300);
 
-        banner.postDelayed(() -> banner.animate().translationY(0).alpha(0.0f).setDuration(0), 400);
+        banner.postDelayed(() -> banner.animate()
+                .translationY(0)
+                .alpha(0.0f)
+                .setDuration(0), 400);
 
         // Le LinearLayout retourne à la position initiale
         linearLayout.animate()
@@ -530,4 +544,5 @@ public class ActivityCapture extends AppCompatActivity {
             }
         }
     }
+
 }
