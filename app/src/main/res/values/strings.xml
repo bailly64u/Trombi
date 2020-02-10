@@ -19,6 +19,7 @@
     <string name="MAIN_trombiAjoute">Le trombinoscope a été ajouté</string>
     <string name="MAIN_trombiModifie">Le trombinoscope a été modifié</string>
     <string name="MAIN_modifier">Modifier les élèves</string>
+    <string name="MAIN_parametres">Paramètres</string>
 
     <string name="AJOUTTROMBI_title">Ajouter un trombinoscope</string>
     <string name="AJOUTTROMBI_titleVar">Modifier un trombinoscope</string>
@@ -94,6 +95,12 @@
     <string name="AJOUTGROUPE_title">Ajouter un groupe</string>
     <string name="AJOUTGROUPE_hint1">Nom</string>
     <string name="AJOUTGROUPE_contentDesc1">Nom du groupe</string>
+
+    <string name="PARA_title">Paramètres</string>
+    <string name="PARA_titleNbCol">Nombre de colonnes</string>
+    <string name="PARA_nbCol">Sélectionnez le nombre de colonnes voulues par défaut dans l\'affichage des trombinoscopes.</string>
+    <string name="PARA_titleFixedRatio">Ratio de recadrage fixe</string>
+    <string name="PARA_fixedRatio">Fixer un ratio 1:1 pour le recadrage des photos, afin qu\'elles soient toujours carrées.</string>
 
     <!-- ID pour chips -->
     <string name="TAG_CHIPS_ID">com.ufrst.app.trombi.TAG_CHIPS_ID</string>

@@ -120,7 +120,7 @@ public class ActivityVueTrombi extends AppCompatActivity {
     // Récupération des valeures prédéfinies par l'utilisateur
     private void retrieveSharedPrefs(){
         prefs = getSharedPreferences("com.ufrst.app.trombi", Context.MODE_PRIVATE);
-        nbCols = prefs.getInt(PREFS_NBCOLS, 3);
+        nbCols = prefs.getInt(PREFS_NBCOLS, 4) -1;
     }
 
     // Désérialise les vues dont on aura besoin depuis le XML
@@ -172,13 +172,9 @@ public class ActivityVueTrombi extends AppCompatActivity {
 
         // Observation des élèves d'un des groupes (voir TrombiViewModel)
         trombiViewModel.groupesWithEleves
-                .observe(ActivityVueTrombi.this, new Observer<GroupeWithEleves>() {
-                    @Override
-                    public void onChanged(GroupeWithEleves groupeWithEleves){
-                        listeEleves = groupeWithEleves.getEleves();
-                        Logger.logV("L2", String.valueOf(listeEleves.size()));
-                        showHTML();
-                    }
+                .observe(ActivityVueTrombi.this, groupeWithEleves -> {
+                    listeEleves = groupeWithEleves.getEleves();
+                    showHTML();
                 });
     }
 

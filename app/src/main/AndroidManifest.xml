@@ -14,12 +14,20 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.ActivityAjoutGroupe"/>
+        <activity
+            android:name=".ui.ActivityParametre"
+            android:parentActivityName=".ui.ActivityMain">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.ufrst.app.trombi.ui.ActivityMain" />
+        </activity>
+        <activity android:name=".ui.ActivityAjoutGroupe" />
         <activity android:name=".ui.ActivityListGroupe" />
         <activity android:name=".ui.ActivityAjoutEleve" />
         <activity android:name=".ui.ActivityListEleve" />
-        <activity android:name=".ui.ActivityCapture"
-            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".ui.ActivityCapture"
+            android:screenOrientation="portrait" />
         <activity android:name=".ui.ActivityBDTest" />
         <activity android:name=".ui.ActivityMain">
             <intent-filter>
@@ -29,8 +37,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.ActivityAjoutTrombi" />
-        <activity android:name=".ui.ActivityVueTrombi"
-            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".ui.ActivityVueTrombi"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

@@ -1,6 +1,8 @@
 package com.ufrst.app.trombi.ui;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -47,6 +49,7 @@ import java.util.concurrent.Executors;
 
 import static com.ufrst.app.trombi.ui.ActivityMain.EXTRA_ID;
 import static com.ufrst.app.trombi.ui.ActivityMain.EXTRA_ID_E;
+import static com.ufrst.app.trombi.ui.ActivityMain.PREFS_FIXED_RATIO;
 
 public class ActivityCapture extends AppCompatActivity {
 
@@ -73,7 +76,9 @@ public class ActivityCapture extends AppCompatActivity {
     private CardView banner;
 
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
+    private SharedPreferences prefs;
     private List<Eleve> listEleves;
+    private boolean isFixedRatio;
     private Eleve currentEleve;
     private long idTrombi;              // Utile seulement si on est en mode TAKE_ALL_PHOTO
     private long idEleve;
@@ -87,6 +92,8 @@ public class ActivityCapture extends AppCompatActivity {
 
         findViews();
         getExtras();
+        retrieveSharedPreferences();
+        Logger.logV("prefs", "isRatioFixed: " + isFixedRatio);
         observeEleve();
         setListeners();
         //updateUI();
@@ -121,6 +128,11 @@ public class ActivityCapture extends AppCompatActivity {
         idEleve = intent.getLongExtra(EXTRA_ID_E, -1);
         idTrombi = intent.getLongExtra(EXTRA_ID, -1);
         mode = intent.getIntExtra(EXTRA_MODE, TAKE_PHOTO_MODE);
+    }
+
+    private void retrieveSharedPreferences(){
+        prefs = getSharedPreferences("com.ufrst.app.trombi", Context.MODE_PRIVATE);
+        isFixedRatio = prefs.getBoolean(PREFS_FIXED_RATIO, true);
     }
 
     private void observeEleve(){
@@ -353,9 +365,8 @@ public class ActivityCapture extends AppCompatActivity {
         //editImage.setShowCropOverlay(false);
         editImage.post(() -> editImage.setImageUriAsync(capturedImage));
 
-        // A mettre dans les paramètres ?
         editImage.setAspectRatio(1, 1);
-        editImage.setFixedAspectRatio(true);
+        editImage.setFixedAspectRatio(isFixedRatio);
 
         /*runOnUiThread(() -> {
             //editImage.setCropShape(CropImageView.CropShape.OVAL);     // https://github.com/ArthurHub/Android-Image-Cropper/issues/553

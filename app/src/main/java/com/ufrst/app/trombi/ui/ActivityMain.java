@@ -3,6 +3,9 @@ package com.ufrst.app.trombi.ui;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
@@ -45,6 +48,7 @@ public class ActivityMain extends AppCompatActivity {
     public static final String EXTRA_NOM_G = "com.ufrst.app.trombi.EXTRA_NOM_G";
 
     public static final String PREFS_NBCOLS = "com.ufrst.app.trombi.PREFS_NBCOLS";
+    public static final String PREFS_FIXED_RATIO = "com.ufrst.app.trombi.PREFS_FIXED_RATIO";
 
     private CoordinatorLayout coordinatorLayout;
     //private NavigationView navigationView;
@@ -288,5 +292,23 @@ public class ActivityMain extends AppCompatActivity {
                 Snackbar.make(coordinatorLayout, R.string.MAIN_trombiModifie, Snackbar.LENGTH_LONG).show();
             }
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.main_menu, menu);
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item){
+        if(item.getItemId() == R.id.MAIN_settings){
+            Intent intent = new Intent(ActivityMain.this, ActivityParametre.class);
+            startActivity(intent);
+        }
+
+        return true;
     }
 }
