@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -71,6 +72,7 @@ public class ActivityVueTrombi extends AppCompatActivity {
     private WebView webView;
     private Toolbar toolbar;
     private SeekBar seekBar;
+    private Chip checked;                               // Chip sélectionnée, pour empecher de changer de chip lors d'un chargement
 
     private Observer<List<Eleve>> observerEleve;
     private TrombiViewModel trombiViewModel;
@@ -194,7 +196,7 @@ public class ActivityVueTrombi extends AppCompatActivity {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar){
-                if(seekBar.getProgress() != nbCols){
+                if(seekBar.getProgress() != nbCols && !isLoading){
                     nbCols = seekBar.getProgress();
                     showHTML();
                 }
@@ -202,44 +204,52 @@ public class ActivityVueTrombi extends AppCompatActivity {
         });
 
         // Groupe de chips
-        chipGroup.setOnCheckedChangeListener(new ChipGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(ChipGroup chipGroup, int i){
-                //
-                // SOLUTION TEMPORAIRE au problème du changement d'id des chips lors de la reprise de l'activité
-                //
-                /*int pos = i - 1;    // Représente la position du groupe dans la liste listeGroupe
+        chipGroup.setOnCheckedChangeListener((chipGroup, i) -> {
+            //
+            // SOLUTION TEMPORAIRE au problème du changement d'id des chips lors de la reprise de l'activité
+            //
+            /*int pos = i - 1;    // Représente la position du groupe dans la liste listeGroupe
 
-                while(pos > chipGroup.getChildCount() - 1){
-                    pos -= chipGroup.getChildCount();
-                }*/
+            while(pos > chipGroup.getChildCount() - 1){
+                pos -= chipGroup.getChildCount();
+            }*/
 
-                // Une chips est sélectionnée
-                if(i != ChipGroup.NO_ID){
-                    // Récupération du groupe associé à la chips: cf setChips()
-                    Chip c = findViewById(i);
+            // Une chips est sélectionnée
+            if(i != ChipGroup.NO_ID){
+                // Récupération du groupe associé à la chips: cf setChips()
+                Chip c = findViewById(i);
+
+                //if(!isLoading){
+                    // Actualisation de la chip checkée
+                    checked = c;
+                    Logger.logV("O", "IsLoading false, setIdGroupe");
+                    // Récupération du groupe associé à la chip
                     Groupe currentGroupe = (Groupe) c.getTag(R.string.TAG_CHIPS_ID);
 
                     // Changement de l'ID voulu pour la récupération de la méthode TrombiViewModel#getGroupByIdWithEleves
                     trombiViewModel.setIdGroup(currentGroupe.getIdGroupe());
-                } else{
-                    // On observe la liste de tous les élèves du trombi à nouveau
-                    trombiViewModel.getElevesByTrombi(idTrombi)
-                            .observe(ActivityVueTrombi.this, observerEleve);
-                }
+                //} else{
+                    //c.setChecked(false);
+
+                    /*if(checked != null)
+                        checked.setChecked(true);*/
+                //}
+            } else{
+                // On observe la liste de tous les élèves du trombi à nouveau
+                trombiViewModel.getElevesByTrombi(idTrombi)
+                        .observe(ActivityVueTrombi.this, observerEleve);
+
+                //checked = null;
             }
         });
 
         // Switch afficher description
-        relativeLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view){
-                switchDesc.setChecked(!switchDesc.isChecked());
+        relativeLayout.setOnClickListener(view -> {
+            switchDesc.setChecked(!switchDesc.isChecked());
 
-                withDesc = switchDesc.isChecked();
+            withDesc = switchDesc.isChecked();
 
-                showHTML();
-            }
+            showHTML();
         });
     }
 
@@ -253,7 +263,7 @@ public class ActivityVueTrombi extends AppCompatActivity {
         c.setTag(R.string.TAG_CHIPS_ID, g);
 
         // Texte de la chips
-        c.setText(g.getNomGroupe() + "-" + g.getIdGroupe()); //A changer: enlever + idGroupe
+        c.setText(g.getNomGroupe()); //A changer: enlever + idGroupe
 
         // Ajout de la chips dans le groupe de chips
         chipGroup.post(() -> chipGroup.addView(c));
@@ -262,10 +272,7 @@ public class ActivityVueTrombi extends AppCompatActivity {
     // Insère le HTML dans la WebView de manière asynchrone (évite les freezes)
     private void showHTML(){
         if(!isLoading){
-            Logger.logV("isLoading -> true");
-            isLoading = true;
-            linearLayout.setVisibility(View.GONE);
-            progressBar.setVisibility(View.VISIBLE);
+            setLoadingState(true);
 
             HTMLProvider htmlProvider = new HTMLProvider.Builder()
                     .setNomTrombi(nomTrombi)
@@ -285,15 +292,25 @@ public class ActivityVueTrombi extends AppCompatActivity {
                                     "UTF-8",
                                     null)))
                     .exceptionally(throwable -> null)
-                    .thenRun(() -> {
-                        Logger.logV("isLoading -> false");
-                        isLoading = false;
-                        runOnUiThread(() -> {
-                            linearLayout.setVisibility(View.VISIBLE);
-                            progressBar.setVisibility(View.GONE);
-                        });
-                    });
+                    .thenRun(() -> setLoadingState(false));
         }
+    }
+
+    // Active ou désactive des composants si la génération du html est en cours ou non
+    private void setLoadingState(boolean isLoading){
+        runOnUiThread(() -> {
+            if(isLoading){
+                seekBar.setEnabled(false);
+                progressBar.setVisibility(View.VISIBLE);
+            } else {
+                seekBar.setEnabled(true);
+                progressBar.setVisibility(View.GONE);
+            }
+        });
+
+        this.isLoading = isLoading;
+        chipGroup.setClickable(!isLoading);
+        seekBar.setActivated(!isLoading);
     }
 
     // Demande à l'utilisateur si la liste doit être exportée

@@ -142,20 +142,17 @@ public class ActivityCapture extends AppCompatActivity {
         if(mode == TAKE_ALL_PHOTO_MODE){
             // Cet observeur regarde la liste de tous les élèves, puis actualise la valeur
             // de l'élève à observé selon l'attribut index de la classe (voir bloc suivant)
-            trombiViewModel.getElevesByTrombi(idTrombi).observe(this, new Observer<List<Eleve>>() {
-                @Override
-                public void onChanged(List<Eleve> eleves){
-                    listEleves = eleves;
+            trombiViewModel.getElevesByTrombi(idTrombi).observe(this, eleves -> {
+                listEleves = eleves;
 
-                    // Le mode capture de classe est lancé alors qu'il n'y a pas d'élève dans le trombi
-                    if(eleves.isEmpty()){
-                        showToast(getResources().getText(R.string.CAPT_noEleve));
-                        finish();
-                        return;
-                    }
-
-                    trombiViewModel.setIdEleve(listEleves.get(index).getIdEleve());
+                // Le mode capture de classe est lancé alors qu'il n'y a pas d'élève dans le trombi
+                if(eleves.isEmpty()){
+                    showToast(getResources().getText(R.string.CAPT_noEleve));
+                    finish();
+                    return;
                 }
+
+                trombiViewModel.setIdEleve(listEleves.get(index).getIdEleve());
             });
         } else if(mode == TAKE_PHOTO_MODE){ // || mode == EDIT_MODE ?
             trombiViewModel.setIdEleve(idEleve);
@@ -164,56 +161,47 @@ public class ActivityCapture extends AppCompatActivity {
         }
 
         // eleveForPhoto est une transformation, voir TrombiViewModel pour plus d'informations
-        trombiViewModel.eleveForPhoto.observe(ActivityCapture.this, new Observer<Eleve>() {
-            @Override
-            public void onChanged(Eleve eleve){
-                // Ne pas déclencher l'animation si on est sur le même élève et qu'il reçoit une photo
-                if(currentEleve == null || eleve.getIdEleve() != currentEleve.getIdEleve())
-                    updateUI(eleve);
+        trombiViewModel.eleveForPhoto.observe(ActivityCapture.this, eleve -> {
+            // Ne pas déclencher l'animation si on est sur le même élève et qu'il reçoit une photo
+            if(currentEleve == null || eleve.getIdEleve() != currentEleve.getIdEleve())
+                updateUI(eleve);
 
-                currentEleve = eleve;
-                checkForExistingPhoto();
+            currentEleve = eleve;
+            checkForExistingPhoto();
 
-            }
         });
 
     }
 
     // Listener du fab dans ActivityCapture#bindPreview
     private void setListeners(){
-        buttonNext.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view){
-                if(mode != TAKE_ALL_PHOTO_MODE)
-                    switchMode(TAKE_ALL_PHOTO_MODE);
+        buttonNext.setOnClickListener(view -> {
+            if(mode != TAKE_ALL_PHOTO_MODE)
+                switchMode(TAKE_ALL_PHOTO_MODE);
 
-                index++;
+            index++;
 
-                // Changement de l'id de l'élève à observer, donc changement de la valeur currentEleve
-                if(index < listEleves.size()){
-                    trombiViewModel.setIdEleve(listEleves.get(index).getIdEleve());
-                } else{
-                    showToast(getResources().getText(R.string.CAPT_lastEleve));
-                    index--;
-                }
+            // Changement de l'id de l'élève à observer, donc changement de la valeur currentEleve
+            if(index < listEleves.size()){
+                trombiViewModel.setIdEleve(listEleves.get(index).getIdEleve());
+            } else{
+                showToast(getResources().getText(R.string.CAPT_lastEleve));
+                index--;
             }
         });
 
-        buttonPrevious.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view){
-                if(mode != TAKE_ALL_PHOTO_MODE)
-                    switchMode(TAKE_ALL_PHOTO_MODE);
+        buttonPrevious.setOnClickListener(view -> {
+            if(mode != TAKE_ALL_PHOTO_MODE)
+                switchMode(TAKE_ALL_PHOTO_MODE);
 
-                index--;
+            index--;
 
-                // Changement de l'id de l'élève à observer, donc changement de la valeur currentEleve
-                if(index >= 0){
-                    trombiViewModel.setIdEleve(listEleves.get(index).getIdEleve());
-                } else{
-                    showToast(getResources().getText(R.string.CAPT_firstEleve));
-                    index++;
-                }
+            // Changement de l'id de l'élève à observer, donc changement de la valeur currentEleve
+            if(index >= 0){
+                trombiViewModel.setIdEleve(listEleves.get(index).getIdEleve());
+            } else{
+                showToast(getResources().getText(R.string.CAPT_firstEleve));
+                index++;
             }
         });
     }
@@ -285,18 +273,15 @@ public class ActivityCapture extends AppCompatActivity {
                 //.setFlashMode(ImageCapture.FLASH_MODE_ON)
                 .build();
 
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view){
-                if(mode == EDIT_MODE)
-                    saveEditedImage();
+        fab.setOnClickListener(view -> {
+            if(mode == EDIT_MODE)
+                saveEditedImage();
 
-                else if(mode == TAKE_PHOTO_MODE || mode == TAKE_ALL_PHOTO_MODE)
-                    saveImage(imageCapture);
+            else if(mode == TAKE_PHOTO_MODE || mode == TAKE_ALL_PHOTO_MODE)
+                saveImage(imageCapture);
 
-                else
-                    throw new IllegalStateException("Mode inconnu");
-            }
+            else
+                throw new IllegalStateException("Mode inconnu");
         });
 
         // Tentative de récupération de l'image prise sans la stocker dans le stockage interne
@@ -436,21 +421,10 @@ public class ActivityCapture extends AppCompatActivity {
                 .setDuration(300));
 
         // Mise en place des listeners
-        buttonDismiss.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view){
-                hideBanner();
-            }
-        });
+        buttonDismiss.setOnClickListener(view -> hideBanner());
 
-        buttonNextIfPhoto.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view){
-                // Si on est en photo de classe, on passe à l'élève suivant sinon on sort
-                Logger.logV("Bannière", "callOnCLick()");
-                buttonNext.callOnClick();
-            }
-        });
+        // Si on est en photo de classe, on passe à l'élève suivant sinon on sort☺
+        buttonNextIfPhoto.setOnClickListener(view -> buttonNext.callOnClick());
     }
 
     private void hideBanner(){

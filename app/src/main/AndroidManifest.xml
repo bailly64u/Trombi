@@ -14,13 +14,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity
-            android:name=".ui.ActivityParametre"
-            android:parentActivityName=".ui.ActivityMain">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.ufrst.app.trombi.ui.ActivityMain" />
-        </activity>
+        <activity android:name=".ui.ActivityParametre"/>
         <activity android:name=".ui.ActivityAjoutGroupe" />
         <activity android:name=".ui.ActivityListGroupe" />
         <activity android:name=".ui.ActivityAjoutEleve" />

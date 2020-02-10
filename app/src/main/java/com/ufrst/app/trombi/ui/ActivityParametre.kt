@@ -11,6 +11,7 @@ import android.widget.Switch
 import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import com.google.android.material.chip.ChipGroup
 import com.ufrst.app.trombi.R
 import com.ufrst.app.trombi.ui.ActivityMain.PREFS_FIXED_RATIO
 import com.ufrst.app.trombi.ui.ActivityMain.PREFS_NBCOLS
@@ -34,9 +35,11 @@ class ActivityParametre : AppCompatActivity() {
         retrieveSharedPreferences()
         initializeComponent()
         setListeners()
-
+        
         // Toolbar
         setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
         setTitle(R.string.PARA_title)
     }
 
@@ -76,5 +79,10 @@ class ActivityParametre : AppCompatActivity() {
         }
 
         super.onPause()
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        finish()
+        return super.onSupportNavigateUp()
     }
 }
