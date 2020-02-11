@@ -13,20 +13,22 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import com.google.android.material.chip.ChipGroup
 import com.ufrst.app.trombi.R
-import com.ufrst.app.trombi.ui.ActivityMain.PREFS_FIXED_RATIO
-import com.ufrst.app.trombi.ui.ActivityMain.PREFS_NBCOLS
+import com.ufrst.app.trombi.ui.ActivityMain.*
 import com.ufrst.app.trombi.util.Logger
 
 class ActivityParametre : AppCompatActivity() {
 
     private val switchRatioLayout : RelativeLayout by bind(R.id.PARA_switchNbColLayout)
+    private val switchQualityLayout : RelativeLayout by bind(R.id.PARA_switchQualityLayout)
     private val switchFixedRatio : Switch by bind(R.id.PARA_switchFixedRatio)
+    private val switchQuality : Switch by bind(R.id.PARA_switchQuality)
     private val numberPicker : NumberPicker by bind(R.id.PARA_npCol)
     private val toolbar : Toolbar by bind(R.id.PARA_toolbar)
     private lateinit var prefs : SharedPreferences
 
     private var nbCols = -1
     private var isFixedRatio = true
+    private var qualityOrLatency = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,8 +47,13 @@ class ActivityParametre : AppCompatActivity() {
 
     private fun retrieveSharedPreferences(){
         prefs = getSharedPreferences("com.ufrst.app.trombi", Context.MODE_PRIVATE)
-        nbCols = prefs.getInt(PREFS_NBCOLS, 4)
-        isFixedRatio = prefs.getBoolean(PREFS_FIXED_RATIO, true)
+
+        with(prefs) {
+            nbCols = getInt(PREFS_NBCOLS, 4)
+            isFixedRatio = getBoolean(PREFS_FIXED_RATIO, true)
+            Logger.logV("PARA, retrieveSharedPrefs", "isFixedRatio: $isFixedRatio")
+            qualityOrLatency = getBoolean(PREFS_QUALITY_OR_LATENCY, false)
+        }
     }
 
     // Actualise la valeur des composants selon les SharedPreferences
@@ -58,11 +65,17 @@ class ActivityParametre : AppCompatActivity() {
         }
 
         switchFixedRatio.isChecked = isFixedRatio
+        switchQuality.isChecked = qualityOrLatency
     }
 
     private fun setListeners(){
         switchRatioLayout.setOnClickListener {
+            Logger.logV("CLick", "ClickListenerSwitchRatio")
             switchFixedRatio.isChecked = !switchFixedRatio.isChecked
+        }
+
+        switchQualityLayout.setOnClickListener {
+            switchQuality.isChecked = !switchQuality.isChecked
         }
     }
 
@@ -74,7 +87,9 @@ class ActivityParametre : AppCompatActivity() {
     override fun onPause() {
         prefs.edit().apply{
             putInt(PREFS_NBCOLS, numberPicker.value)
+            Logger.logV("PARA, onPause", "switchFixedRatio: " + switchFixedRatio.isChecked)
             putBoolean(PREFS_FIXED_RATIO, switchFixedRatio.isChecked)
+            putBoolean(PREFS_QUALITY_OR_LATENCY, switchQuality.isChecked)
             apply()
         }
 

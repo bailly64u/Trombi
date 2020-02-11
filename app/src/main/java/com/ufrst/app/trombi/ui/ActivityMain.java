@@ -49,6 +49,8 @@ public class ActivityMain extends AppCompatActivity {
 
     public static final String PREFS_NBCOLS = "com.ufrst.app.trombi.PREFS_NBCOLS";
     public static final String PREFS_FIXED_RATIO = "com.ufrst.app.trombi.PREFS_FIXED_RATIO";
+    public static final String PREFS_QUALITY_OR_LATENCY =
+            "com.ufrst.app.trombi.PREFS_QUALITY_OR_LATENCY";
 
     private CoordinatorLayout coordinatorLayout;
     //private NavigationView navigationView;

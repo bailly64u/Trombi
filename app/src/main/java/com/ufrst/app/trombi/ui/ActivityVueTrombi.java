@@ -4,6 +4,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.print.PrintAttributes;
+import android.print.PrintDocumentAdapter;
+import android.print.PrintJob;
+import android.print.PrintManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -36,6 +40,7 @@ import com.ufrst.app.trombi.database.Groupe;
 import com.ufrst.app.trombi.database.GroupeWithEleves;
 import com.ufrst.app.trombi.database.TrombiViewModel;
 import com.ufrst.app.trombi.util.HTMLProvider;
+import com.ufrst.app.trombi.util.ImageUtil;
 import com.ufrst.app.trombi.util.Logger;
 
 import java.io.BufferedWriter;
@@ -72,18 +77,20 @@ public class ActivityVueTrombi extends AppCompatActivity {
     private WebView webView;
     private Toolbar toolbar;
     private SeekBar seekBar;
-    private Chip checked;                               // Chip sélectionnée, pour empecher de changer de chip lors d'un chargement
 
     private Observer<List<Eleve>> observerEleve;
     private TrombiViewModel trombiViewModel;
+    private boolean observingGroups = false;            // Sert à savoir si on met le groupe pour le titre du PDF
+    private boolean isLoading = false;                  // Le chargement d'une webview est en cours
     private List<Eleve> listeEleves;
     private SharedPreferences prefs;
-    private boolean isLoading = false;                  // Le chargement d'une webview est en cours
     private boolean withDesc = true;
     private String descTrombi;
     private String nomTrombi;
     private long idTrombi;
     private int nbCols;                                 // Nombre de colonnes à afficher dans le webview
+
+    private Chip checked;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -157,19 +164,13 @@ public class ActivityVueTrombi extends AppCompatActivity {
 
         trombiViewModel = ViewModelProviders.of(this).get(TrombiViewModel.class);
         trombiViewModel.getElevesByTrombi(idTrombi).observe(this, observerEleve);
-        trombiViewModel.getGroupesByTrombi(idTrombi).observe(this, new Observer<List<Groupe>>() {
-            @Override
-            public void onChanged(List<Groupe> groupes){
-                // Insertion des chips pour le choix des groupes a afficher
-                Executors.newSingleThreadExecutor().execute(() -> {
-                    for(Groupe g : groupes){
-                        setChips(g);
-                    }
-                });
-
-                // On a besoin des valeurs une seule fois
-                trombiViewModel.getGroupesByTrombi(idTrombi).removeObserver(this);
-            }
+        trombiViewModel.getGroupesByTrombi(idTrombi).observe(this, groupes -> {
+            // Insertion des chips pour le choix des groupes a afficher
+            Executors.newSingleThreadExecutor().execute(() -> {
+                for(Groupe g : groupes){
+                    setChips(g);
+                }
+            });
         });
 
         // Observation des élèves d'un des groupes (voir TrombiViewModel)
@@ -219,37 +220,32 @@ public class ActivityVueTrombi extends AppCompatActivity {
                 // Récupération du groupe associé à la chips: cf setChips()
                 Chip c = findViewById(i);
 
-                //if(!isLoading){
-                    // Actualisation de la chip checkée
-                    checked = c;
-                    Logger.logV("O", "IsLoading false, setIdGroupe");
-                    // Récupération du groupe associé à la chip
-                    Groupe currentGroupe = (Groupe) c.getTag(R.string.TAG_CHIPS_ID);
+                checked = c;
 
-                    // Changement de l'ID voulu pour la récupération de la méthode TrombiViewModel#getGroupByIdWithEleves
-                    trombiViewModel.setIdGroup(currentGroupe.getIdGroupe());
-                //} else{
-                    //c.setChecked(false);
+                // Récupération du groupe associé à la chip
+                Groupe currentGroupe = (Groupe) c.getTag(R.string.TAG_CHIPS_ID);
 
-                    /*if(checked != null)
-                        checked.setChecked(true);*/
-                //}
+                observingGroups = true;
+
+                // Changement de l'ID voulu pour la récupération de la méthode TrombiViewModel#getGroupByIdWithEleves
+                trombiViewModel.setIdGroup(currentGroupe.getIdGroupe());
             } else{
+                observingGroups = false;
+
                 // On observe la liste de tous les élèves du trombi à nouveau
                 trombiViewModel.getElevesByTrombi(idTrombi)
                         .observe(ActivityVueTrombi.this, observerEleve);
-
-                //checked = null;
             }
         });
 
         // Switch afficher description
         relativeLayout.setOnClickListener(view -> {
-            switchDesc.setChecked(!switchDesc.isChecked());
+            if(!isLoading){
+                switchDesc.setChecked(!switchDesc.isChecked());
+                withDesc = switchDesc.isChecked();
 
-            withDesc = switchDesc.isChecked();
-
-            showHTML();
+                showHTML();
+            }
         });
     }
 
@@ -300,17 +296,17 @@ public class ActivityVueTrombi extends AppCompatActivity {
     private void setLoadingState(boolean isLoading){
         runOnUiThread(() -> {
             if(isLoading){
+                chipGroup.setVisibility(View.INVISIBLE);
                 seekBar.setEnabled(false);
                 progressBar.setVisibility(View.VISIBLE);
-            } else {
+            } else{
+                chipGroup.setVisibility(View.VISIBLE);
                 seekBar.setEnabled(true);
                 progressBar.setVisibility(View.GONE);
             }
         });
 
         this.isLoading = isLoading;
-        chipGroup.setClickable(!isLoading);
-        seekBar.setActivated(!isLoading);
     }
 
     // Demande à l'utilisateur si la liste doit être exportée
@@ -321,27 +317,24 @@ public class ActivityVueTrombi extends AppCompatActivity {
         final String filename = nomTrombi + "-" + df.format(calendar.getTime());
 
         // Observation des élèves du trombi à exporter
-        trombiViewModel.getElevesByTrombi(idTrombi).observe(this, new Observer<List<Eleve>>() {
-            @Override
-            public void onChanged(List<Eleve> eleves){
-                File file = new File(getExternalFilesDir(null) + "/" + filename + ".txt");
+        trombiViewModel.getElevesByTrombi(idTrombi).observe(this, eleves -> {
+            File file = new File(getExternalFilesDir(null) + "/" + filename + ".txt");
 
-                // Si le fichier existe, on demande à le remplacer, sinon on le créer.
-                if(file.exists()){
-                    // Snackbar avec action
-                    Snackbar.make(coordinatorLayout, R.string.VUETROMBI_fichierExiste, Snackbar.LENGTH_INDEFINITE)
-                            .setAction(R.string.U_remplacer, new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v){
-                                    writeExportedList(filename, eleves, true);
-                                }
-                            })
-                            .setActionTextColor(ContextCompat.getColor(ActivityVueTrombi.this, R.color.colorAccent))
-                            .setDuration(8000)
-                            .show();
-                } else{
-                    writeExportedList(filename, eleves, false);
-                }
+            // Si le fichier existe, on demande à le remplacer, sinon on le créer.
+            if(file.exists()){
+                // Snackbar avec action
+                Snackbar.make(coordinatorLayout, R.string.VUETROMBI_fichierExiste, Snackbar.LENGTH_INDEFINITE)
+                        .setAction(R.string.U_remplacer, new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v){
+                                writeExportedList(filename, eleves, true);
+                            }
+                        })
+                        .setActionTextColor(ContextCompat.getColor(ActivityVueTrombi.this, R.color.colorAccent))
+                        .setDuration(8000)
+                        .show();
+            } else{
+                writeExportedList(filename, eleves, false);
             }
         });
 
@@ -385,6 +378,24 @@ public class ActivityVueTrombi extends AppCompatActivity {
         }
     }
 
+    // Lance un Intent pour le PrintManager qui permet d'exporter en PDF
+    private void createWebPrintJob(WebView webView) {
+        PrintManager printManager = (PrintManager) getSystemService(Context.PRINT_SERVICE);
+
+        StringBuilder filename = new StringBuilder(nomTrombi);
+
+        if(observingGroups && trombiViewModel.groupesWithEleves.getValue() != null){
+            filename.append(" - ").append(trombiViewModel.groupesWithEleves.getValue().getGroupe().getNomGroupe());
+        }
+
+        PrintDocumentAdapter printAdapter = webView.createPrintDocumentAdapter(filename.toString());
+
+        if(printManager != null){
+            printManager.print(filename.toString(), printAdapter, new PrintAttributes.Builder().build());
+        }
+
+    }
+
     @Override
     public boolean onSupportNavigateUp(){
         finish();
@@ -406,15 +417,18 @@ public class ActivityVueTrombi extends AppCompatActivity {
                 return true;
 
             case R.id.VUETROMBI_exporterPdf:
-                Toast.makeText(this, "bruh1", Toast.LENGTH_SHORT).show();
+                createWebPrintJob(webView);
                 return true;
 
             case R.id.VUETROMBI_exporterImg:
-                Toast.makeText(this, "bruh2", Toast.LENGTH_SHORT).show();
+                CompletableFuture
+                        .supplyAsync(() -> ImageUtil.saveImageFromWebview(webView,
+                                getExternalFilesDir(null).getPath(),
+                                nomTrombi))
+                        .thenAccept(isSaved -> Logger.logV("IMG", "Image sauvée ?: " + isSaved));
                 return true;
 
             case R.id.VUETROMBI_exporterListe:
-                Toast.makeText(this, "bruh3", Toast.LENGTH_SHORT).show();
                 checkWriteExportedList();
                 return true;
 

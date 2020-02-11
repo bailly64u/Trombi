@@ -19,6 +19,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageCapture;
+import androidx.camera.core.ImageProxy;
 import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
@@ -26,7 +27,6 @@ import androidx.cardview.widget.CardView;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.google.android.material.bottomappbar.BottomAppBar;
@@ -50,6 +50,7 @@ import java.util.concurrent.Executors;
 import static com.ufrst.app.trombi.ui.ActivityMain.EXTRA_ID;
 import static com.ufrst.app.trombi.ui.ActivityMain.EXTRA_ID_E;
 import static com.ufrst.app.trombi.ui.ActivityMain.PREFS_FIXED_RATIO;
+import static com.ufrst.app.trombi.ui.ActivityMain.PREFS_QUALITY_OR_LATENCY;
 
 public class ActivityCapture extends AppCompatActivity {
 
@@ -78,6 +79,7 @@ public class ActivityCapture extends AppCompatActivity {
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     private SharedPreferences prefs;
     private List<Eleve> listEleves;
+    private int qualityOrLatency;       // Paramètre définit par l'utilisateur pour choisir une meilleure qualité de photo ou le moins de latence
     private boolean isFixedRatio;
     private Eleve currentEleve;
     private long idTrombi;              // Utile seulement si on est en mode TAKE_ALL_PHOTO
@@ -133,6 +135,12 @@ public class ActivityCapture extends AppCompatActivity {
     private void retrieveSharedPreferences(){
         prefs = getSharedPreferences("com.ufrst.app.trombi", Context.MODE_PRIVATE);
         isFixedRatio = prefs.getBoolean(PREFS_FIXED_RATIO, true);
+        boolean pref = prefs.getBoolean(PREFS_QUALITY_OR_LATENCY, false);
+
+        if(pref)
+            qualityOrLatency = ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY;
+        else
+            qualityOrLatency = ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY;
     }
 
     private void observeEleve(){
@@ -269,7 +277,7 @@ public class ActivityCapture extends AppCompatActivity {
 
         ImageCapture imageCapture = new ImageCapture.Builder()
                 .setTargetRotation(getWindowManager().getDefaultDisplay().getRotation())
-                //.setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
+                .setCaptureMode(qualityOrLatency)
                 //.setFlashMode(ImageCapture.FLASH_MODE_ON)
                 .build();
 
@@ -328,7 +336,7 @@ public class ActivityCapture extends AppCompatActivity {
                             //showToast(getResources().getText(R.string.CAPT_photoTaken));
 
                             //changeElevePhoto(f);
-                            loadImageEditor(Uri.fromFile(f));
+                            loadImageEditor(file);
                         }
 
                         @Override
@@ -344,14 +352,14 @@ public class ActivityCapture extends AppCompatActivity {
     }
 
     // Fait apparaître l'outil d'édition de la photo prise
-    private void loadImageEditor(Uri capturedImage){
+    private void loadImageEditor(File capturedImage){
         switchMode(EDIT_MODE);
 
-        //editImage.setShowCropOverlay(false);
-        editImage.post(() -> editImage.setImageUriAsync(capturedImage));
-
-        editImage.setAspectRatio(1, 1);
-        editImage.setFixedAspectRatio(isFixedRatio);
+        editImage.post(() -> {
+            editImage.setAspectRatio(1, 1);
+            editImage.setFixedAspectRatio(isFixedRatio);
+            editImage.setImageUriAsync(Uri.fromFile(capturedImage));
+        });
 
         /*runOnUiThread(() -> {
             //editImage.setCropShape(CropImageView.CropShape.OVAL);     // https://github.com/ArthurHub/Android-Image-Cropper/issues/553
@@ -364,7 +372,7 @@ public class ActivityCapture extends AppCompatActivity {
         ImageUtil imageUtil = new ImageUtil();
 
         CompletableFuture.supplyAsync(() ->
-                imageUtil.saveImage(bitmap, getExternalFilesDir(null).getPath(), currentEleve))
+                imageUtil.savePhotoForEleve(bitmap, getExternalFilesDir(null).getPath(), currentEleve))
                 .exceptionally(throwable -> null)
                 .thenApply(this::changeElevePhoto)
                 .thenAccept(this::alertImageSaved);
