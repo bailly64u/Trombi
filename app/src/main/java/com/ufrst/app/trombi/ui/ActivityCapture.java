@@ -19,7 +19,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageCapture;
-import androidx.camera.core.ImageProxy;
 import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
@@ -38,7 +37,7 @@ import com.ufrst.app.trombi.R;
 import com.ufrst.app.trombi.database.Eleve;
 import com.ufrst.app.trombi.database.EleveWithGroups;
 import com.ufrst.app.trombi.database.TrombiViewModel;
-import com.ufrst.app.trombi.util.ImageUtil;
+import com.ufrst.app.trombi.util.FileUtil;
 import com.ufrst.app.trombi.util.Logger;
 
 import java.io.File;
@@ -321,34 +320,30 @@ public class ActivityCapture extends AppCompatActivity {
     private void saveImage(ImageCapture imageCapture){
         Logger.logV("Current eleve", currentEleve.getNomPrenom());
 
-        if(getExternalFilesDir(null) != null){
-            String path = ImageUtil.getPathNameForEleve(
-                    getExternalFilesDir(null).getPath(),
-                    currentEleve);
+        FileUtil fileUtil = new FileUtil(getExternalFilesDir(null).getPath());
 
-            File f = new File(path);
+        String path = fileUtil.getPathNameForEleve(currentEleve);
 
-            imageCapture.takePicture(f,
-                    Executors.newSingleThreadExecutor(),
-                    new ImageCapture.OnImageSavedCallback() {
-                        @Override
-                        public void onImageSaved(@NonNull File file){
-                            //showToast(getResources().getText(R.string.CAPT_photoTaken));
+        File f = new File(path);
 
-                            //changeElevePhoto(f);
-                            loadImageEditor(file);
-                        }
+        imageCapture.takePicture(f,
+                Executors.newSingleThreadExecutor(),
+                new ImageCapture.OnImageSavedCallback() {
+                    @Override
+                    public void onImageSaved(@NonNull File file){
+                        //showToast(getResources().getText(R.string.CAPT_photoTaken));
 
-                        @Override
-                        public void onError(int imageCaptureError,
-                                            @NonNull String message,
-                                            @Nullable Throwable cause){
-                            showToast(getResources().getText(R.string.CAPT_error));
-                        }
-                    });
-        } else{
-            showToast(getResources().getText(R.string.CAPT_error2));
-        }
+                        //changeElevePhoto(f);
+                        loadImageEditor(file);
+                    }
+
+                    @Override
+                    public void onError(int imageCaptureError,
+                                        @NonNull String message,
+                                        @Nullable Throwable cause){
+                        showToast(getResources().getText(R.string.CAPT_error));
+                    }
+                });
     }
 
     // Fait apparaître l'outil d'édition de la photo prise
@@ -369,10 +364,10 @@ public class ActivityCapture extends AppCompatActivity {
 
     private void saveEditedImage(){
         Bitmap bitmap = editImage.getCroppedImage();
-        ImageUtil imageUtil = new ImageUtil();
+        FileUtil fileUtil = new FileUtil(getExternalFilesDir(null).getPath());
 
         CompletableFuture.supplyAsync(() ->
-                imageUtil.savePhotoForEleve(bitmap, getExternalFilesDir(null).getPath(), currentEleve))
+                fileUtil.savePhotoForEleve(bitmap, currentEleve))
                 .exceptionally(throwable -> null)
                 .thenApply(this::changeElevePhoto)
                 .thenAccept(this::alertImageSaved);

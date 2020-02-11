@@ -6,9 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.print.PrintAttributes;
 import android.print.PrintDocumentAdapter;
-import android.print.PrintJob;
 import android.print.PrintManager;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -37,10 +35,9 @@ import com.google.android.material.snackbar.Snackbar;
 import com.ufrst.app.trombi.R;
 import com.ufrst.app.trombi.database.Eleve;
 import com.ufrst.app.trombi.database.Groupe;
-import com.ufrst.app.trombi.database.GroupeWithEleves;
 import com.ufrst.app.trombi.database.TrombiViewModel;
 import com.ufrst.app.trombi.util.HTMLProvider;
-import com.ufrst.app.trombi.util.ImageUtil;
+import com.ufrst.app.trombi.util.FileUtil;
 import com.ufrst.app.trombi.util.Logger;
 
 import java.io.BufferedWriter;
@@ -312,70 +309,43 @@ public class ActivityVueTrombi extends AppCompatActivity {
     // Demande à l'utilisateur si la liste doit être exportée
     // Un fichier correspondant à cette liste peut déjà exister
     private void checkWriteExportedList(){
-        DateFormat df = new SimpleDateFormat("dd-MM-yyyy");
-        Calendar calendar = Calendar.getInstance();
-        final String filename = nomTrombi + "-" + df.format(calendar.getTime());
+        FileUtil fileUtil = new FileUtil(getExternalFilesDir(null).getPath());
+        File list = new File(fileUtil.getPathForExportedList(nomTrombi));
 
         // Observation des élèves du trombi à exporter
         trombiViewModel.getElevesByTrombi(idTrombi).observe(this, eleves -> {
-            File file = new File(getExternalFilesDir(null) + "/" + filename + ".txt");
-
             // Si le fichier existe, on demande à le remplacer, sinon on le créer.
-            if(file.exists()){
+            if(list.exists()){
                 // Snackbar avec action
-                Snackbar.make(coordinatorLayout, R.string.VUETROMBI_fichierExiste, Snackbar.LENGTH_INDEFINITE)
-                        .setAction(R.string.U_remplacer, new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v){
-                                writeExportedList(filename, eleves, true);
-                            }
-                        })
-                        .setActionTextColor(ContextCompat.getColor(ActivityVueTrombi.this, R.color.colorAccent))
+                Snackbar.make(coordinatorLayout,
+                        R.string.VUETROMBI_fichierExiste, Snackbar.LENGTH_INDEFINITE)
+                        .setAction(R.string.U_remplacer, v -> triggerListExport(fileUtil, eleves, true))
+                        .setActionTextColor(ContextCompat.getColor(ActivityVueTrombi.this,
+                                R.color.colorAccent))
                         .setDuration(8000)
                         .show();
             } else{
-                writeExportedList(filename, eleves, false);
+                // La liste est nouvelle, pas besoin de vider le contenu du fichier
+                triggerListExport(fileUtil, eleves, false);
             }
         });
-
-        trombiViewModel.getElevesByTrombi(idTrombi).removeObservers(this);
     }
 
-    // Ecrit une liste d'élèves dans un fichier situé dans le stockage externe de l'app
-    private void writeExportedList(String filename, List<Eleve> eleves, boolean doErase){
-        // Le fichier est réécrit, on doit supprimer son contenu actuel
-        if(doErase){
-            try{
-                PrintWriter writer = new PrintWriter(getExternalFilesDir(null) +
-                        "/" + filename + ".txt");
-                writer.print("");
-                writer.close();
-            } catch(FileNotFoundException e){
-                e.printStackTrace();
-            }
-        }
+    // Lance l'écriture du fichier de manière asynchrone
+    private void triggerListExport(FileUtil fileUtil, List<Eleve> eleves, boolean doErase){
+        CompletableFuture.supplyAsync(() -> fileUtil.writeExportedList(nomTrombi, eleves, doErase))
+                .exceptionally(throwable -> false)
+                .thenAccept(this::alertFileExported);
+    }
 
-        // Ecriture du fichier
-        try(BufferedWriter writer =
-                    new BufferedWriter(
-                            new OutputStreamWriter(
-                                    new FileOutputStream(getExternalFilesDir(null) +
-                                            "/" + filename + ".txt",
-                                            true),
-                                    StandardCharsets.UTF_8)
-                    )
-        ){
-            for(Eleve eleve : eleves){
-                writer.write(eleve.getNomPrenom() + "\n");
-            }
-
-            Snackbar.make(coordinatorLayout, R.string.VUETROMBI_listeExportee, Snackbar.LENGTH_LONG)
-                    .show();
-        } catch(IOException e){
+    // Avertit l'utilisateur sur le bon déroulement ou non de l'export de liste
+    private void alertFileExported(boolean isFileExported){
+        if(isFileExported)
             Snackbar.make(coordinatorLayout,
-                    R.string.VUETROMBI_listeExporteeErr,
-                    Snackbar.LENGTH_SHORT).show();
-        }
+                    R.string.VUETROMBI_listeExportee,
+                    Snackbar.LENGTH_LONG).show();
+        else
+            Snackbar.make(coordinatorLayout, R.string.U_erreur, Snackbar.LENGTH_LONG).show();
     }
 
     // Lance un Intent pour le PrintManager qui permet d'exporter en PDF
@@ -394,6 +364,17 @@ public class ActivityVueTrombi extends AppCompatActivity {
             printManager.print(filename.toString(), printAdapter, new PrintAttributes.Builder().build());
         }
 
+    }
+
+    private void alertImageExported(boolean isExported){
+        if(isExported)
+            Snackbar.make(coordinatorLayout,
+                    getResources().getString(R.string.VUETROMBI_imageExported),
+                    Snackbar.LENGTH_LONG).show();
+        else
+            Snackbar.make(coordinatorLayout,
+                    getResources().getString(R.string.U_erreur),
+                    Snackbar.LENGTH_LONG).show();
     }
 
     @Override
@@ -421,11 +402,11 @@ public class ActivityVueTrombi extends AppCompatActivity {
                 return true;
 
             case R.id.VUETROMBI_exporterImg:
+                FileUtil fileUtil = new FileUtil(getExternalFilesDir(null).getPath());
+
                 CompletableFuture
-                        .supplyAsync(() -> ImageUtil.saveImageFromWebview(webView,
-                                getExternalFilesDir(null).getPath(),
-                                nomTrombi))
-                        .thenAccept(isSaved -> Logger.logV("IMG", "Image sauvée ?: " + isSaved));
+                        .supplyAsync(() -> fileUtil.saveImageFromWebview(webView, nomTrombi))
+                        .thenAccept(this::alertImageExported);
                 return true;
 
             case R.id.VUETROMBI_exporterListe:
