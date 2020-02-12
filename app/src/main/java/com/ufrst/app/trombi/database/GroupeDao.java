@@ -13,7 +13,7 @@ import java.util.List;
 public interface GroupeDao {
 
     @Insert
-    void insert(Groupe groupe);
+    long insert(Groupe groupe);
 
     @Update
     void update(Groupe groupe);

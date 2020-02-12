@@ -35,7 +35,9 @@ import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.snackbar.Snackbar;
 import com.ufrst.app.trombi.R;
 import com.ufrst.app.trombi.database.Eleve;
+import com.ufrst.app.trombi.database.EleveWithGroups;
 import com.ufrst.app.trombi.database.Groupe;
+import com.ufrst.app.trombi.database.GroupeWithEleves;
 import com.ufrst.app.trombi.database.TrombiViewModel;
 import com.ufrst.app.trombi.util.HTMLProvider;
 import com.ufrst.app.trombi.util.FileUtil;
@@ -52,6 +54,7 @@ import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
@@ -301,31 +304,27 @@ public class ActivityVueTrombi extends AppCompatActivity {
 
     // Demande à l'utilisateur si la liste doit être exportée
     // Un fichier correspondant à cette liste peut déjà exister
-    private void checkWriteExportedList(){
+    private void checkWriteExportedList(List<EleveWithGroups> eleves){
         FileUtil fileUtil = new FileUtil(getExternalFilesDir(null).getPath());
         File list = new File(fileUtil.getPathForExportedList(nomTrombi));
 
-        // Observation des élèves du trombi à exporter
-        trombiViewModel.getElevesByTrombi(idTrombi).observe(this, eleves -> {
-            // Si le fichier existe, on demande à le remplacer, sinon on le créer.
-            if(list.exists()){
-                // Snackbar avec action
-                Snackbar.make(coordinatorLayout,
-                        R.string.VUETROMBI_fichierExiste, Snackbar.LENGTH_INDEFINITE)
-                        .setAction(R.string.U_remplacer, v -> triggerListExport(fileUtil, eleves, true))
-                        .setActionTextColor(ContextCompat.getColor(ActivityVueTrombi.this,
-                                R.color.colorAccent))
-                        .setDuration(8000)
-                        .show();
-            } else{
-                // La liste est nouvelle, pas besoin de vider le contenu du fichier
-                triggerListExport(fileUtil, eleves, false);
-            }
-        });
+        if(list.exists()){
+            // Snackbar avec action
+            Snackbar.make(coordinatorLayout,
+                    R.string.VUETROMBI_fichierExiste, Snackbar.LENGTH_INDEFINITE)
+                    .setAction(R.string.U_remplacer, v -> triggerListExport(fileUtil, eleves, true))
+                    .setActionTextColor(ContextCompat.getColor(ActivityVueTrombi.this,
+                            R.color.colorAccent))
+                    .setDuration(8000)
+                    .show();
+        } else{
+            // La liste est nouvelle, pas besoin de vider le contenu du fichier
+            triggerListExport(fileUtil, eleves, false);
+        }
     }
 
     // Lance l'écriture du fichier de manière asynchrone
-    private void triggerListExport(FileUtil fileUtil, List<Eleve> eleves, boolean doErase){
+    private void triggerListExport(FileUtil fileUtil, List<EleveWithGroups> eleves, boolean doErase){
         CompletableFuture.supplyAsync(() -> fileUtil.writeExportedList(nomTrombi, eleves, doErase))
                 .exceptionally(throwable -> false)
                 .thenAccept(this::alertFileExported);
@@ -364,13 +363,14 @@ public class ActivityVueTrombi extends AppCompatActivity {
 
         Logger.logV("PDF", "Contenu printManager" + printManager.toString());
 
-        StringBuilder filename = new StringBuilder(nomTrombi);
+        String filename = nomTrombi;
+        /*StringBuilder filename = new StringBuilder(nomTrombi);
 
         if(observingGroups && trombiViewModel.groupesWithEleves.getValue() != null){
             filename.append(" - ").append(trombiViewModel.groupesWithEleves.getValue().getGroupe().getNomGroupe());
-        }
+        }*/
 
-        PrintDocumentAdapter printAdapter = webView.createPrintDocumentAdapter(filename.toString());
+        PrintDocumentAdapter printAdapter = webView.createPrintDocumentAdapter(filename);
         Logger.logV("PDF", "Contenu printAdapter" + printAdapter.toString());
 
         printManager.print(filename.toString(), printAdapter, new PrintAttributes.Builder().build());
@@ -397,6 +397,7 @@ public class ActivityVueTrombi extends AppCompatActivity {
                 return true;
 
             case R.id.VUETROMBI_exporterPdf:
+                //startActivity(null);
                 createWebPrintJob(webView);
                 return true;
 
@@ -409,7 +410,11 @@ public class ActivityVueTrombi extends AppCompatActivity {
                 return true;
 
             case R.id.VUETROMBI_exporterListe:
-                checkWriteExportedList();
+                CompletableFuture.supplyAsync(() ->
+                        trombiViewModel.getEleveWithGroupsByTrombiNotLive(idTrombi))
+                        .exceptionally(throwable -> Collections.emptyList())
+                        .thenAccept(this::checkWriteExportedList);
+
                 return true;
 
             default:

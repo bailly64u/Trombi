@@ -78,6 +78,8 @@ public class TrombiRepository {
     LiveData<List<Groupe>> getGroupesByTrombi(long idTrombi){return groupeDao.getGroupesByTrombi(idTrombi);}
     void deleteGroupesForTrombi(long idTrombi){Executors.newSingleThreadExecutor().execute(() -> groupeDao.deleteGroupesForTrombi(idTrombi));}
 
+    long insertAndRetrieveId(Groupe groupe){return groupeDao.insert(groupe);}
+
 
     //______________________________________________________________________________________________
     // Eleve________________________________________________________________________________________
@@ -127,6 +129,7 @@ public class TrombiRepository {
 
     // Pas de LiveData, ne pas exécuter sur le ThreadUI
     EleveWithGroups getEleveByIdWithGroupsNotLive(long idEleve){return joinDao.getEleveByIdWithGroupsNotLive(idEleve);}
+    List<EleveWithGroups> getEleveWithGroupsByTrombiNotLive(long idTrombi){return joinDao.getEleveWithGroupsByTrombiNotLive(idTrombi);}
 
 
 

@@ -64,6 +64,8 @@ public class TrombiViewModel extends AndroidViewModel {
     public LiveData<List<Groupe>> getGroupesByTrombi(long idTrombi){return repository.getGroupesByTrombi(idTrombi);}
     public void deleteGroupesForTrombi(long idTrombi){repository.deleteGroupesForTrombi(idTrombi);}
 
+    public long insertAndRetrieveId(Groupe groupe){return repository.insertAndRetrieveId(groupe);}
+
 
     // Eleve________________________________________________________________________________________
     public void insert(Eleve eleve){repository.insert(eleve);}
@@ -91,6 +93,7 @@ public class TrombiViewModel extends AndroidViewModel {
     public LiveData<List<GroupeWithEleves>> getGroupesWithEleves(){return repository.getGroupesWithEleves(); }
 
     public EleveWithGroups getEleveByIdWithGroupsNotLive(long idEleve){return repository.getEleveByIdWithGroupsNotLive(idEleve);}
+    public List<EleveWithGroups> getEleveWithGroupsByTrombiNotLive(long idTrombi){return repository.getEleveWithGroupsByTrombiNotLive(idTrombi);}
 
     // Cette méthode va modifier le contenu des LiveData avant de propager aux observeurs
     // pour retirer les élèves qui ont étés soft delete

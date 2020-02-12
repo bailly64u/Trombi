@@ -27,15 +27,21 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.ufrst.app.trombi.ImportAlertDialog;
 import com.ufrst.app.trombi.R;
 import com.ufrst.app.trombi.database.Eleve;
+import com.ufrst.app.trombi.database.EleveGroupeJoin;
 import com.ufrst.app.trombi.database.Groupe;
 import com.ufrst.app.trombi.database.TrombiViewModel;
 import com.ufrst.app.trombi.database.Trombinoscope;
+import com.ufrst.app.trombi.util.ImportUtil;
+import com.ufrst.app.trombi.util.Logger;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 
 import static com.ufrst.app.trombi.ui.ActivityMain.EXTRA_DESC;
@@ -203,9 +209,17 @@ public class ActivityAjoutTrombi extends AppCompatActivity implements ImportAler
         finish();
     }
 
+    // TEntative deplacement de logique
+    // Insère un trombinoscopes, ses élèves, ses groupes et les liens entre ces derniers dans la BD
+//    private void importTrombiFile(List<String> eleves, Set<String> groupes, long idTrombi){
+//        eleves.stream()
+//                .mapToLong(s -> trombiViewModel.insertAndRetrieveId(new Eleve(s, idTrombi, "")))
+//                .forEach(id -> );
+//    }
+
     // Crée des Toast
     private void showToast(CharSequence text){
-        runOnUiThread( () -> Toast.makeText(this, text, Toast.LENGTH_LONG).show());
+        runOnUiThread(() -> Toast.makeText(this, text, Toast.LENGTH_LONG).show());
     }
 
     @Override
@@ -281,22 +295,43 @@ public class ActivityAjoutTrombi extends AppCompatActivity implements ImportAler
         super.onActivityResult(requestCode, resultCode, data);
 
         if(requestCode == PICKFILE_RESULT_CODE){
-            if(resultCode == RESULT_OK && data.getData() != null){
+            if(resultCode == RESULT_OK && data.getData() != null &&
+                    data.getData().getLastPathSegment() != null){
+
+                // Tentative déplacement de logique
+//                // Récupération du nom du fichier
+//                String[] split = data.getData().getLastPathSegment().split("/");
+//                String filename = split[split.length - 1];
+//                String nomTrombi = filename.split("-")[0];
+//
+//                // Insertion du trombi
+//                Trombinoscope t = new Trombinoscope(nomTrombi, "");
+//                long idTrombi = trombiViewModel.insertAndRetrieveId(t);
+//
+//                CompletableFuture.supplyAsync(() ->
+//                        new ImportUtil(getExternalFilesDir(null).getPath(), filename))
+//                        .exceptionally(throwable -> null)
+//                        .thenAccept(importUtil -> importTrombiFile(
+//                                importUtil.getElevesName(), importUtil.getGroupesName(), idTrombi));
+
+
+
                 Executors.newSingleThreadExecutor().execute( () ->{
-                    String filename = null;
 
                     // Récupération du nom du fichier
-                    if(data.getData().getLastPathSegment() != null){
-                        String[] split = data.getData().getLastPathSegment().split("/");
-                        filename = split[split.length - 1];
-                    }
+                    String[] split = data.getData().getLastPathSegment().split("/");
+                    String filename = split[split.length - 1];
+
+
+
+
 
                     try(BufferedReader reader =
                                 new BufferedReader(
                                         new InputStreamReader(
                                                 new FileInputStream(
                                                         getExternalFilesDir(null) +
-                                                                "/" + filename
+                                                                "/listes/" + filename
                                                 )
                                         )
                                 )
@@ -310,16 +345,41 @@ public class ActivityAjoutTrombi extends AppCompatActivity implements ImportAler
                         }
 
                         Trombinoscope trombi = new Trombinoscope(nomTrombi, "");
-                        long id = trombiViewModel.insertAndRetrieveId(trombi);
+                        long idTrombi = trombiViewModel.insertAndRetrieveId(trombi);
 
                         String line;
                         while((line = reader.readLine()) != null){
-                            trombiViewModel.insert(new Eleve(line, id, ""));
+                            String[] lineWithGroups = line.split("\\|");
+
+                            Logger.logV("import", "split[0]: " + lineWithGroups[0]);
+
+                            // Insertion de l'élève
+                            Eleve eleve = new Eleve(lineWithGroups[0], idTrombi, "");
+                            long idEleve = trombiViewModel.insertAndRetrieveId(eleve);
+
+                            ImportUtil importUtil = new ImportUtil(getExternalFilesDir(null).getPath(), filename);
+
+                            /*
+
+
+                            Retourner une List<Groupe>, puis un stream pour ajouter les groupes dessus, et un autre stream pour les eleveGroupeJoin
+
+
+                             */
+
+                            // Spécification des groupes
+                            Arrays.stream(lineWithGroups)
+                                    .skip(1)
+                                    .mapToLong(s -> trombiViewModel
+                                            .insertAndRetrieveId(new Groupe(s, idTrombi)))
+                                    .forEach(groupId -> trombiViewModel
+                                            .insert(new EleveGroupeJoin(idEleve, groupId)));
                         }
 
                         showToast(getResources().getText(R.string.AJOUTTROMBI_fichierImporte));
                     } catch(IOException e){
                         showToast(getResources().getText(R.string.AJOUTTROMBI_fichierImporteErr));
+                        Logger.handleException(e);
                     }
                 });
 

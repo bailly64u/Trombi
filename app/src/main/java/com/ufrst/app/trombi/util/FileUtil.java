@@ -3,12 +3,14 @@ package com.ufrst.app.trombi.util;
 import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.util.Log;
 import android.webkit.WebView;
 
-import com.google.android.material.snackbar.Snackbar;
-import com.ufrst.app.trombi.R;
+import androidx.annotation.WorkerThread;
+
 import com.ufrst.app.trombi.database.Eleve;
+import com.ufrst.app.trombi.database.EleveWithGroups;
+import com.ufrst.app.trombi.database.Groupe;
+import com.ufrst.app.trombi.database.Trombinoscope;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -28,8 +30,8 @@ import java.util.List;
 public class FileUtil {
 
     private static final String PHOTO_DIRECTORY = "/photos/";
-    private static final String LIST_DIRECTORY = "/listes/";
     private static final String IMG_DIRECTORY = "/images/";
+    static final String LIST_DIRECTORY = "/listes/";
     private static final String TXT = ".txt";
     private static final String JPEG = ".jpeg";
 
@@ -126,7 +128,8 @@ public class FileUtil {
 
     // Ecrit une liste d'élèves dans un fichier situé dans le stockage externe de l'app
     // Retourne true si le fichier existe déjà
-    public boolean writeExportedList(String nomTrombi, List<Eleve> eleves, boolean doErase){
+    public boolean writeExportedList(String nomTrombi, List<EleveWithGroups> eleves,
+                                     boolean doErase){
         // Récupération du nom du fichier
         String path = getPathForExportedList(nomTrombi);
 
@@ -150,8 +153,16 @@ public class FileUtil {
                                     StandardCharsets.UTF_8)
                     )
         ){
-            for(Eleve eleve : eleves){
-                writer.write(eleve.getNomPrenom() + "\n");
+            // Pour chaque élève on écrit le nom prénom
+            for(EleveWithGroups eleve : eleves){
+                writer.write(eleve.getEleves().getNomPrenom());
+
+                // Pour chaque groupe de cet élève on écrit son nom
+                for(Groupe g : eleve.getGroupes()){
+                    writer.write("|" + g.getNomGroupe());
+                }
+
+                writer.write("\n");
             }
         } catch(IOException e){
             Logger.handleException(e);
