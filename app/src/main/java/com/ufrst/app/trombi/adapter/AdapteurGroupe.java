@@ -77,28 +77,22 @@ public class AdapteurGroupe extends ListAdapter<Groupe, AdapteurGroupe.GroupeHol
             textViewNom = itemView.findViewById(R.id.GROUPEITEM_nom);
 
             // Gestion des listeners
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v){
-                    int pos = getAdapterPosition();             // Récupération position item cliqué
+            itemView.setOnClickListener(v -> {
+                int pos = getAdapterPosition();             // Récupération position item cliqué
 
-                    if(listener != null && pos != RecyclerView.NO_POSITION){
-                        listener.onItemClick(getItem(pos));     // Récupération objet dans la liste
-                    }
+                if(listener != null && pos != RecyclerView.NO_POSITION){
+                    listener.onItemClick(getItem(pos));     // Récupération objet dans la liste
                 }
             });
 
-            itemView.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v){
-                    int pos = getAdapterPosition();
+            itemView.setOnLongClickListener(v -> {
+                int pos = getAdapterPosition();
 
-                    if(listener != null && pos != RecyclerView.NO_POSITION){
-                        listener.onItemLongClick(getItem(pos));
-                    }
-
-                    return true;
+                if(listener != null && pos != RecyclerView.NO_POSITION){
+                    listener.onItemLongClick(getItem(pos));
                 }
+
+                return true;
             });
         }
     }

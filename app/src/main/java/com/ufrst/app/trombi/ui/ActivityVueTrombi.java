@@ -3,6 +3,7 @@ package com.ufrst.app.trombi.ui;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.print.PrintAttributes;
 import android.print.PrintDocumentAdapter;
@@ -62,10 +63,8 @@ import static com.ufrst.app.trombi.ui.ActivityMain.PREFS_NBCOLS;
 
 public class ActivityVueTrombi extends AppCompatActivity {
 
-    private BottomSheetBehavior bottomSheetBehavior;
     private CoordinatorLayout coordinatorLayout;
     private RelativeLayout relativeLayout;
-    private LinearLayout linearLayout;
     private ProgressBar progressBar;
     private ChipGroup chipGroup;
     private TextView tvNbCols;
@@ -80,14 +79,11 @@ public class ActivityVueTrombi extends AppCompatActivity {
     private boolean observingGroups = false;            // Sert à savoir si on met le groupe pour le titre du PDF
     private boolean isLoading = false;                  // Le chargement d'une webview est en cours
     private List<Eleve> listeEleves;
-    private SharedPreferences prefs;
     private boolean withDesc = true;
     private String descTrombi;
     private String nomTrombi;
     private long idTrombi;
     private int nbCols;                                 // Nombre de colonnes à afficher dans le webview
-
-    private Chip checked;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -107,7 +103,7 @@ public class ActivityVueTrombi extends AppCompatActivity {
         setTitle(nomTrombi);
 
         // Met en place la Bottom Sheet persistante, qui contiendra les filtres
-        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
+        BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
 
         // Applique la valeur par défaut de nbCols à la SeekBar
         seekBar.setProgress(nbCols);
@@ -125,7 +121,7 @@ public class ActivityVueTrombi extends AppCompatActivity {
 
     // Récupération des valeures prédéfinies par l'utilisateur
     private void retrieveSharedPrefs(){
-        prefs = getSharedPreferences("com.ufrst.app.trombi", Context.MODE_PRIVATE);
+        SharedPreferences prefs = getSharedPreferences("com.ufrst.app.trombi", Context.MODE_PRIVATE);
         nbCols = prefs.getInt(PREFS_NBCOLS, 4) -1;
     }
 
@@ -133,7 +129,6 @@ public class ActivityVueTrombi extends AppCompatActivity {
     private void findViews(){
         relativeLayout = findViewById(R.id.VUETROMBI_switchDescLayout);
         coordinatorLayout = findViewById(R.id.VUETROMBI_coordinator);
-        linearLayout = findViewById(R.id.VUETROMBI_layoutParam);
         progressBar = findViewById(R.id.VUETROMBI_progressBar);
         bottomSheet = findViewById(R.id.VUETROMBI_bottomSheet);
         switchDesc = findViewById(R.id.VUETROMBI_switchDesc);
@@ -217,8 +212,6 @@ public class ActivityVueTrombi extends AppCompatActivity {
                 // Récupération du groupe associé à la chips: cf setChips()
                 Chip c = findViewById(i);
 
-                checked = c;
-
                 // Récupération du groupe associé à la chip
                 Groupe currentGroupe = (Groupe) c.getTag(R.string.TAG_CHIPS_ID);
 
@@ -277,6 +270,7 @@ public class ActivityVueTrombi extends AppCompatActivity {
 
             // Génère le HTML dans un autre Thread, puis l'affiche dans le ThreadUI (obligatoire)
             CompletableFuture.supplyAsync(htmlProvider::doHTML)
+                    .exceptionally(throwable -> getResources().getString(R.string.U_erreur))
                     .thenAccept(htmlText ->
                             runOnUiThread(() -> webView.loadDataWithBaseURL(
                                     null,
@@ -284,7 +278,6 @@ public class ActivityVueTrombi extends AppCompatActivity {
                                     "text/html; charset=UTF-8",
                                     "UTF-8",
                                     null)))
-                    .exceptionally(throwable -> null)
                     .thenRun(() -> setLoadingState(false));
         }
     }
@@ -348,24 +341,7 @@ public class ActivityVueTrombi extends AppCompatActivity {
             Snackbar.make(coordinatorLayout, R.string.U_erreur, Snackbar.LENGTH_LONG).show();
     }
 
-    // Lance un Intent pour le PrintManager qui permet d'exporter en PDF
-    private void createWebPrintJob(WebView webView) {
-        PrintManager printManager = (PrintManager) getSystemService(Context.PRINT_SERVICE);
-
-        StringBuilder filename = new StringBuilder(nomTrombi);
-
-        if(observingGroups && trombiViewModel.groupesWithEleves.getValue() != null){
-            filename.append(" - ").append(trombiViewModel.groupesWithEleves.getValue().getGroupe().getNomGroupe());
-        }
-
-        PrintDocumentAdapter printAdapter = webView.createPrintDocumentAdapter(filename.toString());
-
-        if(printManager != null){
-            printManager.print(filename.toString(), printAdapter, new PrintAttributes.Builder().build());
-        }
-
-    }
-
+    // Avertit l'utilisateur sur le bon déroulement ou non de l'export de l'image
     private void alertImageExported(boolean isExported){
         if(isExported)
             Snackbar.make(coordinatorLayout,
@@ -375,6 +351,29 @@ public class ActivityVueTrombi extends AppCompatActivity {
             Snackbar.make(coordinatorLayout,
                     getResources().getString(R.string.U_erreur),
                     Snackbar.LENGTH_LONG).show();
+    }
+
+    // Lance un Intent pour le PrintManager qui permet d'exporter en PDF
+    private void createWebPrintJob(WebView webView) {
+
+        if(getPackageManager().hasSystemFeature(PackageManager.FEATURE_PRINTING)){
+            Logger.logV("PDF", "printing disponible sur cet appareil");
+        }
+
+        PrintManager printManager = (PrintManager) getSystemService(Context.PRINT_SERVICE);
+
+        Logger.logV("PDF", "Contenu printManager" + printManager.toString());
+
+        StringBuilder filename = new StringBuilder(nomTrombi);
+
+        if(observingGroups && trombiViewModel.groupesWithEleves.getValue() != null){
+            filename.append(" - ").append(trombiViewModel.groupesWithEleves.getValue().getGroupe().getNomGroupe());
+        }
+
+        PrintDocumentAdapter printAdapter = webView.createPrintDocumentAdapter(filename.toString());
+        Logger.logV("PDF", "Contenu printAdapter" + printAdapter.toString());
+
+        printManager.print(filename.toString(), printAdapter, new PrintAttributes.Builder().build());
     }
 
     @Override

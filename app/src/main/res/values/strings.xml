@@ -94,6 +94,7 @@
     <string name="LISTg_groupeModifie">Le groupe a été modifié</string>
 
     <string name="AJOUTGROUPE_title">Ajouter un groupe</string>
+    <string name="AJOUTGROUPE_titleVar">Modifier un groupe</string>
     <string name="AJOUTGROUPE_hint1">Nom</string>
     <string name="AJOUTGROUPE_contentDesc1">Nom du groupe</string>
 

@@ -76,14 +76,11 @@ public class ActivityListGroupe extends AppCompatActivity {
     }
 
     private void setListeners(){
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view){
-                Intent intent = new Intent(ActivityListGroupe.this, ActivityAjoutGroupe.class);
-                intent.putExtra(EXTRA_ID, idTrombi);
+        fab.setOnClickListener(view -> {
+            Intent intent = new Intent(ActivityListGroupe.this, ActivityAjoutGroupe.class);
+            intent.putExtra(EXTRA_ID, idTrombi);
 
-                startActivityForResult(intent, REQUETE_AJOUT_GROUPE);
-            }
+            startActivityForResult(intent, REQUETE_AJOUT_GROUPE);
         });
     }
 
@@ -98,17 +95,14 @@ public class ActivityListGroupe extends AppCompatActivity {
 
         // Récupérer le ViewModel et observer la liste de Groupes
         trombiViewModel = ViewModelProviders.of(this).get(TrombiViewModel.class);
-        trombiViewModel.getGroupesByTrombi(idTrombi).observe(this, new Observer<List<Groupe>>() {
-            @Override
-            public void onChanged(List<Groupe> groupes){
-                adapteur.submitList(groupes);
+        trombiViewModel.getGroupesByTrombi(idTrombi).observe(this, groupes -> {
+            adapteur.submitList(groupes);
 
-                // Afficher le placeholder en cas de liste vide
-                if(groupes.isEmpty()){
-                    tvEmpty.setVisibility(View.VISIBLE);
-                } else{
-                    tvEmpty.setVisibility(View.GONE);
-                }
+            // Afficher le placeholder en cas de liste vide
+            if(groupes.isEmpty()){
+                tvEmpty.setVisibility(View.VISIBLE);
+            } else{
+                tvEmpty.setVisibility(View.GONE);
             }
         });
 
@@ -175,7 +169,7 @@ public class ActivityListGroupe extends AppCompatActivity {
         adapteur.setOnItemClickListener(new AdapteurGroupe.OnItemClickListener() {
             @Override
             public void onItemClick(Groupe groupe){
-                this.onItemLongClick(groupe);
+                onItemLongClick(groupe);
             }
 
             @Override

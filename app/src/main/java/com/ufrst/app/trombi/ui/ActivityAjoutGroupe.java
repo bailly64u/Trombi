@@ -43,7 +43,6 @@ public class ActivityAjoutGroupe extends AppCompatActivity {
         // Toolbar
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        setTitle(R.string.AJOUTGROUPE_title);
     }
 
     private void findViews(){
@@ -61,7 +60,12 @@ public class ActivityAjoutGroupe extends AppCompatActivity {
             isEditMode = true;
             nomGroupe = intent.getStringExtra(EXTRA_NOM_G);
             inputEditText.setText(nomGroupe);
+
+            // Actualisation de l'UI
+            setTitle(R.string.AJOUTGROUPE_titleVar);
+            fab.setText(R.string.U_enregistrer);
         } else{
+            setTitle(R.string.AJOUTGROUPE_title);
             nomGroupe = null;
         }
     }
@@ -71,12 +75,7 @@ public class ActivityAjoutGroupe extends AppCompatActivity {
     }
 
     private void setListeners(){
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view){
-                saveGroup();
-            }
-        });
+        fab.setOnClickListener(view -> saveGroup());
     }
 
     private void saveGroup(){
