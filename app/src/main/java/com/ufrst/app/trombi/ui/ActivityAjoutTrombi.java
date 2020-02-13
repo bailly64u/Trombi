@@ -357,23 +357,24 @@ public class ActivityAjoutTrombi extends AppCompatActivity implements ImportAler
                             Eleve eleve = new Eleve(lineWithGroups[0], idTrombi, "");
                             long idEleve = trombiViewModel.insertAndRetrieveId(eleve);
 
-                            ImportUtil importUtil = new ImportUtil(getExternalFilesDir(null).getPath(), filename);
+                            //ImportUtil importUtil = new ImportUtil(getExternalFilesDir(null).getPath(), filename);
 
                             /*
 
 
-                            Retourner une List<Groupe>, puis un stream pour ajouter les groupes dessus, et un autre stream pour les eleveGroupeJoin
+                            Retourner une List<Groupe>, puis un stream pour ajouter les groupes dessus, et un autre stream pour les eleveGroupeJoin?
 
 
                              */
 
+
                             // Spécification des groupes
-                            Arrays.stream(lineWithGroups)
+                            /*Arrays.stream(lineWithGroups)
                                     .skip(1)
                                     .mapToLong(s -> trombiViewModel
                                             .insertAndRetrieveId(new Groupe(s, idTrombi)))
                                     .forEach(groupId -> trombiViewModel
-                                            .insert(new EleveGroupeJoin(idEleve, groupId)));
+                                            .insert(new EleveGroupeJoin(idEleve, groupId)));*/
                         }
 
                         showToast(getResources().getText(R.string.AJOUTTROMBI_fichierImporte));

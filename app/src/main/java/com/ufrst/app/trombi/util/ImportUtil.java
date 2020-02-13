@@ -1,11 +1,8 @@
 package com.ufrst.app.trombi.util;
 
-import androidx.annotation.WorkerThread;
-
 import com.ufrst.app.trombi.database.Eleve;
-import com.ufrst.app.trombi.database.EleveGroupeJoin;
 import com.ufrst.app.trombi.database.Groupe;
-import com.ufrst.app.trombi.model.ImportedTrombi;
+import com.ufrst.app.trombi.database.Trombinoscope;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -21,16 +18,25 @@ public class ImportUtil {
     private String filename;
     private String externalDirPath;
     private String nomTrombi;
-    private List<String> elevesName;
-    private Set<String> groupesName;
+    private long idTrombi;
 
-    public ImportUtil(String externalDirPath, String filename){
+    private List<Groupe> groupesForTrombi;
+
+    public ImportUtil(String externalDirPath, String filename, long idTrombi){
         this.externalDirPath = externalDirPath;
         this.filename = filename;
+        this.idTrombi = idTrombi;
 
         init();
     }
 
+    //
+    //
+    // ImportUtil doit retourner une liste d'objet contenant un élève et une liste de ses groupes
+    // Il doit aussi retourner une list des groupes
+    // Il faut ensuite que l'activité demande la liste des objets contenants un élève et sa liste de groupe
+    // et insert les objets
+    //
 
     // Lit les données du fichier pour se préparer à l'importation
     private void init(){
@@ -46,27 +52,18 @@ public class ImportUtil {
             while((line = reader.readLine()) != null){
                 String[] lineWithGroups = line.split("\\|");
 
-                elevesName.add(lineWithGroups[0]);
+                // Créer un objet contenant un élève et sa liste de groupes
+                // Stocker les groupes s'il n'existent pas
 
-                // Spécification des groupes
-                Arrays.stream(lineWithGroups)
+
+                // Spécification des groupes dans une liste, sans doublons
+                /*Arrays.stream(lineWithGroups)
                         .skip(1)
-                        .forEach(groupesName::add);
+                        .filter(groupeName -> !groupesName.contains(groupeName))
+                        .forEach(groupesName::add);*/
             }
         } catch(IOException e){
             Logger.handleException(e);
         }
-    }
-
-    public String getNomTrombi(){
-        return nomTrombi;
-    }
-
-    public List<String> getElevesName(){
-        return elevesName;
-    }
-
-    public Set<String> getGroupesName(){
-        return groupesName;
     }
 }
