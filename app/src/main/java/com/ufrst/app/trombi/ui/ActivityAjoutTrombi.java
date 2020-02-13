@@ -38,6 +38,7 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -351,18 +352,28 @@ public class ActivityAjoutTrombi extends AppCompatActivity implements ImportAler
                         while((line = reader.readLine()) != null){
                             String[] lineWithGroups = line.split("\\|");
 
-                            Logger.logV("import", "split[0]: " + lineWithGroups[0]);
-
                             // Insertion de l'élève
                             Eleve eleve = new Eleve(lineWithGroups[0], idTrombi, "");
                             long idEleve = trombiViewModel.insertAndRetrieveId(eleve);
 
                             //ImportUtil importUtil = new ImportUtil(getExternalFilesDir(null).getPath(), filename);
 
+                            ArrayList<Groupe> alreadyCreatedGroups = new ArrayList<>();
+
+                            for(int i=1; i < lineWithGroups.length; i++){
+                                Groupe g = new Groupe(lineWithGroups[i], idTrombi);
+                                alreadyCreatedGroups.add(g);
+                                long idGroupe = trombiViewModel.insertAndRetrieveId(g);
+                                g.setIdGroupe(idGroupe);
+                            }
+
                             /*
 
 
-                            Retourner une List<Groupe>, puis un stream pour ajouter les groupes dessus, et un autre stream pour les eleveGroupeJoin?
+
+                            Ajouter une ligne avec tous les groupes au début des trombis exportés
+                            Instancier chaque groupe, les insérer dans la BD, récupérer leurs Ids dans la BD puis actualiser les objets groupes avec leur id
+                            Boucler sur chaque élève, comparer le nom de ses groupes au nom des groupes présents dan las liste de groupes, et créer un eleve et un elevegroupejoin
 
 
                              */
