@@ -27,11 +27,10 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.ufrst.app.trombi.ImportAlertDialog;
 import com.ufrst.app.trombi.R;
 import com.ufrst.app.trombi.database.Eleve;
-import com.ufrst.app.trombi.database.EleveGroupeJoin;
 import com.ufrst.app.trombi.database.Groupe;
 import com.ufrst.app.trombi.database.TrombiViewModel;
 import com.ufrst.app.trombi.database.Trombinoscope;
-import com.ufrst.app.trombi.util.ImportUtil;
+import com.ufrst.app.trombi.model.EleveWithGroupsImport;
 import com.ufrst.app.trombi.util.Logger;
 
 import java.io.BufferedReader;
@@ -40,10 +39,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 import static com.ufrst.app.trombi.ui.ActivityMain.EXTRA_DESC;
 import static com.ufrst.app.trombi.ui.ActivityMain.EXTRA_ID;
@@ -316,15 +317,11 @@ public class ActivityAjoutTrombi extends AppCompatActivity implements ImportAler
 //                                importUtil.getElevesName(), importUtil.getGroupesName(), idTrombi));
 
 
-
-                Executors.newSingleThreadExecutor().execute( () ->{
+                Executors.newSingleThreadExecutor().execute(() -> {
 
                     // Récupération du nom du fichier
                     String[] split = data.getData().getLastPathSegment().split("/");
                     String filename = split[split.length - 1];
-
-
-
 
 
                     try(BufferedReader reader =
@@ -348,23 +345,33 @@ public class ActivityAjoutTrombi extends AppCompatActivity implements ImportAler
                         Trombinoscope trombi = new Trombinoscope(nomTrombi, "");
                         long idTrombi = trombiViewModel.insertAndRetrieveId(trombi);
 
+                        ArrayList<EleveWithGroupsImport> eleveWithGroups = new ArrayList<>();
+
                         String line;
                         while((line = reader.readLine()) != null){
                             String[] lineWithGroups = line.split("\\|");
 
+                            String eleveName = lineWithGroups[0];
+                            String[] groupesNames = Arrays.stream(lineWithGroups).skip(1).toArray();
+
                             // Insertion de l'élève
-                            Eleve eleve = new Eleve(lineWithGroups[0], idTrombi, "");
-                            long idEleve = trombiViewModel.insertAndRetrieveId(eleve);
+                            //Eleve eleve = new Eleve(lineWithGroups[0], idTrombi, "");
+                            //long idEleve = trombiViewModel.insertAndRetrieveId(eleve);
 
                             //ImportUtil importUtil = new ImportUtil(getExternalFilesDir(null).getPath(), filename);
 
-                            ArrayList<Groupe> alreadyCreatedGroups = new ArrayList<>();
+                            // Création d'un objet contenant un élève et ses groupes
+                            eleveWithGroups.add(new EleveWithGroupsImport(Arrays.asList(lineWithGroups[1-lineWithGroups.length]), new Eleve(lineWithGroups[0], idTrombi, "")));
 
-                            for(int i=1; i < lineWithGroups.length; i++){
-                                Groupe g = new Groupe(lineWithGroups[i], idTrombi);
-                                alreadyCreatedGroups.add(g);
-                                long idGroupe = trombiViewModel.insertAndRetrieveId(g);
-                                g.setIdGroupe(idGroupe);
+                            // Liste contenant le nom des groupes, afin de pouvoir les créer
+                            // de manière unique par la suite
+                            Set<String> uniqueGroups = new HashSet<>();
+
+                            for(int i = 1; i < lineWithGroups.length; i++){
+//                                Groupe g = new Groupe(lineWithGroups[i], idTrombi);
+                                uniqueGroups.add(lineWithGroups[i]);
+
+
                             }
 
                             /*
