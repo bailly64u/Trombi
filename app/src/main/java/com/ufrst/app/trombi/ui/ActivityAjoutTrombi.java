@@ -32,6 +32,7 @@ import com.ufrst.app.trombi.database.Groupe;
 import com.ufrst.app.trombi.database.TrombiViewModel;
 import com.ufrst.app.trombi.database.Trombinoscope;
 import com.ufrst.app.trombi.model.EleveWithGroupsImport;
+import com.ufrst.app.trombi.util.ImportUtil;
 import com.ufrst.app.trombi.util.Logger;
 
 import java.io.BufferedReader;
@@ -294,7 +295,6 @@ public class ActivityAjoutTrombi extends AppCompatActivity implements ImportAler
     }
 
     @Override
-    // TODO: déplace la logique dans une autre classe si possible
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
         super.onActivityResult(requestCode, resultCode, data);
 
@@ -307,84 +307,49 @@ public class ActivityAjoutTrombi extends AppCompatActivity implements ImportAler
                     String[] split = data.getData().getLastPathSegment().split("/");
                     String filename = split[split.length - 1];
 
+                    // Récupération du nom du trombinoscope sans fioritures
+                    String nameTrombi = "DefaultName";
 
-                    try(BufferedReader reader =
-                                new BufferedReader(
-                                        new InputStreamReader(
-                                                new FileInputStream(
-                                                        getExternalFilesDir(null) +
-                                                                "/listes/" + filename
-                                                )
-                                        )
-                                )
-                    ){
-                        trombiViewModel = ViewModelProviders.of(this).get(TrombiViewModel.class);
-                        String nomTrombi = null;
+                    if(filename != null){
+                        nameTrombi = filename.split("-")[0];
+                    }
 
-                        // Récupère le nom du fichier sans fioritures
-                        if(data.getData().getLastPathSegment() != null && filename != null){
-                            nomTrombi = filename.split("-")[0];
-                        }
+                    // Création du trombinoscope en BD et récupération de son id
+                    Trombinoscope trombi = new Trombinoscope(nameTrombi, "");
+                    long idTrombi = trombiViewModel.insertAndRetrieveId(trombi);
 
-                        Trombinoscope trombi = new Trombinoscope(nomTrombi, "");
-                        long idTrombi = trombiViewModel.insertAndRetrieveId(trombi);
+                    // Récupération de la liste des noms des groupes et des élèves
+                    ImportUtil importUtil = new ImportUtil(
+                            getExternalFilesDir(null).getPath(), filename, idTrombi);
+                    Set<String> uniqueGroups = importUtil.getUniqueGroups();
+                    List<EleveWithGroupsImport> eleveWithGroups = importUtil.getEleveWithGroups();
 
-                        // Création d'une list d'objets contenants un élève et ses groupes
-                        List<EleveWithGroupsImport> eleveWithGroups = new ArrayList<>();
+                    // Liste des groupes pour ce trombinoscope
+                    List<Groupe> groupes = new ArrayList<>();
 
-                        // Liste contenant le nom des groupes, afin de pouvoir les créer
-                        // de manière unique par la suite
-                        Set<String> uniqueGroups = new HashSet<>();
+                    // Instanciation des groupes et récupération de leurs ids dans la BD
+                    for(String groupName : uniqueGroups){
+                        Groupe g = new Groupe(groupName, idTrombi);
+                        long idGroupe = trombiViewModel.insertAndRetrieveId(g);
+                        g.setIdGroupe(idGroupe);
+                        groupes.add(g);
+                    }
 
-                        String line;
-                        while((line = reader.readLine()) != null){
-                            String[] lineWithGroupsArr = line.split("\\|");
-                            List<String> lineWithGroups = Arrays.asList(lineWithGroupsArr);
+                    for(EleveWithGroupsImport eleveWithGroup : eleveWithGroups){
+                        long idEleve = trombiViewModel.insertAndRetrieveId(eleveWithGroup.getEleve());
 
-                            String eleveName = lineWithGroups.get(0);
-                            List<String> groupesNames = lineWithGroups.subList(1, lineWithGroups.size());
-
-                            Logger.logV("LISTE", "Nombre d'item dans la liste des groupes: " + groupesNames.toString());
-
-                            // Création d'un objet contenant un élève et ses groupes
-                            EleveWithGroupsImport eleve = new EleveWithGroupsImport(groupesNames, new Eleve(eleveName, idTrombi, ""));
-                            eleveWithGroups.add(eleve);
-
-                            // Les groupes sont ajoutés dans le set, éliminant ainsi les doublons
-                            uniqueGroups.addAll(groupesNames);
-                        }// Fin lecture fichier
-
-                        // List des groupes pour ce trombinoscope
-                        List<Groupe> groupes = new ArrayList<>();
-
-                        // Instanciation des groupes et récupération de leurs ids dans la BD
-                        for(String groupName : uniqueGroups){
-                            Groupe g = new Groupe(groupName, idTrombi);
-                            long idGroupe = trombiViewModel.insertAndRetrieveId(g);
-                            g.setIdGroupe(idGroupe);
-                            groupes.add(g);
-                        }
-
-                        for(EleveWithGroupsImport eleveWithGroup : eleveWithGroups){
-                            long idEleve = trombiViewModel.insertAndRetrieveId(eleveWithGroup.getEleve());
-
-                            // Itération sur les noms du groupe d'un élève
-                            for(String s : eleveWithGroup.getGroups()){
-                                for(Groupe g : groupes){
-                                    // L'élève appartient au groupe g
-                                    if(g.getNomGroupe().equals(s)){
-                                        trombiViewModel.insert(new EleveGroupeJoin(idEleve, g.getIdGroupe()));
-                                    }
+                        // Itération sur les noms du groupe d'un élève
+                        for(String s : eleveWithGroup.getGroups()){
+                            for(Groupe g : groupes){
+                                // L'élève appartient au groupe g
+                                if(g.getNomGroupe().equals(s)){
+                                    trombiViewModel.insert(new EleveGroupeJoin(idEleve, g.getIdGroupe()));
                                 }
                             }
                         }
-
-
-                        showToast(getResources().getText(R.string.AJOUTTROMBI_fichierImporte));
-                    } catch(IOException e){
-                        showToast(getResources().getText(R.string.AJOUTTROMBI_fichierImporteErr));
-                        Logger.handleException(e);
                     }
+
+                    showToast(getResources().getText(R.string.AJOUTTROMBI_fichierImporte));
                 });
 
                 finish();

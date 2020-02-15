@@ -1,26 +1,26 @@
 package com.ufrst.app.trombi.util;
 
 import com.ufrst.app.trombi.database.Eleve;
-import com.ufrst.app.trombi.database.Groupe;
-import com.ufrst.app.trombi.database.Trombinoscope;
+import com.ufrst.app.trombi.model.EleveWithGroupsImport;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 // Une classe pour importer un Trombinoscope, ses Elèves et ses Groupes
 public class ImportUtil {
 
+    private List<EleveWithGroupsImport> eleveWithGroups = new ArrayList<>();
+    private Set<String> uniqueGroups = new HashSet<>();
     private String filename;
     private String externalDirPath;
-    private String nomTrombi;
     private long idTrombi;
-
-    private List<Groupe> groupesForTrombi;
 
     public ImportUtil(String externalDirPath, String filename, long idTrombi){
         this.externalDirPath = externalDirPath;
@@ -30,14 +30,6 @@ public class ImportUtil {
         init();
     }
 
-    //
-    //
-    // ImportUtil doit retourner une liste d'objet contenant un élève et une liste de ses groupes
-    // Il doit aussi retourner une list des groupes
-    // Il faut ensuite que l'activité demande la liste des objets contenants un élève et sa liste de groupe
-    // et insert les objets
-    //
-
     // Lit les données du fichier pour se préparer à l'importation
     private void init(){
         String filepath = externalDirPath + FileUtil.LIST_DIRECTORY + filename;
@@ -46,24 +38,31 @@ public class ImportUtil {
                 new FileInputStream(filepath)))){
             String line;
 
-            // Préparation du Trombinoscope
-            nomTrombi = filename.split("-")[0];
-
             while((line = reader.readLine()) != null){
-                String[] lineWithGroups = line.split("\\|");
+                List<String> lineWithGroups = Arrays.asList(line.split("\\|"));
 
-                // Créer un objet contenant un élève et sa liste de groupes
-                // Stocker les groupes s'il n'existent pas
+                String eleveName = lineWithGroups.get(0);
+                List<String> groupesNames = lineWithGroups.subList(1, lineWithGroups.size());
 
+                // Création d'un objet contenant un élève et ses groupes
+                Eleve e = new Eleve(eleveName, idTrombi, "");
+                EleveWithGroupsImport eleve = new EleveWithGroupsImport(groupesNames, e);
+                eleveWithGroups.add(eleve);
 
-                // Spécification des groupes dans une liste, sans doublons
-                /*Arrays.stream(lineWithGroups)
-                        .skip(1)
-                        .filter(groupeName -> !groupesName.contains(groupeName))
-                        .forEach(groupesName::add);*/
+                // Les groupes sont ajoutés dans le set, éliminant ainsi les doublons
+                uniqueGroups.addAll(groupesNames);
             }
         } catch(IOException e){
             Logger.handleException(e);
         }
     }
+
+    public List<EleveWithGroupsImport> getEleveWithGroups(){
+        return eleveWithGroups;
+    }
+
+    public Set<String> getUniqueGroups(){
+        return uniqueGroups;
+    }
+
 }

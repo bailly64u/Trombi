@@ -59,7 +59,7 @@ public class FileUtil {
         // En cas de problèmes de création de répertoire, la photo est stockée directement
         // dans le stockage externe
         if(checkDirectory(new File(directory)))
-            return externalDirPath + "/" + filename;
+            return externalDirPath + File.separator + filename;
 
         return directory + File.separator + filename;
     }
@@ -76,7 +76,7 @@ public class FileUtil {
         // En cas de problèmes de création de répertoire, la liste est stockée directement
         // dans le stockage externe
         if(checkDirectory(new File(directory)))
-            return externalDirPath + "/" + filename;
+            return externalDirPath + File.separator + filename;
 
         return directory + File.separator + filename;
     }
