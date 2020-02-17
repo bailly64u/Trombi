@@ -344,7 +344,8 @@ public class ActivityAjoutTrombi extends AppCompatActivity implements ImportAler
                             for(Groupe g : groupes){
                                 // L'élève appartient au groupe g
                                 if(g.getNomGroupe().equals(s)){
-                                    trombiViewModel.insert(new EleveGroupeJoin(idEleve, g.getIdGroupe()));
+                                    trombiViewModel.insert(
+                                            new EleveGroupeJoin(idEleve, g.getIdGroupe(), idTrombi));
                                 }
                             }
                         }

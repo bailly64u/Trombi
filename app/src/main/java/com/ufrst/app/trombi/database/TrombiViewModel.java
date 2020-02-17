@@ -63,6 +63,10 @@ public class TrombiViewModel extends AndroidViewModel {
     public LiveData<List<Groupe>> getAllGroupes(){return repository.getAllGroupes();}
     public LiveData<List<Groupe>> getGroupesByTrombi(long idTrombi){return repository.getGroupesByTrombi(idTrombi);}
     public void deleteGroupesForTrombi(long idTrombi){repository.deleteGroupesForTrombi(idTrombi);}
+    public void softDeleteGroupe(long idGroupe){repository.softDeleteGroupe(idGroupe);}
+    public void deleteSoftDeletedGroupes(){repository.deleteSoftDeletedGroupes();}
+    public void softDeleteGroupesForTrombi(long idTrombi, int isDeleted){repository.softDeleteGroupesForTrombi(idTrombi, isDeleted);}
+    public void softDeleteXRefsByGroupe(long idGroupe, int isDeleted){repository.softDeleteXRefsByGroupe(idGroupe, isDeleted);}
 
     public long insertAndRetrieveId(Groupe groupe){return repository.insertAndRetrieveId(groupe);}
 
@@ -77,8 +81,9 @@ public class TrombiViewModel extends AndroidViewModel {
     public LiveData<Eleve> getEleveById(long idEleve){return repository.getEleveById(idEleve);}
     public void deleteElevesForTrombi(long idTrombi){repository.deleteElevesForTrombi(idTrombi);}
     public void softDeleteEleve(long idEleve){repository.softDeleteEleve(idEleve);}
-    public void softDeleteElevesForTrombi(long idTrombi){repository.softDeleteElevesForTrombi(idTrombi);}
+    public void softDeleteElevesForTrombi(long idTrombi, int isDeleted){repository.softDeleteElevesForTrombi(idTrombi, isDeleted);}
     public void deleteSoftDeletedEleves(){repository.deleteSoftDeletedEleves();}
+    public void softDeleteXRefsByEleve(long idEleve, int isDeleted){repository.softDeleteXRefsByEleve(idEleve, isDeleted);}
 
     public int getElevesNumberByTrombi(long idTrombi){return repository.getElevesNumberByTrombi(idTrombi);}
     public long insertAndRetrieveId(Eleve eleve){return repository.insertAndRetrieveId(eleve);}
@@ -94,6 +99,9 @@ public class TrombiViewModel extends AndroidViewModel {
 
     public EleveWithGroups getEleveByIdWithGroupsNotLive(long idEleve){return repository.getEleveByIdWithGroupsNotLive(idEleve);}
     public List<EleveWithGroups> getEleveWithGroupsByTrombiNotLive(long idTrombi){return repository.getEleveWithGroupsByTrombiNotLive(idTrombi);}
+
+    public void softDeleteXRefsByTrombi(long idTrombi, int isDeleted){repository.softDeleteXRefsByTrombi(idTrombi, isDeleted);}
+    public void deleteSoftDeletedXRefs(){repository.deleteSoftDeletedXRefs();}
 
     // Cette méthode va modifier le contenu des LiveData avant de propager aux observeurs
     // pour retirer les élèves qui ont étés soft delete

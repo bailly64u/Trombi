@@ -16,14 +16,24 @@ public class EleveGroupeJoin {
     @ColumnInfo(name = "join_id_groupe")
     private long joinIdGroupe;
 
+    @ColumnInfo(name = "join_id_trombi")
+    private long joinIdTrombi;
 
-    public EleveGroupeJoin(long joinIdEleve, long joinIdGroupe){
+    @ColumnInfo(name = "is_deleted")
+    private boolean isDeleted = false;      // Soft delete
+
+    public EleveGroupeJoin(long joinIdEleve, long joinIdGroupe, long joinIdTrombi){
         this.joinIdEleve = joinIdEleve;
         this.joinIdGroupe = joinIdGroupe;
+        this.joinIdTrombi = joinIdTrombi;
     }
 
     public long getJoinIdEleve(){ return joinIdEleve; }
     public void setJoinIdEleve(long joinIdEleve){ this.joinIdEleve = joinIdEleve;}
     public long getJoinIdGroupe(){ return joinIdGroupe; }
     public void setJoinIdGroupe(long joinIdGroupe){ this.joinIdGroupe = joinIdGroupe; }
+    public boolean isDeleted(){ return isDeleted; }
+    public void setDeleted(boolean deleted){ isDeleted = deleted; }
+    public long getJoinIdTrombi(){ return joinIdTrombi; }
+    public void setJoinIdTrombi(long joinIdTrombi){ this.joinIdTrombi = joinIdTrombi; }
 }

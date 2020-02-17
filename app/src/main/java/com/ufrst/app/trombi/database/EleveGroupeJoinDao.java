@@ -24,13 +24,8 @@ public interface EleveGroupeJoinDao {
     @Delete
     void delete(EleveGroupeJoin eleveGroupeJoin);
 
-    // Retourne une liste d'objet contenant un Groupe avec sa liste d'Eleves
-    // Comme Room utilisera deux requêtes pour nous dans les coulisses, on annote une Transaction pour s'assurer que cela se passe atomiquement
-    /*@Transaction
-    @Query("SELECT * FROM table_groupe")
-    LiveData<List<GroupeWithEleves>> getGroupesWithEleves();*/
-
-    // GroupeWitheEleves sans Annotations (@Relation / @Junction) représentant chaque groupe et sa liste d'élèves (sans les élèves soft deleted)
+    // GroupeWitheEleves sans Annotations (@Relation / @Junction)
+    // représentant chaque groupe et sa liste d'élèves (sans les élèves soft deleted)
     @Transaction
     @Query("SELECT table_eleve.id_trombi, id_groupe, nom_groupe, table_eleve.is_deleted " +
             "FROM eleve_x_group " +
@@ -51,7 +46,7 @@ public interface EleveGroupeJoinDao {
     @Query("SELECT * FROM table_eleve ORDER BY nom_prenom")
     LiveData<List<EleveWithGroups>> getElevesWithGroups();
 
-    // Retourne un objet EleveWithGroups avec un groupe d'un certain id
+    // Retourne un objet EleveWithGroups avec un eleve d'un certain id
     @Transaction
     @Query("SELECT * FROM table_eleve WHERE id_eleve=:idEleve")
     LiveData<EleveWithGroups> getEleveByIdWithGroups(long idEleve);
@@ -60,8 +55,24 @@ public interface EleveGroupeJoinDao {
     @Query("SELECT * FROM table_eleve WHERE id_eleve=:idEleve")
     EleveWithGroups getEleveByIdWithGroupsNotLive(long idEleve);
 
+    @Transaction
     @Query("SELECT * FROM table_eleve WHERE id_trombi=:idTrombi")
     List<EleveWithGroups> getEleveWithGroupsByTrombiNotLive(long idTrombi);
 
-    //TODO: Requête pour supprimer les XREf inutiles
+    // Supprime les cross refs d'un trombi
+    @Query("UPDATE eleve_x_group SET is_deleted=:isDeleted WHERE join_id_trombi=:idTrombi")
+    void softDeleteXRefsByTrombi(long idTrombi, int isDeleted);
+
+    // Soft delete les cross refs d'un groupe
+    @Query("UPDATE eleve_x_group SET is_deleted=:isDeleted WHERE join_id_groupe=:idGroupe")
+    void softDeleteXRefsByGroupe(long idGroupe, int isDeleted);
+
+    // Soft delete les cross refs d'un eleve
+    @Query("UPDATE eleve_x_group SET is_deleted=:isDeleted WHERE join_id_eleve=:idEleve")
+    void softDeleteXRefsByEleve(long idEleve, int isDeleted);
+
+    // Supprime réellement les XRefs soft deleted
+    @Query("DELETE FROM eleve_x_group WHERE is_deleted = 1")
+    void deleteSoftDeletedXRefs();
+
 }

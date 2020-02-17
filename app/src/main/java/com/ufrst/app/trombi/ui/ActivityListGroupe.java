@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.ContextCompat;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -25,11 +24,11 @@ import com.ufrst.app.trombi.R;
 import com.ufrst.app.trombi.database.Groupe;
 import com.ufrst.app.trombi.database.TrombiViewModel;
 
-import java.util.List;
-
 import static com.ufrst.app.trombi.ui.ActivityMain.EXTRA_ID;
 import static com.ufrst.app.trombi.ui.ActivityMain.EXTRA_ID_G;
 import static com.ufrst.app.trombi.ui.ActivityMain.EXTRA_NOM_G;
+import static com.ufrst.app.trombi.ui.ActivityMain.STATE_NOT_DELETED;
+import static com.ufrst.app.trombi.ui.ActivityMain.STATE_SOFT_DELETED;
 
 public class ActivityListGroupe extends AppCompatActivity {
 
@@ -133,20 +132,15 @@ public class ActivityListGroupe extends AppCompatActivity {
 
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction){
-                final Groupe groupeSuppr = adapteur.getGroupeAt(viewHolder.getAdapterPosition());
-                trombiViewModel.delete(groupeSuppr);
-
-                // TODO: Gérer les cross reference à supprimer
+                final long id = adapteur.getGroupeAt(viewHolder.getAdapterPosition()).getIdGroupe();
+                setGroupeState(id, STATE_SOFT_DELETED);
 
                 // Snackbar avec possibilité d'annuler
-                Snackbar.make(coordinatorLayout, R.string.LISTg_groupeSuppr, Snackbar.LENGTH_INDEFINITE)
-                        .setAction(R.string.U_annuler, new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v){
-                                trombiViewModel.insert(groupeSuppr);
-                            }
-                        })
-                        .setActionTextColor(ContextCompat.getColor(ActivityListGroupe.this, R.color.colorAccent))
+                Snackbar.make(
+                        coordinatorLayout, R.string.LISTg_groupeSuppr, Snackbar.LENGTH_INDEFINITE)
+                        .setAction(R.string.U_annuler, v -> setGroupeState(id, STATE_NOT_DELETED))
+                        .setActionTextColor(ContextCompat.getColor(
+                                ActivityListGroupe.this, R.color.colorAccent))
                         .setDuration(8000)
                         .show();
             }
@@ -182,6 +176,12 @@ public class ActivityListGroupe extends AppCompatActivity {
                 startActivityForResult(intent, REQUETE_EDITE_GROUPE);
             }
         });
+    }
+
+    // Soft delete ou annule le soft delete d'un groupe et des ses XRefs
+    private void setGroupeState(long idGroupe, int state){
+        trombiViewModel.softDeleteGroupe(idGroupe);
+        trombiViewModel.softDeleteXRefsByGroupe(idGroupe, state);
     }
 
     @Override

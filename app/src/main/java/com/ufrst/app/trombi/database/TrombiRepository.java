@@ -6,12 +6,8 @@ import android.os.AsyncTask;
 import androidx.lifecycle.LiveData;
 
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.function.Consumer;
 
 // Couche supplémentaire entre les données et le ViewModel (Architecture MVVM)
 // pour que ce dernier n'ai pas à se préoccuper de la source des données (BD, éventuellement Internet...)
@@ -24,7 +20,7 @@ public class TrombiRepository {
     private EleveGroupeJoinDao joinDao;
 
     // Utilise des LiveData (observable, pour plus d'infos: https://developer.android.com/topic/libraries/architecture/livedata
-    public TrombiRepository(Application application) {
+    public TrombiRepository(Application application){
         TrombiDatabase db = TrombiDatabase.getInstance(application);
 
         // Récupération des DAOs
@@ -38,14 +34,33 @@ public class TrombiRepository {
     //______________________________________________________________________________________________
     // Trombinoscope________________________________________________________________________________
     //______________________________________________________________________________________________
-    void insert(Trombinoscope trombi){Executors.newSingleThreadExecutor().execute(() -> trombiDao.insert(trombi));}
-    void update(Trombinoscope trombi){Executors.newSingleThreadExecutor().execute(() -> trombiDao.update(trombi));}
-    void delete(Trombinoscope trombi){Executors.newSingleThreadExecutor().execute(() -> trombiDao.delete(trombi));}
+    void insert(Trombinoscope trombi){
+        execute(() -> trombiDao.insert(trombi));
+    }
 
-    LiveData<List<Trombinoscope>> getAllTrombis(){return trombiDao.getAllTrombis();}
-    LiveData<Trombinoscope> getTrombiById(long idTrombi){return trombiDao.getTrombiById(idTrombi);}
-    void softDeleteTrombi(long idTrombi){Executors.newSingleThreadExecutor().execute(() -> trombiDao.softDeleteTrombi(idTrombi));}
-    void deleteSoftDeletedTrombis(){Executors.newSingleThreadExecutor().execute(() -> trombiDao.deleteSoftDeletedTrombis());}
+    void update(Trombinoscope trombi){
+        execute(() -> trombiDao.update(trombi));
+    }
+
+    void delete(Trombinoscope trombi){
+        execute(() -> trombiDao.delete(trombi));
+    }
+
+    LiveData<List<Trombinoscope>> getAllTrombis(){
+        return trombiDao.getAllTrombis();
+    }
+
+    LiveData<Trombinoscope> getTrombiById(long idTrombi){
+        return trombiDao.getTrombiById(idTrombi);
+    }
+
+    void softDeleteTrombi(long idTrombi){
+        execute(() -> trombiDao.softDeleteTrombi(idTrombi));
+    }
+
+    void deleteSoftDeletedTrombis(){
+        execute(() -> trombiDao.deleteSoftDeletedTrombis());
+    }
 
     // trombiDao.insert() retourne un long (qui correspond à l'id du trombinoscope inséré).
     // Mais il est ignoré dans la méthode insert de cette classe (pour des raisons de performances)
@@ -70,33 +85,93 @@ public class TrombiRepository {
     //______________________________________________________________________________________________
     // Groupe_______________________________________________________________________________________
     //______________________________________________________________________________________________
-    void insert(Groupe groupe){Executors.newSingleThreadExecutor().execute(() -> groupeDao.insert(groupe));}
-    void update(Groupe groupe){Executors.newSingleThreadExecutor().execute(() -> groupeDao.update(groupe));}
-    void delete(Groupe groupe){Executors.newSingleThreadExecutor().execute(() -> groupeDao.delete(groupe));}
+    void insert(Groupe groupe){
+        execute(() -> groupeDao.insert(groupe));
+    }
 
-    LiveData<List<Groupe>> getAllGroupes(){return groupeDao.getAllGroupes();}
-    LiveData<List<Groupe>> getGroupesByTrombi(long idTrombi){return groupeDao.getGroupesByTrombi(idTrombi);}
-    void deleteGroupesForTrombi(long idTrombi){Executors.newSingleThreadExecutor().execute(() -> groupeDao.deleteGroupesForTrombi(idTrombi));}
+    void update(Groupe groupe){
+        execute(() -> groupeDao.update(groupe));
+    }
 
-    long insertAndRetrieveId(Groupe groupe){return groupeDao.insert(groupe);}
+    void delete(Groupe groupe){
+        execute(() -> groupeDao.delete(groupe));
+    }
+
+    LiveData<List<Groupe>> getAllGroupes(){
+        return groupeDao.getAllGroupes();
+    }
+
+    LiveData<List<Groupe>> getGroupesByTrombi(long idTrombi){
+        return groupeDao.getGroupesByTrombi(idTrombi);
+    }
+
+    void deleteGroupesForTrombi(long idTrombi){
+        execute(() -> groupeDao.deleteGroupesForTrombi(idTrombi));
+    }
+
+    void softDeleteGroupe(long idGroupe){
+        execute(() -> groupeDao.softDeleteGroupe(idGroupe));
+    }
+
+    void softDeleteGroupesForTrombi(long idTrombi, int isDeleted){
+        execute(() -> groupeDao.softDeleteGroupesForTrombi(idTrombi, isDeleted));
+    }
+
+    void deleteSoftDeletedGroupes(){
+        execute(() -> groupeDao.deleteSoftDeletedGroupes());
+    }
+
+    long insertAndRetrieveId(Groupe groupe){
+        return groupeDao.insert(groupe);
+    }
 
 
     //______________________________________________________________________________________________
     // Eleve________________________________________________________________________________________
     //______________________________________________________________________________________________
-    void insert(Eleve eleve){Executors.newSingleThreadExecutor().execute(() -> eleveDao.insert(eleve));}
-    void update(Eleve eleve){Executors.newSingleThreadExecutor().execute(() -> eleveDao.update(eleve));}
-    void delete(Eleve eleve){Executors.newSingleThreadExecutor().execute(() -> eleveDao.delete(eleve));}
+    void insert(Eleve eleve){
+        execute(() -> eleveDao.insert(eleve));
+    }
 
-    LiveData<List<Eleve>> getAllEleves(){return eleveDao.getAllEleves();}
-    LiveData<List<Eleve>> getElevesByTrombi(long idTrombi){return eleveDao.getElevesByTrombi(idTrombi);}
-    LiveData<Eleve> getEleveById(long idEleve){return eleveDao.getEleveById(idEleve);}
-    void deleteElevesForTrombi(long idTrombi){Executors.newSingleThreadExecutor().execute(() -> eleveDao.deleteElevesForTrombi(idTrombi));}
-    void softDeleteEleve(long idEleve){Executors.newSingleThreadExecutor().execute(() -> eleveDao.softDeleteEleve(idEleve));}
-    void softDeleteElevesForTrombi(long idTrombi){Executors.newSingleThreadExecutor().execute(() -> eleveDao.softDeleteElevesForTrombi(idTrombi));}
-    void deleteSoftDeletedEleves(){Executors.newSingleThreadExecutor().execute(() -> eleveDao.deleteSoftDeletedEleves());}
+    void update(Eleve eleve){
+        execute(() -> eleveDao.update(eleve));
+    }
 
-    int getElevesNumberByTrombi(long idTrombi){return eleveDao.getElevesNumberByTrombi(idTrombi);}
+    void delete(Eleve eleve){
+        execute(() -> eleveDao.delete(eleve));
+    }
+
+    LiveData<List<Eleve>> getAllEleves(){
+        return eleveDao.getAllEleves();
+    }
+
+    LiveData<List<Eleve>> getElevesByTrombi(long idTrombi){
+        return eleveDao.getElevesByTrombi(idTrombi);
+    }
+
+    LiveData<Eleve> getEleveById(long idEleve){
+        return eleveDao.getEleveById(idEleve);
+    }
+
+    void deleteElevesForTrombi(long idTrombi){
+        execute(() -> eleveDao.deleteElevesForTrombi(idTrombi));
+    }
+
+    void softDeleteEleve(long idEleve){
+        execute(() -> eleveDao.softDeleteEleve(idEleve));
+    }
+
+    void softDeleteElevesForTrombi(long idTrombi, int isDeleted){
+        execute(() -> eleveDao.softDeleteElevesForTrombi(idTrombi, isDeleted));
+    }
+
+    void deleteSoftDeletedEleves(){
+        execute(() -> eleveDao.deleteSoftDeletedEleves());
+    }
+
+    int getElevesNumberByTrombi(long idTrombi){
+        return eleveDao.getElevesNumberByTrombi(idTrombi);
+    }
 
     // Voir TrombiRepository#insertAndRetrieveId(Trombinoscope trombi)
     long insertAndRetrieveId(Eleve eleve){
@@ -119,191 +194,58 @@ public class TrombiRepository {
     //______________________________________________________________________________________________
     // Groupe x Eleve_______________________________________________________________________________
     //______________________________________________________________________________________________
-    void insert(EleveGroupeJoin eleveGroupeJoin){Executors.newSingleThreadExecutor().execute(() -> joinDao.insert(eleveGroupeJoin));}
-    void update(EleveGroupeJoin eleveGroupeJoin){Executors.newSingleThreadExecutor().execute(() -> joinDao.update(eleveGroupeJoin));}
-    void delete(EleveGroupeJoin eleveGroupeJoin){Executors.newSingleThreadExecutor().execute(() -> joinDao.delete(eleveGroupeJoin));}
+    void insert(EleveGroupeJoin eleveGroupeJoin){
+        execute(() -> joinDao.insert(eleveGroupeJoin));
+    }
 
-    LiveData<List<GroupeWithEleves>> getGroupesWithEleves(){return joinDao.getGroupesWithEleves();}
-    LiveData<GroupeWithEleves> getGroupeByIdWithEleves(long idGroupe){return joinDao.getGroupeByIdWithEleves(idGroupe);}
-    LiveData<EleveWithGroups> getEleveByIdWithGroups(long idEleve){return joinDao.getEleveByIdWithGroups(idEleve);}
+    void update(EleveGroupeJoin eleveGroupeJoin){
+        execute(() -> joinDao.update(eleveGroupeJoin));
+    }
+
+    void delete(EleveGroupeJoin eleveGroupeJoin){
+        execute(() -> joinDao.delete(eleveGroupeJoin));
+    }
+
+    LiveData<List<GroupeWithEleves>> getGroupesWithEleves(){
+        return joinDao.getGroupesWithEleves();
+    }
+
+    LiveData<GroupeWithEleves> getGroupeByIdWithEleves(long idGroupe){
+        return joinDao.getGroupeByIdWithEleves(idGroupe);
+    }
+
+    LiveData<EleveWithGroups> getEleveByIdWithGroups(long idEleve){
+        return joinDao.getEleveByIdWithGroups(idEleve);
+    }
 
     // Pas de LiveData, ne pas exécuter sur le ThreadUI
-    EleveWithGroups getEleveByIdWithGroupsNotLive(long idEleve){return joinDao.getEleveByIdWithGroupsNotLive(idEleve);}
-    List<EleveWithGroups> getEleveWithGroupsByTrombiNotLive(long idTrombi){return joinDao.getEleveWithGroupsByTrombiNotLive(idTrombi);}
-
-
-
-    //A changer : supprimer, remplacement par Executors.newSingleThreadExecutor()
-    // Création de tâches asynchrone pour modifier la BD____________________________________________
-    // Trombinoscopes
-    private static class InsertTrombiAsyncTask extends AsyncTask<Trombinoscope, Void, Void>{
-        private TrombinoscopeDao trombiDao;
-
-        InsertTrombiAsyncTask(TrombinoscopeDao trombiDao){ this.trombiDao = trombiDao; }
-
-        @Override
-        protected Void doInBackground(Trombinoscope... trombinoscopes) {
-            trombiDao.insert(trombinoscopes[0]);
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-        }
-    }
-    private static class UpdateTrombiAsyncTask extends AsyncTask<Trombinoscope, Void, Void>{
-        private TrombinoscopeDao trombiDao;
-
-        UpdateTrombiAsyncTask(TrombinoscopeDao trombiDao){ this.trombiDao = trombiDao; }
-
-        @Override
-        protected Void doInBackground(Trombinoscope... trombinoscopes) {
-            trombiDao.update(trombinoscopes[0]);
-            return null;
-        }
-    }
-    private static class DeleteTrombiAsyncTask extends AsyncTask<Trombinoscope, Void, Void>{
-        private TrombinoscopeDao trombiDao;
-
-        DeleteTrombiAsyncTask(TrombinoscopeDao trombiDao){ this.trombiDao = trombiDao; }
-
-        @Override
-        protected Void doInBackground(Trombinoscope... trombinoscopes) {
-            trombiDao.delete(trombinoscopes[0]);
-            return null;
-        }
+    EleveWithGroups getEleveByIdWithGroupsNotLive(long idEleve){
+        return joinDao.getEleveByIdWithGroupsNotLive(idEleve);
     }
 
-
-    // Groupes
-    private static class InsertGroupeAsyncTask extends AsyncTask<Groupe, Void, Void>{
-        private GroupeDao groupeDao;
-
-        InsertGroupeAsyncTask(GroupeDao groupeDao){ this.groupeDao = groupeDao; }
-
-        @Override
-        protected Void doInBackground(Groupe... groupes) {
-            groupeDao.insert(groupes[0]);
-            return null;
-        }
-    }
-    private static class UpdateGroupeAsyncTask extends AsyncTask<Groupe, Void, Void>{
-        private GroupeDao groupeDao;
-
-        UpdateGroupeAsyncTask(GroupeDao groupeDao){ this.groupeDao = groupeDao; }
-
-        @Override
-        protected Void doInBackground(Groupe... groupes) {
-            groupeDao.update(groupes[0]);
-            return null;
-        }
-    }
-    private static class DeleteGroupeAsyncTask extends AsyncTask<Groupe, Void, Void>{
-        private GroupeDao groupeDao;
-
-        DeleteGroupeAsyncTask(GroupeDao groupeDao){ this.groupeDao = groupeDao; }
-
-        @Override
-        protected Void doInBackground(Groupe... groupes) {
-            groupeDao.delete(groupes[0]);
-            return null;
-        }
+    List<EleveWithGroups> getEleveWithGroupsByTrombiNotLive(long idTrombi){
+        return joinDao.getEleveWithGroupsByTrombiNotLive(idTrombi);
     }
 
-    private static class DeleteGroupesForTrombiAsyncTask extends AsyncTask<Long, Void, Void>{
-        private GroupeDao groupeDao;
-
-        DeleteGroupesForTrombiAsyncTask(GroupeDao groupeDao){ this.groupeDao = groupeDao; }
-
-        @Override
-        protected Void doInBackground(Long... longs) {
-            groupeDao.deleteGroupesForTrombi(longs[0]);
-            return null;
-        }
+    // Soft delete et suppressions
+    void softDeleteXRefsByGroupe(long idGroupe, int isDeleted){
+        execute(() -> joinDao.softDeleteXRefsByGroupe(idGroupe, isDeleted));
     }
 
-
-    //Eleve
-    private static class InsertEleveAsyncTask extends AsyncTask<Eleve, Void, Void>{
-        private EleveDao eleveDao;
-
-        InsertEleveAsyncTask(EleveDao eleveDao){ this.eleveDao = eleveDao; }
-
-        @Override
-        protected Void doInBackground(Eleve... eleves) {
-            eleveDao.insert(eleves[0]);
-            return null;
-        }
-    }
-    private static class UpdateEleveAsyncTask extends AsyncTask<Eleve, Void, Void>{
-        private EleveDao eleveDao;
-
-        UpdateEleveAsyncTask(EleveDao eleveDao){ this.eleveDao = eleveDao; }
-
-        @Override
-        protected Void doInBackground(Eleve... eleves) {
-            eleveDao.update(eleves[0]);
-            return null;
-        }
-    }
-    private static class DeleteEleveAsyncTask extends AsyncTask<Eleve, Void, Void>{
-        private EleveDao eleveDao;
-
-        DeleteEleveAsyncTask(EleveDao eleveDao){ this.eleveDao = eleveDao; }
-
-        @Override
-        protected Void doInBackground(Eleve... eleves) {
-            eleveDao.delete(eleves[0]);
-            return null;
-        }
+    void softDeleteXRefsByTrombi(long idTrombi, int isDeleted){
+        execute(() -> joinDao.softDeleteXRefsByTrombi(idTrombi, isDeleted));
     }
 
-    private static class DeleteElevesForTrombiAsyncTask extends AsyncTask<Long, Void, Void>{
-        private EleveDao eleveDao;
-
-        DeleteElevesForTrombiAsyncTask(EleveDao eleveDao){ this.eleveDao = eleveDao; }
-
-        @Override
-        protected Void doInBackground(Long... longs) {
-            eleveDao.deleteElevesForTrombi(longs[0]);
-            return null;
-        }
+    void softDeleteXRefsByEleve(long idEleve, int isDeleted){
+        execute(() -> joinDao.softDeleteXRefsByEleve(idEleve, isDeleted));
     }
 
-
-    // EleveGroupeJoin
-    private static class InsertEleveXGroupeAsyncTask extends AsyncTask<EleveGroupeJoin, Void, Void>{
-        private EleveGroupeJoinDao joinDao;
-
-        InsertEleveXGroupeAsyncTask(EleveGroupeJoinDao joinDao){ this.joinDao = joinDao; }
-
-        @Override
-        protected Void doInBackground(EleveGroupeJoin... eleveGroupeJoins) {
-            joinDao.insert(eleveGroupeJoins[0]);
-            return null;
-        }
+    void deleteSoftDeletedXRefs(){
+        execute(() -> joinDao.deleteSoftDeletedXRefs());
     }
-    private static class UpdateEleveXGroupeAsyncTask extends AsyncTask<EleveGroupeJoin, Void, Void>{
-        private EleveGroupeJoinDao joinDao;
 
-        UpdateEleveXGroupeAsyncTask(EleveGroupeJoinDao joinDao){ this.joinDao = joinDao; }
-
-        @Override
-        protected Void doInBackground(EleveGroupeJoin... eleveGroupeJoins) {
-            joinDao.update(eleveGroupeJoins[0]);
-            return null;
-        }
+    private void execute(Runnable runnable){
+        Executors.newSingleThreadExecutor().execute(runnable);
     }
-    private static class DeleteEleveXGroupeAsyncTask extends AsyncTask<EleveGroupeJoin, Void, Void>{
-        private EleveGroupeJoinDao joinDao;
-
-        DeleteEleveXGroupeAsyncTask(EleveGroupeJoinDao joinDao){ this.joinDao = joinDao; }
-
-        @Override
-        protected Void doInBackground(EleveGroupeJoin... eleveGroupeJoins) {
-            joinDao.delete(eleveGroupeJoins[0]);
-            return null;
-        }
-    }
+    
 }

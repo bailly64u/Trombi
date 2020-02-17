@@ -225,9 +225,9 @@ public class ActivityAjoutEleve extends AppCompatActivity {
                 // puis retrait de la XRef pour toutes les chips pas checkées
                 // si Room ne trouve pas d'item à supprimer, il ne fait rien
                 if(chip.isChecked()){
-                    trombiViewModel.insert(new EleveGroupeJoin(idEleve, g.getIdGroupe()));
+                    trombiViewModel.insert(new EleveGroupeJoin(idEleve, g.getIdGroupe(), idTrombi));
                 } else {
-                    trombiViewModel.delete(new EleveGroupeJoin(idEleve, g.getIdGroupe()));
+                    trombiViewModel.delete(new EleveGroupeJoin(idEleve, g.getIdGroupe(), idTrombi));
                 }
             }
         }

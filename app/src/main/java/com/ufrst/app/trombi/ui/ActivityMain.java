@@ -27,6 +27,7 @@ import com.ufrst.app.trombi.adapter.AdapteurTrombi;
 import com.ufrst.app.trombi.R;
 import com.ufrst.app.trombi.database.TrombiViewModel;
 import com.ufrst.app.trombi.database.Trombinoscope;
+import com.ufrst.app.trombi.util.Logger;
 
 import java.util.List;
 
@@ -35,13 +36,15 @@ public class ActivityMain extends AppCompatActivity {
     public static final int REQUETE_AJOUT_TROMBI = 1;
     public static final int REQUETE_EDITE_TROMBI = 2;
 
+    public static final int STATE_SOFT_DELETED = 1;
+    public static final int STATE_NOT_DELETED = 0;
+
     public static final String EXTRA_ID = "com.ufrst.app.trombi.EXTRA_ID";
     public static final String EXTRA_NOM = "com.ufrst.app.trombi.EXTRA_NOM";
     public static final String EXTRA_DESC = "com.ufrst.app.trombi.EXTRA_DESC";
 
     public static final String EXTRA_ID_E = "com.ufrst.app.trombi.EXTRA_ID_E";
     public static final String EXTRA_NOM_E = "com.ufrst.app.trombi.EXTRA_NOM_E";
-    public static final String EXTRA_GROUPE_E = "com.ufrst.app.trombi.EXTRA_GROUPE_E";
     public static final String EXTRA_PHOTO_E = "com.ufrst.app.trombi.EXTRA_PHOTO_E";
 
     public static final String EXTRA_ID_G = "com.ufrst.app.trombi.EXTRA_ID_G";
@@ -79,7 +82,6 @@ public class ActivityMain extends AppCompatActivity {
 
     // Désérialise les vues dont on aura besoin depuis le XML
     private void findViews(){
-        //mNavigationView = findViewById(R.id.NAV_navigationView);
         coordinatorLayout = findViewById(R.id.MAIN_coordinator);
         recyclerView = findViewById(R.id.MAIN_recyclerView);
         tvEmpty = findViewById(R.id.MAIN_emptyRecyclerView);
@@ -135,17 +137,14 @@ public class ActivityMain extends AppCompatActivity {
 
         // Récupérer le ViewModel et observer la liste de Trombinoscopes
         trombiViewModel = ViewModelProviders.of(this).get(TrombiViewModel.class);
-        trombiViewModel.getAllTrombis().observe(this, new Observer<List<Trombinoscope>>() {
-            @Override
-            public void onChanged(List<Trombinoscope> trombis){
-                adapteur.submitList(trombis);
+        trombiViewModel.getAllTrombis().observe(this, trombis -> {
+            adapteur.submitList(trombis);
 
-                // Afficher le placeholder en cas de liste vide
-                if(trombis.isEmpty()){
-                    tvEmpty.setVisibility(View.VISIBLE);
-                } else{
-                    tvEmpty.setVisibility(View.GONE);
-                }
+            // Afficher le placeholder en cas de liste vide
+            if(trombis.isEmpty()){
+                tvEmpty.setVisibility(View.VISIBLE);
+            } else{
+                tvEmpty.setVisibility(View.GONE);
             }
         });
 
@@ -176,20 +175,16 @@ public class ActivityMain extends AppCompatActivity {
 
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction){
-                final long idTrombiSuppr = adapteur.getTrombiAt(viewHolder.getAdapterPosition()).getIdTrombi();
-                trombiViewModel.softDeleteTrombi(idTrombiSuppr);
-                trombiViewModel.softDeleteElevesForTrombi(idTrombiSuppr);
+                final long idTrombiSuppr =
+                        adapteur.getTrombiAt(viewHolder.getAdapterPosition()).getIdTrombi();
+                setTrombiState(idTrombiSuppr, STATE_SOFT_DELETED);
 
                 // Snackbar avec possibilité d'annuler
-                Snackbar.make(coordinatorLayout, R.string.MAIN_trombiSuppr, Snackbar.LENGTH_INDEFINITE)
-                        .setAction(R.string.U_annuler, new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v){
-                                trombiViewModel.softDeleteTrombi(idTrombiSuppr);
-                                trombiViewModel.softDeleteElevesForTrombi(idTrombiSuppr);
-                            }
-                        })
-                        .setActionTextColor(ContextCompat.getColor(ActivityMain.this, R.color.colorAccent))
+                Snackbar.make(
+                        coordinatorLayout, R.string.MAIN_trombiSuppr, Snackbar.LENGTH_INDEFINITE)
+                        .setAction(R.string.U_annuler, v -> setTrombiState(idTrombiSuppr, STATE_NOT_DELETED))
+                        .setActionTextColor(ContextCompat.getColor(
+                                ActivityMain.this, R.color.colorAccent))
                         .setDuration(8000)
                         .show();
             }
@@ -215,8 +210,7 @@ public class ActivityMain extends AppCompatActivity {
         adapteur.setOnItemClickListener(new AdapteurTrombi.OnItemClickListener() {
             @Override
             public void onItemClick(Trombinoscope trombi){
-                Intent intent = new Intent(ActivityMain.this, ActivityVueTrombi.class); //A changer
-                //Intent intent = new Intent(ActivityMain.this, ActivityCapture.class);
+                Intent intent = new Intent(ActivityMain.this, ActivityVueTrombi.class);
 
                 // Informations à passer pour afficher dans le HTML
                 intent.putExtra(EXTRA_ID, trombi.getIdTrombi());
@@ -248,10 +242,20 @@ public class ActivityMain extends AppCompatActivity {
         });
     }
 
+    // Soft delete ou annule le soft delete de tous les objets d'un trombinoscope
+    private void setTrombiState(long idTrombi, int state){
+        trombiViewModel.softDeleteTrombi(idTrombi);
+        trombiViewModel.softDeleteElevesForTrombi(idTrombi, state);
+        trombiViewModel.softDeleteGroupesForTrombi(idTrombi, state);
+        trombiViewModel.softDeleteXRefsByTrombi(idTrombi, state);
+    }
+
     @Override
     protected void onDestroy() {
+        trombiViewModel.deleteSoftDeletedGroupes();
         trombiViewModel.deleteSoftDeletedTrombis();
         trombiViewModel.deleteSoftDeletedEleves();
+        trombiViewModel.deleteSoftDeletedXRefs();
 
         super.onDestroy();
     }
@@ -307,7 +311,7 @@ public class ActivityMain extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item){
         if(item.getItemId() == R.id.MAIN_settings){
-            Intent intent = new Intent(ActivityMain.this, ActivityParametre.class);
+            Intent intent = new Intent(ActivityMain.this, ActivityBDTest.class);
             startActivity(intent);
         }
 

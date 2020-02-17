@@ -40,6 +40,8 @@ import static com.ufrst.app.trombi.ui.ActivityMain.EXTRA_ID;
 import static com.ufrst.app.trombi.ui.ActivityMain.EXTRA_ID_E;
 import static com.ufrst.app.trombi.ui.ActivityMain.EXTRA_NOM_E;
 import static com.ufrst.app.trombi.ui.ActivityMain.EXTRA_PHOTO_E;
+import static com.ufrst.app.trombi.ui.ActivityMain.STATE_NOT_DELETED;
+import static com.ufrst.app.trombi.ui.ActivityMain.STATE_SOFT_DELETED;
 
 public class ActivityListEleve extends AppCompatActivity {
 
@@ -155,20 +157,15 @@ public class ActivityListEleve extends AppCompatActivity {
 
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction){
-                final long idEleveSuppr = adapteur.getEleveAt(viewHolder.getAdapterPosition()).getIdEleve();
-                trombiViewModel.softDeleteEleve(idEleveSuppr);
-                Log.v("_________________", "ID: " + idEleveSuppr + " NOM: " + adapteur.getEleveAt(viewHolder.getAdapterPosition()).getNomPrenom());
-                // TODO: Gérer les cross reference à supprimer
+                final long id = adapteur.getEleveAt(viewHolder.getAdapterPosition()).getIdEleve();
+                setEleveState(id, STATE_SOFT_DELETED);
 
                 // Snackbar avec possibilité d'annuler
-                Snackbar.make(coordinatorLayout, R.string.LISTe_eleveSuppr, Snackbar.LENGTH_INDEFINITE)
-                        .setAction(R.string.U_annuler, new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v){
-                                trombiViewModel.softDeleteEleve(idEleveSuppr);
-                            }
-                        })
-                        .setActionTextColor(ContextCompat.getColor(ActivityListEleve.this, R.color.colorAccent))
+                Snackbar.make(
+                        coordinatorLayout, R.string.LISTe_eleveSuppr, Snackbar.LENGTH_INDEFINITE)
+                        .setAction(R.string.U_annuler, v -> setEleveState(id, STATE_NOT_DELETED))
+                        .setActionTextColor(ContextCompat.getColor(
+                                ActivityListEleve.this, R.color.colorAccent))
                         .setDuration(8000)
                         .show();
             }
@@ -216,6 +213,12 @@ public class ActivityListEleve extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+
+    // Soft delete ou annule le soft delete d'un élève et de ses XRefs
+    private void setEleveState(long idEleve, int state){
+        trombiViewModel.softDeleteEleve(idEleve);
+        trombiViewModel.softDeleteXRefsByEleve(idEleve, state);
     }
 
     @Override
