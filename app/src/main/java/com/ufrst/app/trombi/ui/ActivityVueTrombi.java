@@ -309,6 +309,8 @@ public class ActivityVueTrombi extends AppCompatActivity {
         }
     }
 
+    // Demande à l'utilisateur si le trombi doit être exportée
+    // Un fichier correspondant à cette liste peut déjà exister
     private void checkWriteExportedTrombi(List<EleveWithGroups> eleves){
         FileUtil fileUtil = new FileUtil(getExternalFilesDir(null).getPath());
         File list = new File(fileUtil.getPathForExportedTrombi(nomTrombi));
