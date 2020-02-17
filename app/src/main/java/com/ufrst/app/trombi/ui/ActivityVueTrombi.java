@@ -13,13 +13,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -37,23 +35,12 @@ import com.ufrst.app.trombi.R;
 import com.ufrst.app.trombi.database.Eleve;
 import com.ufrst.app.trombi.database.EleveWithGroups;
 import com.ufrst.app.trombi.database.Groupe;
-import com.ufrst.app.trombi.database.GroupeWithEleves;
 import com.ufrst.app.trombi.database.TrombiViewModel;
 import com.ufrst.app.trombi.util.HTMLProvider;
 import com.ufrst.app.trombi.util.FileUtil;
 import com.ufrst.app.trombi.util.Logger;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.nio.charset.StandardCharsets;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -304,7 +291,7 @@ public class ActivityVueTrombi extends AppCompatActivity {
 
     // Demande à l'utilisateur si la liste doit être exportée
     // Un fichier correspondant à cette liste peut déjà exister
-    private void checkWriteExportedList(List<EleveWithGroups> eleves){
+    private void checkWriteExportedList(List<Eleve> eleves){
         FileUtil fileUtil = new FileUtil(getExternalFilesDir(null).getPath());
         File list = new File(fileUtil.getPathForExportedList(nomTrombi));
 
@@ -312,20 +299,47 @@ public class ActivityVueTrombi extends AppCompatActivity {
             // Snackbar avec action
             Snackbar.make(coordinatorLayout,
                     R.string.VUETROMBI_fichierExiste, Snackbar.LENGTH_INDEFINITE)
-                    .setAction(R.string.U_remplacer, v -> triggerListExport(fileUtil, eleves, true))
+                    .setAction(R.string.U_remplacer, v -> triggerListExport(fileUtil, eleves))
+                    .setActionTextColor(ContextCompat.getColor(ActivityVueTrombi.this,
+                            R.color.colorAccent))
+                    .setDuration(8000)
+                    .show();
+        } else{
+            triggerListExport(fileUtil, eleves);
+        }
+    }
+
+    private void checkWriteExportedTrombi(List<EleveWithGroups> eleves){
+        FileUtil fileUtil = new FileUtil(getExternalFilesDir(null).getPath());
+        File list = new File(fileUtil.getPathForExportedTrombi(nomTrombi));
+
+        if(list.exists()){
+            // Snackbar avec action
+            Snackbar.make(coordinatorLayout,
+                    R.string.VUETROMBI_fichierExiste, Snackbar.LENGTH_INDEFINITE)
+                    .setAction(R.string.U_remplacer, v ->
+                            triggerTrombiExport(fileUtil, eleves, true))
                     .setActionTextColor(ContextCompat.getColor(ActivityVueTrombi.this,
                             R.color.colorAccent))
                     .setDuration(8000)
                     .show();
         } else{
             // La liste est nouvelle, pas besoin de vider le contenu du fichier
-            triggerListExport(fileUtil, eleves, false);
+            triggerTrombiExport(fileUtil, eleves, false);
         }
     }
 
     // Lance l'écriture du fichier de manière asynchrone
-    private void triggerListExport(FileUtil fileUtil, List<EleveWithGroups> eleves, boolean doErase){
-        CompletableFuture.supplyAsync(() -> fileUtil.writeExportedList(nomTrombi, eleves, doErase))
+    private void triggerListExport(FileUtil fileUtil, List<Eleve> eleves){
+        CompletableFuture.supplyAsync(() -> fileUtil.writeExportedList(nomTrombi, eleves))
+                .exceptionally(throwable -> false)
+                .thenAccept(this::alertFileExported);
+    }
+
+    // Lance l'écriture du fichier de manière asynchrone
+    private void triggerTrombiExport(FileUtil fileUtil, List<EleveWithGroups> eleves,
+                                     boolean doErase){
+        CompletableFuture.supplyAsync(() -> fileUtil.writeExportedTrombi(nomTrombi, eleves, doErase))
                 .exceptionally(throwable -> false)
                 .thenAccept(this::alertFileExported);
     }
@@ -406,12 +420,21 @@ public class ActivityVueTrombi extends AppCompatActivity {
 
                 CompletableFuture
                         .supplyAsync(() -> fileUtil.saveImageFromWebview(webView, nomTrombi))
+                        .exceptionally(throwable -> false)
                         .thenAccept(this::alertImageExported);
+
+                return true;
+
+            case R.id.VUETROMBI_exporterTrombiF:
+                CompletableFuture.supplyAsync(() ->
+                        trombiViewModel.getEleveWithGroupsByTrombiNotLive(idTrombi))
+                        .exceptionally(throwable -> Collections.emptyList())
+                        .thenAccept(this::checkWriteExportedTrombi);
+
                 return true;
 
             case R.id.VUETROMBI_exporterListe:
-                CompletableFuture.supplyAsync(() ->
-                        trombiViewModel.getEleveWithGroupsByTrombiNotLive(idTrombi))
+                CompletableFuture.supplyAsync(() -> listeEleves)
                         .exceptionally(throwable -> Collections.emptyList())
                         .thenAccept(this::checkWriteExportedList);
 

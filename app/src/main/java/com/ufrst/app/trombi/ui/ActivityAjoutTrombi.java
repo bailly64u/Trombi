@@ -32,6 +32,7 @@ import com.ufrst.app.trombi.database.Groupe;
 import com.ufrst.app.trombi.database.TrombiViewModel;
 import com.ufrst.app.trombi.database.Trombinoscope;
 import com.ufrst.app.trombi.model.EleveWithGroupsImport;
+import com.ufrst.app.trombi.util.FileUtil;
 import com.ufrst.app.trombi.util.ImportUtil;
 import com.ufrst.app.trombi.util.Logger;
 
@@ -308,7 +309,7 @@ public class ActivityAjoutTrombi extends AppCompatActivity implements ImportAler
                     String filename = split[split.length - 1];
 
                     // Récupération du nom du trombinoscope sans fioritures
-                    String nameTrombi = "DefaultName";
+                    String nameTrombi = "Mon trombi";
 
                     if(filename != null){
                         nameTrombi = filename.split("-")[0];

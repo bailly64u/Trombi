@@ -47,6 +47,7 @@
     <string name="VUETROMBI_exporterImg">Exporter en tant qu\'image</string>
     <string name="VUETROMBI_exporterPdf">Exporter en tant que PDF</string>
     <string name="VUETROMBI_exporterListe">Exporter la liste des noms</string>
+    <string name="VUETROMBI_exporterTrombi">Exporter le trombinoscope</string>
     <string name="VUETROMBI_listeExportee">La liste a été exportée</string>
     <string name="VUETROMBI_listeExporteeErr">Un problème est survenu lors de l\'exportation</string>
     <string name="VUETROMBI_fichierExiste">Le fichier existe déjà, remplacer ?</string>

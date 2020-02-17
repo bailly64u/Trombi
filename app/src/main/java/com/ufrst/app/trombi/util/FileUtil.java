@@ -29,6 +29,7 @@ import java.util.List;
 // générés par l'application
 public class FileUtil {
 
+    private static final String EXPORT_DIRECTORY = "/export/";
     private static final String PHOTO_DIRECTORY = "/photos/";
     private static final String IMG_DIRECTORY = "/images/";
     static final String LIST_DIRECTORY = "/listes/";
@@ -72,6 +73,18 @@ public class FileUtil {
 
         String directory = externalDirPath + LIST_DIRECTORY;
         String filename = nomTrombi + "-" + df.format(calendar.getTime()) + TXT;
+
+        // En cas de problèmes de création de répertoire, la liste est stockée directement
+        // dans le stockage externe
+        if(checkDirectory(new File(directory)))
+            return externalDirPath + File.separator + filename;
+
+        return directory + File.separator + filename;
+    }
+
+    public String getPathForExportedTrombi(String nomTrombi){
+        String directory = externalDirPath + EXPORT_DIRECTORY;
+        String filename = nomTrombi + TXT;
 
         // En cas de problèmes de création de répertoire, la liste est stockée directement
         // dans le stockage externe
@@ -126,12 +139,13 @@ public class FileUtil {
         }
     }
 
-    // Ecrit une liste d'élèves dans un fichier situé dans le stockage externe de l'app
+    // Ecrit une liste d'élèves avec leurs groupes
+    // dans un fichier situé dans le stockage externe de l'app
     // Retourne true si le fichier existe déjà
-    public boolean writeExportedList(String nomTrombi, List<EleveWithGroups> eleves,
-                                     boolean doErase){
+    public boolean writeExportedTrombi(String nomTrombi, List<EleveWithGroups> eleves,
+                                       boolean doErase){
         // Récupération du nom du fichier
-        String path = getPathForExportedList(nomTrombi);
+        String path = getPathForExportedTrombi(nomTrombi);
 
         // Le fichier est réécrit, on doit supprimer son contenu actuel
         if(doErase){
@@ -146,13 +160,9 @@ public class FileUtil {
         }
 
         // Ecriture du fichier
-        try(BufferedWriter writer =
-                    new BufferedWriter(
-                            new OutputStreamWriter(
+        try(BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
                                     new FileOutputStream(path, true),
-                                    StandardCharsets.UTF_8)
-                    )
-        ){
+                                    StandardCharsets.UTF_8))){
             // Pour chaque élève on écrit le nom prénom
             for(EleveWithGroups eleve : eleves){
                 writer.write(eleve.getEleves().getNomPrenom());
@@ -162,6 +172,28 @@ public class FileUtil {
                     writer.write("|" + g.getNomGroupe());
                 }
 
+                writer.write("\n");
+            }
+        } catch(IOException e){
+            Logger.handleException(e);
+            return false;
+        }
+
+        return true;
+    }
+
+    // Exporte une liste de noms, sans les groupes
+    public boolean writeExportedList(String nomTrombi, List<Eleve> eleves){
+        // Récupération du nom du fichier
+        String path = getPathForExportedList(nomTrombi);
+
+        // Ecriture du fichier
+        try(BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
+                                    new FileOutputStream(path, true),
+                                    StandardCharsets.UTF_8))){
+            // Pour chaque élève on écrit le nom prénom
+            for(Eleve eleve : eleves){
+                writer.write(eleve.getNomPrenom());
                 writer.write("\n");
             }
         } catch(IOException e){

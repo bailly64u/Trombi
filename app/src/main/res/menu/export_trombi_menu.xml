@@ -24,6 +24,11 @@
                 android:title="@string/VUETROMBI_exporterListe"
                 android:icon="@drawable/ic_list" />
 
+            <item
+                android:id="@+id/VUETROMBI_exporterTrombiF"
+                android:title="@string/VUETROMBI_exporterTrombi"
+                android:icon="@drawable/ic_portrait" />
+
         </menu>
     </item>
 </menu>
