@@ -3,6 +3,8 @@
     <!-- Theme clair -->
     <!-- <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar"> -->
     <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
+        <item name="colorControlHighlight">@color/textDisabled</item>
+
         <item name="android:navigationBarColor">@color/colorPrimaryDarker</item>
         <item name="android:statusBarColor">@color/colorPrimaryDarker</item>
 
@@ -33,6 +35,8 @@
 
     <!-- Theme sombre -->
     <style name="AppThemeDark" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
+        <item name="colorControlHighlight">@color/textDisabledDark</item>
+
         <item name="android:navigationBarColor">@color/colorPrimaryDarkDark</item>
         <item name="android:statusBarColor">@color/colorPrimaryDarkDark</item>
 
