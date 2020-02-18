@@ -3,6 +3,7 @@ package com.ufrst.app.trombi.util;
 import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Picture;
 import android.webkit.WebView;
 
 import androidx.annotation.WorkerThread;

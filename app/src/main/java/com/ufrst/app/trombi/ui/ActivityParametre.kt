@@ -62,8 +62,6 @@ class ActivityParametre : AppCompatActivity() {
             isFixedRatio = getBoolean(PREFS_FIXED_RATIO, true)
             qualityOrLatency = getBoolean(PREFS_QUALITY_OR_LATENCY, false)
             isNightMode = getBoolean(PREFS_NIGHT_MODE, false)
-
-            Logger.logV("wtf", "NightMode: $isNightMode")
         }
     }
 
@@ -74,8 +72,6 @@ class ActivityParametre : AppCompatActivity() {
             maxValue = 6
             value = nbCols
         }
-
-        Logger.logV("wtf", "NightMode: $isNightMode")
 
         switchFixedRatio.isChecked = isFixedRatio
         switchQuality.isChecked = qualityOrLatency
@@ -92,9 +88,7 @@ class ActivityParametre : AppCompatActivity() {
         }
 
         switchNightModeLayout.setOnClickListener {
-            Logger.logV("wtf", "NightModeAvant: $isNightMode")
             switchNightMode.isChecked = !switchNightMode.isChecked
-            Logger.logV("wtf", "NightModeAprès: $isNightMode")
         }
     }
 
@@ -119,7 +113,6 @@ class ActivityParametre : AppCompatActivity() {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         }
 
-        Logger.logV("wtf", "NightMode: $isNightMode")
         super.onPause()
     }
 
