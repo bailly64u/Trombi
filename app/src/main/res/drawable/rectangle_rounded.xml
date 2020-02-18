@@ -6,7 +6,7 @@
         android:radius="4dp" />
 
     <solid
-        android:color="@color/textDisabled" />
+        android:color="?attr/textDisabled" />
 
     <size
         android:width="24dp"

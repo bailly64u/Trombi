@@ -71,6 +71,7 @@
                     android:layout_marginBottom="16dp"
                     android:layout_toEndOf="@+id/AJOUTGROUPE_ivIcon1"
                     android:hint="@string/AJOUTGROUPE_hint1"
+                    android:textColorHint="?attr/textHighEmphasis"
                     app:boxStrokeColor="?attr/colorAccent"
                     app:hintTextColor="?attr/colorAccent"
                     app:boxBackgroundColor="?attr/boxBackground">
@@ -81,6 +82,7 @@
                         android:layout_height="wrap_content"
                         android:imeOptions="actionNext"
                         android:inputType="textCapSentences"
+                        android:textColor="?attr/onBackground"
                         android:maxLines="1" />
 
                 </com.google.android.material.textfield.TextInputLayout>

@@ -81,6 +81,7 @@
                         android:layout_height="wrap_content"
                         android:imeOptions="actionDone"
                         android:inputType="textCapSentences"
+                        android:textColor="?attr/onBackground"
                         android:maxLines="1" />
 
                 </com.google.android.material.textfield.TextInputLayout>
@@ -124,6 +125,7 @@
                             android:layout_height="match_parent"
                             android:layout_margin="8dp"
                             android:gravity="bottom"
+                            android:textColor="?attr/textHighEmphasis"
                             android:text="@string/AJOUTELEVE_emptyGroup"
                             android:visibility="gone" />
 

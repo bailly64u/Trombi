@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/PARA_coordinator"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="?attr/backgroundApp">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
@@ -19,128 +20,189 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="?attr/actionBarSize"
-        android:orientation="vertical">
+        android:layout_marginTop="?attr/actionBarSize">
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="12dp">
+            android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/PARA_titleNbCol"
-                style="@style/TextAppearance.AppCompat.Large"
-                android:layout_width="wrap_content"
+            <RelativeLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true"
-                android:layout_toStartOf="@+id/PARA_npCol"
-                android:textSize="18sp"
-                android:text="@string/PARA_titleNbCol" />
+                android:padding="12dp">
 
-            <TextView
-                android:layout_width="wrap_content"
+                <TextView
+                    android:id="@+id/PARA_titleNbCol"
+                    style="@style/TextAppearance.AppCompat.Large"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_toStartOf="@+id/PARA_npCol"
+                    android:textSize="18sp"
+                    android:textColor="?attr/onBackground"
+                    android:text="@string/PARA_titleNbCol" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/PARA_titleNbCol"
+                    android:layout_toStartOf="@+id/PARA_npCol"
+                    android:textColor="?attr/textHighEmphasis"
+                    android:text="@string/PARA_nbCol" />
+
+                <NumberPicker
+                    android:id="@+id/PARA_npCol"
+                    android:layout_width="wrap_content"
+                    android:layout_height="80dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:theme="@style/AppTheme.Picker"
+                    android:foregroundTint="?attr/onBackground"
+                    android:descendantFocusability="blocksDescendants" />
+
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="?attr/dividerColor" />
+
+            <RelativeLayout
+                android:id="@+id/PARA_switchNbColLayout"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/PARA_titleNbCol"
-                android:layout_toStartOf="@+id/PARA_npCol"
-                android:text="@string/PARA_nbCol" />
+                android:padding="12dp"
+                android:background="?android:selectableItemBackground">
 
-            <NumberPicker
-                android:id="@+id/PARA_npCol"
-                android:layout_width="wrap_content"
-                android:layout_height="80dp"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true" />
+                <TextView
+                    android:id="@+id/PARA_titleFixedRatio"
+                    style="@style/TextAppearance.AppCompat.Large"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_toStartOf="@+id/PARA_switchFixedRatio"
+                    android:textSize="18sp"
+                    android:textColor="?attr/onBackground"
+                    android:text="@string/PARA_titleFixedRatio" />
 
-        </RelativeLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/PARA_titleFixedRatio"
+                    android:layout_alignParentStart="true"
+                    android:layout_toStartOf="@+id/PARA_switchFixedRatio"
+                    android:textColor="?attr/textHighEmphasis"
+                    android:text="@string/PARA_fixedRatio" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="?attr/dividerColor" />
+                <Switch
+                    android:id="@+id/PARA_switchFixedRatio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:clickable="false" />
 
-        <RelativeLayout
-            android:id="@+id/PARA_switchNbColLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="12dp"
-            android:background="?android:selectableItemBackground">
+            </RelativeLayout>
 
-            <TextView
-                android:id="@+id/PARA_titleFixedRatio"
-                style="@style/TextAppearance.AppCompat.Large"
-                android:layout_width="wrap_content"
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="?attr/dividerColor" />
+
+            <RelativeLayout
+                android:id="@+id/PARA_switchQualityLayout"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true"
-                android:layout_toStartOf="@+id/PARA_switchFixedRatio"
-                android:textSize="18sp"
-                android:text="@string/PARA_titleFixedRatio" />
+                android:padding="12dp"
+                android:background="?android:selectableItemBackground">
 
-            <TextView
-                android:layout_width="wrap_content"
+                <TextView
+                    android:id="@+id/PARA_titleQuality"
+                    style="@style/TextAppearance.AppCompat.Large"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_toStartOf="@+id/PARA_switchQuality"
+                    android:textSize="18sp"
+                    android:textColor="?attr/onBackground"
+                    android:text="@string/PARA_titleQuality" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/PARA_titleQuality"
+                    android:layout_toStartOf="@+id/PARA_switchQuality"
+                    android:textColor="?attr/textHighEmphasis"
+                    android:text="@string/PARA_quality" />
+
+                <Switch
+                    android:id="@+id/PARA_switchQuality"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:clickable="false" />
+
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="?attr/dividerColor" />
+
+            <RelativeLayout
+                android:id="@+id/PARA_switchNightModeLayout"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/PARA_titleFixedRatio"
-                android:layout_toStartOf="@+id/PARA_switchFixedRatio"
-                android:text="@string/PARA_fixedRatio" />
+                android:padding="12dp"
+                android:background="?android:selectableItemBackground">
 
-            <Switch
-                android:id="@+id/PARA_switchFixedRatio"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:clickable="false" />
+                <TextView
+                    android:id="@+id/PARA_titleNightMode"
+                    style="@style/TextAppearance.AppCompat.Large"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_toStartOf="@+id/PARA_switchNightMode"
+                    android:textSize="18sp"
+                    android:textColor="?attr/onBackground"
+                    android:text="@string/PARA_titleNightMode" />
 
-        </RelativeLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/PARA_titleNightMode"
+                    android:layout_alignParentStart="true"
+                    android:layout_toStartOf="@+id/PARA_switchNightMode"
+                    android:textColor="?attr/textHighEmphasis"
+                    android:text="@string/PARA_nightMode" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="?attr/dividerColor" />
+                <Switch
+                    android:id="@+id/PARA_switchNightMode"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:clickable="false" />
 
-        <RelativeLayout
-            android:id="@+id/PARA_switchQualityLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="12dp"
-            android:background="?android:selectableItemBackground">
+            </RelativeLayout>
 
-            <TextView
-                android:id="@+id/PARA_titleQuality"
-                style="@style/TextAppearance.AppCompat.Large"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true"
-                android:layout_toStartOf="@+id/PARA_switchQuality"
-                android:textSize="18sp"
-                android:text="@string/PARA_titleQuality" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="?attr/dividerColor" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/PARA_titleQuality"
-                android:layout_toStartOf="@+id/PARA_switchQuality"
-                android:text="@string/PARA_quality" />
-
-            <Switch
-                android:id="@+id/PARA_switchQuality"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:clickable="false" />
-
-        </RelativeLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="?attr/dividerColor" />
-
-    </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

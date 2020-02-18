@@ -1,6 +1,8 @@
 package com.ufrst.app.trombi.ui;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.os.Bundle;
 import android.view.Menu;
@@ -12,6 +14,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.ContextCompat;
@@ -52,6 +55,7 @@ public class ActivityMain extends AppCompatActivity {
 
     public static final String PREFS_NBCOLS = "com.ufrst.app.trombi.PREFS_NBCOLS";
     public static final String PREFS_FIXED_RATIO = "com.ufrst.app.trombi.PREFS_FIXED_RATIO";
+    public static final String PREFS_NIGHT_MODE = "com.ufrst.app.trombi.PREFS_NIGHT_MODE";
     public static final String PREFS_QUALITY_OR_LATENCY =
             "com.ufrst.app.trombi.PREFS_QUALITY_OR_LATENCY";
 
@@ -67,6 +71,17 @@ public class ActivityMain extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
+        SharedPreferences prefs =
+                getSharedPreferences("com.ufrst.app.trombi", Context.MODE_PRIVATE);
+        boolean night = prefs.getBoolean(PREFS_NIGHT_MODE, false);
+
+        if(AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES || night){
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+            setTheme(R.style.AppThemeDark);
+        } else{
+            setTheme(R.style.AppTheme);
+        }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -113,15 +128,12 @@ public class ActivityMain extends AppCompatActivity {
             }
         });*/
 
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Démarre une activité. Au retour, onActivityResult() sera déclenchée
-                Intent intent = new Intent(ActivityMain.this, ActivityAjoutTrombi.class);
-                startActivityForResult(intent, REQUETE_AJOUT_TROMBI);
-                //Intent intent = new Intent(ActivityMain.this, ActivityBDTest.class);
-                //startActivity(intent);
-            }
+        fab.setOnClickListener(view -> {
+            // Démarre une activité. Au retour, onActivityResult() sera déclenchée
+            Intent intent = new Intent(ActivityMain.this, ActivityAjoutTrombi.class);
+            startActivityForResult(intent, REQUETE_AJOUT_TROMBI);
+            //Intent intent = new Intent(ActivityMain.this, ActivityBDTest.class);
+            //startActivity(intent);
         });
     }
 
@@ -311,7 +323,7 @@ public class ActivityMain extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item){
         if(item.getItemId() == R.id.MAIN_settings){
-            Intent intent = new Intent(ActivityMain.this, ActivityBDTest.class);
+            Intent intent = new Intent(ActivityMain.this, ActivityParametre.class);
             startActivity(intent);
         }
 

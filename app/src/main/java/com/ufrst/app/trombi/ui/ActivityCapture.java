@@ -17,6 +17,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageCapture;
 import androidx.camera.core.Preview;
@@ -88,16 +89,20 @@ public class ActivityCapture extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
+        if(AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES){
+            setTheme(R.style.AppThemeDark);
+        } else{
+            setTheme(R.style.AppTheme);
+        }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_capture);
 
         findViews();
         getExtras();
         retrieveSharedPreferences();
-        Logger.logV("prefs", "isRatioFixed: " + isFixedRatio);
         observeEleve();
         setListeners();
-        //updateUI();
 
         // Vérification des permissions accordées
         if(allPermissionsGranted()){
@@ -134,9 +139,9 @@ public class ActivityCapture extends AppCompatActivity {
     private void retrieveSharedPreferences(){
         prefs = getSharedPreferences("com.ufrst.app.trombi", Context.MODE_PRIVATE);
         isFixedRatio = prefs.getBoolean(PREFS_FIXED_RATIO, true);
-        boolean pref = prefs.getBoolean(PREFS_QUALITY_OR_LATENCY, false);
+        boolean isLowLatency = prefs.getBoolean(PREFS_QUALITY_OR_LATENCY, false);
 
-        if(pref)
+        if(isLowLatency)
             qualityOrLatency = ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY;
         else
             qualityOrLatency = ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY;

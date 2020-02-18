@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.DialogFragment;
@@ -67,6 +68,12 @@ public class ActivityAjoutTrombi extends AppCompatActivity implements ImportAler
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
+        if(AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES){
+            setTheme(R.style.AppThemeDark);
+        } else{
+            setTheme(R.style.AppTheme);
+        }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ajout_trombi);
 
@@ -151,7 +158,6 @@ public class ActivityAjoutTrombi extends AppCompatActivity implements ImportAler
     }
 
     // Prépare la sauvegarde du trombi qui sera finalisée dans ActivityMain
-    // TODO: Ne pas rediriger vers le menu principal, mais vers la page de modification du trombi
     private void saveTrombi(){
         String nom = etNom.getText().toString();
         String desc = etDesc.getText().toString();

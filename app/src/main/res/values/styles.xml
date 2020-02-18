@@ -3,6 +3,9 @@
     <!-- Theme clair -->
     <!-- <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar"> -->
     <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
+        <item name="android:navigationBarColor">@color/colorPrimaryDarker</item>
+        <item name="android:statusBarColor">@color/colorPrimaryDarker</item>
+
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
@@ -11,6 +14,9 @@
 
         <item name="backgroundApp">@color/background</item>
         <item name="onBackground">@color/onBackground</item>
+
+        <item name="backgroundL1">@color/backgroundL1</item>
+        <item name="backgroundL2">@color/backgroundL2</item>
 
         <item name="onPrimary">@color/onPrimary</item>
         <item name="onSecondary">@color/onSecondary</item>
@@ -21,10 +27,15 @@
 
         <item name="boxBackground">@color/boxBackground</item>
         <item name="dividerColor">@color/divider</item>
+
+        <item name="chipsBackground">@color/divider</item>
     </style>
 
     <!-- Theme sombre -->
     <style name="AppThemeDark" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
+        <item name="android:navigationBarColor">@color/colorPrimaryDarkDark</item>
+        <item name="android:statusBarColor">@color/colorPrimaryDarkDark</item>
+
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
@@ -33,6 +44,9 @@
 
         <item name="backgroundApp">@color/backgroundDark</item>
         <item name="onBackground">@color/onBackgroundDark</item>
+
+        <item name="backgroundL1">@color/backgroundDarkL1</item>
+        <item name="backgroundL2">@color/backgroundDarkL2</item>
 
         <item name="onPrimary">@color/onPrimaryDark</item>
         <item name="onSecondary">@color/onSecondaryDark</item>
@@ -43,6 +57,8 @@
 
         <item name="boxBackground">@color/boxBackgroundDark</item>
         <item name="dividerColor">@color/dividerDark</item>
+
+        <item name="chipsBackground">@color/backgroundDarkL2</item>
     </style>
 
 
@@ -66,5 +82,9 @@
     <!-- Text Appearance personnalisé pour les chips (requis) -->
     <style name="CustomTextChips" parent="TextAppearance.AppCompat">
         <item name="android:textColor">?attr/colorAccent</item>
+    </style>
+
+    <style name="AppTheme.Picker" parent="Theme.AppCompat.Light.NoActionBar" >
+        <item name="android:textColorPrimary">#808080</item>
     </style>
 </resources>

@@ -2,6 +2,7 @@ package com.ufrst.app.trombi.ui;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
@@ -50,6 +51,12 @@ public class ActivityAjoutEleve extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
+        if(AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES){
+            setTheme(R.style.AppThemeDark);
+        } else{
+            setTheme(R.style.AppTheme);
+        }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ajout_eleve);
 
@@ -91,21 +98,13 @@ public class ActivityAjoutEleve extends AppCompatActivity {
     }
 
     private void setListeners(){
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view){
-                saveEleve();
-            }
-        });
+        fab.setOnClickListener(view -> saveEleve());
 
-        buttonGroup.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view){
-                Intent intent = new Intent(ActivityAjoutEleve.this, ActivityListGroupe.class);
-                intent.putExtra(EXTRA_ID, idTrombi);
+        buttonGroup.setOnClickListener(view -> {
+            Intent intent = new Intent(ActivityAjoutEleve.this, ActivityListGroupe.class);
+            intent.putExtra(EXTRA_ID, idTrombi);
 
-                startActivity(intent);
-            }
+            startActivity(intent);
         });
     }
 

@@ -106,6 +106,8 @@
     <string name="PARA_fixedRatio">Fixer un ratio 1:1 pour le recadrage des photos, afin qu\'elles soient toujours carrées.</string>
     <string name="PARA_titleQuality">Mode latence minimale</string>
     <string name="PARA_quality">Active le mode latence minimale pour la prise de photo. La qualité de la photo sera amoindrie.</string>
+    <string name="PARA_titleNightMode">Mode sombre</string>
+    <string name="PARA_nightMode">Un thème sombre pour préserver votre batterie (et vos beaux yeux).</string>
 
     <!-- ID pour chips -->
     <string name="TAG_CHIPS_ID">com.ufrst.app.trombi.TAG_CHIPS_ID</string>

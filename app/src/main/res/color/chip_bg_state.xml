@@ -3,5 +3,5 @@
     <item android:color="?attr/colorAccent"
         android:state_checked="true" />
 
-    <item android:color="?attr/dividerColor" />
+    <item android:color="?attr/chipsBackground" />
 </selector>
