@@ -264,11 +264,16 @@ public class ActivityVueTrombi extends AppCompatActivity {
                     .setListeEleves(listeEleves)
                     .setNbCols(nbCols)
                     .hasDescription(withDesc)
+                    .setContext(this)
                     .build();
 
             // Génère le HTML dans un autre Thread, puis l'affiche dans le ThreadUI (obligatoire)
             CompletableFuture.supplyAsync(htmlProvider::doHTML)
-                    .exceptionally(throwable -> getResources().getString(R.string.U_erreur))
+                    .exceptionally(throwable -> {
+                        throwable.printStackTrace();
+                        return getResources().getString(R.string.U_erreur);
+
+                    })
                     .thenAccept(htmlText ->
                             runOnUiThread(() -> webView.loadDataWithBaseURL(
                                     null,

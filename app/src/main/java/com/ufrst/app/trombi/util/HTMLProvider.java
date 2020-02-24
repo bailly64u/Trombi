@@ -1,8 +1,8 @@
 package com.ufrst.app.trombi.util;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
 import android.net.Uri;
 import android.util.Base64;
 
@@ -10,12 +10,8 @@ import com.ufrst.app.trombi.database.Eleve;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 // Classe utilitaire pour générer le HTML et charger les images en parallèle. Builder Pattern
 public class HTMLProvider {
@@ -28,6 +24,7 @@ public class HTMLProvider {
     private final boolean withDescription;
     private final String descTrombi;
     private final String nomTrombi;
+    private final Context context;
     private final int nbCols;
 
     private HTMLProvider(final Builder builder){
@@ -35,98 +32,12 @@ public class HTMLProvider {
         listeEleves = builder.listeEleves;
         descTrombi = builder.descTrombi;
         nomTrombi = builder.nomTrombi;
+        context = builder.context;
         nbCols = builder.nbCols;
     }
 
-    // Seule méthode publique de cet objet qui permet de retourner le HTML à afficher pour un trombi
-    public String doHTML(){
-        return generateHTML();
-    }
-
-    private String generateHTML(){
-        boolean isLastRow = false;              // Détermine si la dernière ligne affichée était la dernière
-        int index = 0;                          // Indexe a chosir dans la liste d'élèves
-
-        // Ne peut pas se produire, sauf si l'API du téléphone est inférieure à 26
-        // Les APIs inférieures à 26 ne supportent pas l'attribut "min" des Seekbar
-        if(nbCols == -1){
-            return "Erreur nombre de colonnes";
-        }
-
-        StringBuilder sb = new StringBuilder();
-
-        // Style et métadonnées
-        sb.append("<html>")
-                .append("<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">")
-                .append("<style>")
-                .append("@page {size:A4; margin:1cm;}")                     // Page
-                .append("html, body{width: 210mm;}")                        // <html>, <body>
-                .append("img{width: 100%;margin-right: auto; margin-left: auto;}") // <img> transform:rotate(90deg);
-                .append("h1{font-size: 3em; text-align: center;}")          // <h1>
-                .append("h2{font-size: 2.8em; text-align: center;}")        // <h2>
-                .append("table{width: 100%; margin-bottom:100px;}")         // <table>
-                .append("td{padding-bottom: 20px}")                         // <td>
-                .append("td > *{display: block;}")
-                .append("#table td{text-align: center; font-size: 2em}")    // <td>
-                .append("</style></head>")
-                .append("<body><h1>").append(nomTrombi).append("</h1>");
-
-        if(withDescription){
-            sb.append("<h2>").append(descTrombi).append("</h2>");
-        }
-
-        sb.append("<table id=\"table\">");
-
-        // Lignes
-        while(!isLastRow){
-            sb.append("<tr>");
-
-            // Colonnes
-            for(int j = 0; j < nbCols + 1; j++){
-                try{
-                    Eleve eleve = listeEleves.get(index);
-
-                    // Si l'élève à une image, on ajoute une balise
-                    if(eleve != null){
-                        Logger.logV("E", eleve.getNomPrenom());
-
-                        if(eleve.getPhoto() != null && !eleve.getPhoto().trim().isEmpty()){
-                            sb.append("<td>");
-                            sb.append("<img src=\"data:image/jpg;base64,")
-                                    .append(convertToBase64(eleve))
-                                    .append("\" />")
-                                    .append(eleve.getNomPrenom())
-                                    .append("</td>");
-                        } else{
-                            j--;
-                        }
-
-//                        sb.append(eleveImage.getNomPrenom())
-//                                .append("</td>");
-                    }
-                } catch(IndexOutOfBoundsException e){              // Fin de la liste atteinte, sortie
-                    //Logger.handleException(e);
-                    isLastRow = true;
-                    break;
-                }
-
-                index++;
-            }
-
-            sb.append("</tr>");
-        }
-
-        sb.append("</table>");
-        sb.append("</body></html>");
-
-        return sb.toString();
-    }
-
     // Ecrit les balises HTML en s'adaptant aux attributs de classe
-    /*private String generateHTML(List<EleveImage> listeBase64){
-        boolean isLastRow = false;              // Détermine si la dernière ligne affichée était la dernière
-        int index = 0;                          // Indexe a chosir dans la liste d'élèves
-
+    public String doHTML(){
         // Ne peut pas se produire, sauf si l'API du téléphone est inférieure à 26
         // Les APIs inférieures à 26 ne supportent pas l'attribut "min" des Seekbar
         if(nbCols == -1){
@@ -139,58 +50,73 @@ public class HTMLProvider {
         sb.append("<html>")
                 .append("<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">")
                 .append("<style>")
-                .append("@page {size:A4; margin:1cm;}")                     // Page
-                .append("html, body{width: 210mm;}")                        // <html>, <body>
-                .append("img{width: 100%;margin-right: auto; margin-left: auto;}") // <img> transform:rotate(90deg);
-                .append("h1{font-size: 3em; text-align: center;}")          // <h1>
-                .append("h2{font-size: 2.8em; text-align: center;}")        // <h2>
-                .append("table{width: 100%; margin-bottom:100px;}")         // <table>
-                .append("td{padding-bottom: 20px}")                         // <td>
+                .append("@page {size:A4; margin:1cm;}")
+                .append("html, body{width: 210mm;}")
+                .append("img{width: 100%; margin-right: auto; margin-left: auto;}")
+                .append("h1{font-size: 3em; text-align: center;}")
+                .append("h2{font-size: 2.8em; text-align: center;}")
+                .append("table{width: 100%; margin-bottom:100px; table-layout:fixed;}")
+                .append("td{padding-bottom: 10px; vertical-align: top; word-wrap:break-word;}")
+                .append(".name{padding-bottom: 40px;}")
                 .append("td > *{display: block;}")
-                .append("#table td{text-align: center; font-size: 2em}")    // <td>
+                .append("#table td{text-align: center; font-size: 2em}")
                 .append("</style></head>")
                 .append("<body><h1>").append(nomTrombi).append("</h1>");
 
-        if(withDescription){
+        if(withDescription)
             sb.append("<h2>").append(descTrombi).append("</h2>");
-        }
 
         sb.append("<table id=\"table\">");
 
+        final int nbRows = computeRowsNumber(listeEleves.size(), nbCols);
+
         // Lignes
-        while(!isLastRow){
+        for(int i = 0; i < nbRows; i++){
             sb.append("<tr>");
 
-            // Colonnes
-            for(int j = 0; j < nbCols + 1; j++){
+            // Boucle 1: Aligner les images
+            for(int j = 0; j < nbCols; j++){
+                Eleve eleve;
+
                 try{
-                    EleveImage eleveImage = listeBase64.get(index);
-
-                    // Si l'élève à une image, on ajoute une balise
-                    if(eleveImage != null){
-                        Logger.logV("E", eleveImage.getNomPrenom());
-
-                        if(eleveImage.getBase64Image() != null && !eleveImage.getBase64Image().trim().isEmpty()){
-                            sb.append("<td>");
-                            sb.append("<img src=\"data:image/jpg;base64,")
-                                    .append(eleveImage.getBase64Image())
-                                    .append("\" />")
-                                    .append(eleveImage.getNomPrenom())
-                                    .append("</td>");
-                        } else{
-                            j--;
-                        }
-
-//                        sb.append(eleveImage.getNomPrenom())
-//                                .append("</td>");
-                    }
-                } catch(IndexOutOfBoundsException e){              // Fin de la liste atteinte, sortie
-                    //Logger.handleException(e);
-                    isLastRow = true;
+                    eleve = listeEleves.get(j + (i * nbCols));
+                } catch(IndexOutOfBoundsException e){
+                    // On est sur la dernière ligne, et il reste moins d'élèves que de colonnes
                     break;
                 }
 
-                index++;
+                if(eleve != null){
+                    String base64image = convertToBase64(eleve);
+
+                    // L'image est vide ou null, on met le placeholder
+                    if(base64image == null || base64image.trim().equals("")){
+                        Base64Placeholder placeholder = Base64Placeholder.getInstance(context);
+                        sb.append(addElevePhoto(placeholder.getBase64Placeholder()));
+                    } else{
+                        sb.append(addElevePhoto(base64image));
+                    }
+                }
+            }
+
+            // Nouvelle ligne pour les noms
+            sb.append("</tr><tr>");
+
+            // Boucle 2: Aligner les noms
+            for(int k = 0; k < nbCols; k++){
+                Eleve eleve;
+
+                try{
+                    eleve = listeEleves.get(k + (i * nbCols));
+                } catch(IndexOutOfBoundsException e){
+                    // On est sur la dernière ligne, et il reste moins d'élèves que de colonnes
+                    break;
+                }
+
+                if(eleve != null){
+                    sb.append("<td class=\"name\">")
+                            .append(eleve.getNomPrenom())
+                            .append("</td>");
+                }
             }
 
             sb.append("</tr>");
@@ -200,18 +126,27 @@ public class HTMLProvider {
         sb.append("</body></html>");
 
         return sb.toString();
-    }*/
+    }
+
+    // Crée un <TD> avec l'image fournie
+    private String addElevePhoto(String base64Image){
+        return "<td><img src=\"data:image/jpg;base64," + base64Image + "\" /></td>";
+    }
+
+    private int computeRowsNumber(int nbEleve, int nbCols){
+        return nbEleve % nbCols > 0 ? (nbEleve / nbCols) + 1 : nbEleve / nbCols;
+    }
 
     // Charge les images sous forme base64 et retourne une liste ordonnée des images
-    private List<EleveImage> loadHTLMImages(){
+    /*private List<EleveImage> loadHTLMImages(){
         // Stream parallélisé pour générer les images des élèves
-        /*Stream<EleveImage> stream = */return listeEleves.stream()
+        return listeEleves.stream()
                 //.parallel()
                 .map(eleve -> new EleveImage(convertToBase64(eleve), eleve.getNomPrenom()))
                 .collect(Collectors.toList());
 
         //return processStream(stream);
-    }
+    }*/
 
     // Execute la méthode terminale du stream dans une FJP défini pour éviter d'utiliser trop de threads
     /*private List<EleveImage> processStream(Stream<EleveImage> stream){
@@ -261,10 +196,12 @@ public class HTMLProvider {
         private boolean withDescription;
         private String descTrombi;
         private String nomTrombi;
+        private Context context;
         private int nbCols;
 
         public Builder setNbCols(int nbCols){
-            this.nbCols = nbCols;
+            // Le switch considère que 0 est une valeur possible, donc on ajoute 1 pour éviter le 0
+            this.nbCols = nbCols + 1;
             return this;
         }
 
@@ -289,6 +226,11 @@ public class HTMLProvider {
             return this;
         }
 
+        public Builder setContext(Context context){
+            this.context = context;
+            return this;
+        }
+
         public HTMLProvider build(){
             if(this.nomTrombi == null || this.nomTrombi.trim().isEmpty()){
                 throw new IllegalStateException("Le nom ne peut pas être vide !");
@@ -302,13 +244,17 @@ public class HTMLProvider {
                 throw new IllegalStateException("La liste d'élèves ne peut pas être null !");
             }
 
+            if(this.context == null){
+                throw new IllegalStateException("Le contexte ne peut pas être null !");
+            }
+
             return new HTMLProvider(this);
         }
     }
 
     // Objet contenant le nomPrenom d'un élève et sa photo en base 64
     // Permet de classer les élèves pour récupérer les photos dans l'ordre
-    private class EleveImage {
+    /*private class EleveImage {
 
         String base64Image;
         String nomPrenom;
@@ -325,5 +271,5 @@ public class HTMLProvider {
         String getNomPrenom(){
             return nomPrenom;
         }
-    }
+    }*/
 }
