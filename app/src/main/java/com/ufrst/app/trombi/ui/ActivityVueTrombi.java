@@ -1,5 +1,6 @@
 package com.ufrst.app.trombi.ui;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -419,8 +420,16 @@ public class ActivityVueTrombi extends AppCompatActivity {
             case R.id.VUETROMBI_exporterTrombi:
                 return true;
 
+            case R.id.VUETROMBI_voirEleves:
+                Intent intent = new Intent(ActivityVueTrombi.this, ActivityListEleve.class);
+                intent.putExtra(EXTRA_ID, idTrombi);
+                intent.putExtra(EXTRA_NOM, nomTrombi);
+                intent.putExtra(EXTRA_DESC, descTrombi);
+                startActivity(intent);
+
+                return true;
+
             case R.id.VUETROMBI_exporterPdf:
-                //startActivity(null);
                 createWebPrintJob(webView);
                 return true;
 

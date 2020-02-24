@@ -3,31 +3,37 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/VUETROMBI_voirEleves"
+        android:icon="@drawable/ic_manage_w"
+        android:title="@string/VUETROMBI_voirEleves"
+        app:showAsAction="ifRoom" />
+
+    <item
         android:id="@+id/VUETROMBI_exporterTrombi"
         android:icon="@drawable/ic_export"
         android:title="@string/VUETROMBI_exporter"
-        app:showAsAction="ifRoom" >
+        app:showAsAction="ifRoom">
 
         <menu>
             <item
                 android:id="@+id/VUETROMBI_exporterImg"
-                android:title="@string/VUETROMBI_exporterImg"
-                android:icon="@drawable/ic_img" />
+                android:icon="@drawable/ic_img"
+                android:title="@string/VUETROMBI_exporterImg" />
 
             <item
                 android:id="@+id/VUETROMBI_exporterPdf"
-                android:title="@string/VUETROMBI_exporterPdf"
-                android:icon="@drawable/ic_pdf" />
+                android:icon="@drawable/ic_pdf"
+                android:title="@string/VUETROMBI_exporterPdf" />
 
             <item
                 android:id="@+id/VUETROMBI_exporterListe"
-                android:title="@string/VUETROMBI_exporterListe"
-                android:icon="@drawable/ic_list" />
+                android:icon="@drawable/ic_list"
+                android:title="@string/VUETROMBI_exporterListe" />
 
             <item
                 android:id="@+id/VUETROMBI_exporterTrombiF"
-                android:title="@string/VUETROMBI_exporterTrombi"
-                android:icon="@drawable/ic_portrait" />
+                android:icon="@drawable/ic_portrait"
+                android:title="@string/VUETROMBI_exporterTrombi" />
 
         </menu>
     </item>

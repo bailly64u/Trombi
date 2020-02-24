@@ -24,6 +24,9 @@
     <string name="AJOUTTROMBI_title">Ajouter un trombinoscope</string>
     <string name="AJOUTTROMBI_titleVar">Modifier un trombinoscope</string>
     <string name="AJOUTTROMBI_importer">Importer</string>
+    <string name="AJOUTTROMBI_priseALaChaine">Prise de photos à la chaîne</string>
+    <string name="AJOUTTROMBI_gererGroupe">Gérer les groupes</string>
+    <string name="AJOUTTROMBI_vueTrombi">Voir le trombinoscope</string>
     <string name="AJOUTTROMBI_hint1">Nom</string>
     <string name="AJOUTTROMBI_hint2">Description</string>
     <string name="AJOUTTROMBI_hint3">Insérez votre texte</string>
@@ -44,6 +47,7 @@
     <string name="VUETROMBI_nbColonnes">Nombre de colonnes</string>
     <string name="VUETROMBI_afficherDesc">Afficher la description</string>
     <string name="VUETROMBI_exporter">Exporter</string>
+    <string name="VUETROMBI_voirEleves">Voir la liste des élèves</string>
     <string name="VUETROMBI_exporterImg">Exporter en tant qu\'image</string>
     <string name="VUETROMBI_exporterPdf">Exporter en tant que PDF</string>
     <string name="VUETROMBI_exporterListe">Exporter la liste des noms</string>

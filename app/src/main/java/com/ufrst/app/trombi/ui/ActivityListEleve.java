@@ -37,8 +37,10 @@ import java.util.List;
 import static com.ufrst.app.trombi.ui.ActivityCapture.EXTRA_MODE;
 import static com.ufrst.app.trombi.ui.ActivityCapture.TAKE_ALL_PHOTO_MODE;
 import static com.ufrst.app.trombi.ui.ActivityCapture.TAKE_PHOTO_MODE;
+import static com.ufrst.app.trombi.ui.ActivityMain.EXTRA_DESC;
 import static com.ufrst.app.trombi.ui.ActivityMain.EXTRA_ID;
 import static com.ufrst.app.trombi.ui.ActivityMain.EXTRA_ID_E;
+import static com.ufrst.app.trombi.ui.ActivityMain.EXTRA_NOM;
 import static com.ufrst.app.trombi.ui.ActivityMain.EXTRA_NOM_E;
 import static com.ufrst.app.trombi.ui.ActivityMain.EXTRA_PHOTO_E;
 import static com.ufrst.app.trombi.ui.ActivityMain.STATE_NOT_DELETED;
@@ -57,6 +59,8 @@ public class ActivityListEleve extends AppCompatActivity {
     private TextView tvEmpty;
     private Toolbar toolbar;
 
+    private String descTrombi;
+    private String nomTrombi;
     private long idTrombi;
 
     @Override
@@ -90,6 +94,9 @@ public class ActivityListEleve extends AppCompatActivity {
             Toast.makeText(this, R.string.LISTe_fatalError, Toast.LENGTH_SHORT).show();
             finish();
         }
+
+        nomTrombi = intent.getStringExtra(EXTRA_NOM);
+        descTrombi = intent.getStringExtra(EXTRA_DESC);
     }
 
     private void findViews(){
@@ -101,14 +108,11 @@ public class ActivityListEleve extends AppCompatActivity {
     }
 
     private void setListeners(){
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view){
-                Intent intent = new Intent(ActivityListEleve.this, ActivityAjoutEleve.class);
-                intent.putExtra(EXTRA_ID, idTrombi);
+        fab.setOnClickListener(view -> {
+            Intent intent = new Intent(ActivityListEleve.this, ActivityAjoutEleve.class);
+            intent.putExtra(EXTRA_ID, idTrombi);
 
-                startActivityForResult(intent, REQUETE_AJOUT_ELEVE);
-            }
+            startActivityForResult(intent, REQUETE_AJOUT_ELEVE);
         });
     }
 
@@ -242,16 +246,25 @@ public class ActivityListEleve extends AppCompatActivity {
             case R.id.LISTe_gererGroupe:
                 Intent intent = new Intent(ActivityListEleve.this, ActivityListGroupe.class);
                 intent.putExtra(EXTRA_ID, idTrombi);
-
                 startActivity(intent);
+
                 return true;
 
             case R.id.LISTe_modeClassePhoto:
                 Intent intent1 = new Intent(ActivityListEleve.this, ActivityCapture.class);
                 intent1.putExtra(EXTRA_ID, idTrombi);
                 intent1.putExtra(EXTRA_MODE, TAKE_ALL_PHOTO_MODE);
-
                 startActivity(intent1);
+
+                return true;
+
+            case R.id.LISTe_vueTrombi:
+                Intent intent2 = new Intent(ActivityListEleve.this, ActivityVueTrombi.class);
+                intent2.putExtra(EXTRA_ID, idTrombi);
+                intent2.putExtra(EXTRA_NOM, nomTrombi);
+                intent2.putExtra(EXTRA_DESC, descTrombi);
+                startActivity(intent2);
+
                 return true;
 
             default:

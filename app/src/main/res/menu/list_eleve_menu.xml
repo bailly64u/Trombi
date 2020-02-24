@@ -3,17 +3,34 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/LISTe_gererGroupe"
-        android:icon="@drawable/ic_people"
-        android:title="@string/AJOUTTROMBI_importer"
+        android:id="@+id/LISTe_plus"
+        android:icon="@drawable/ic_more"
         android:iconTint="?attr/onPrimary"
-        app:showAsAction="ifRoom" />
-
-    <item
-        android:id="@+id/LISTe_modeClassePhoto"
-        android:icon="@drawable/ic_take_all_photos"
         android:title="@string/AJOUTTROMBI_importer"
-        android:iconTint="?attr/onPrimary"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="ifRoom">
 
+        <menu>
+            <item
+                android:id="@+id/LISTe_modeClassePhoto"
+                android:icon="@drawable/ic_take_all_photos"
+                android:iconTint="?attr/onBackground"
+                android:title="@string/AJOUTTROMBI_priseALaChaine"
+                app:showAsAction="ifRoom" />
+
+            <item
+                android:id="@+id/LISTe_vueTrombi"
+                android:icon="@drawable/ic_grid_w"
+                android:iconTint="?attr/onBackground"
+                android:title="@string/AJOUTTROMBI_vueTrombi"
+                app:showAsAction="ifRoom" />
+
+            <item
+                android:id="@+id/LISTe_gererGroupe"
+                android:icon="@drawable/ic_people"
+                android:iconTint="?attr/onBackground"
+                android:title="@string/AJOUTTROMBI_gererGroupe"
+                app:showAsAction="ifRoom" />
+
+        </menu>
+    </item>
 </menu>
