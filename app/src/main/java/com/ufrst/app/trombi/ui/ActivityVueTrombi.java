@@ -55,6 +55,7 @@ import static com.ufrst.app.trombi.ui.ActivityMain.PREFS_NBCOLS;
 
 public class ActivityVueTrombi extends AppCompatActivity {
 
+    private BottomSheetBehavior bottomSheetBehavior;
     private CoordinatorLayout coordinatorLayout;
     private RelativeLayout relativeLayout;
     private ProgressBar progressBar;
@@ -65,6 +66,7 @@ public class ActivityVueTrombi extends AppCompatActivity {
     private WebView webView;
     private Toolbar toolbar;
     private SeekBar seekBar;
+    private View expandBS;
 
     private Observer<List<Eleve>> observerEleve;
     private TrombiViewModel trombiViewModel;
@@ -93,7 +95,6 @@ public class ActivityVueTrombi extends AppCompatActivity {
         findViews();
         initializeWebView();
         getGroupesAndEleves();
-        setListeners();
 
         // Toolbar
         setSupportActionBar(toolbar);
@@ -101,7 +102,9 @@ public class ActivityVueTrombi extends AppCompatActivity {
         setTitle(nomTrombi);
 
         // Met en place la Bottom Sheet persistante, qui contiendra les filtres
-        BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
+        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
+
+        setListeners();
 
         // Applique la valeur par défaut de nbCols à la SeekBar
         seekBar.setProgress(nbCols);
@@ -131,6 +134,7 @@ public class ActivityVueTrombi extends AppCompatActivity {
         bottomSheet = findViewById(R.id.VUETROMBI_bottomSheet);
         switchDesc = findViewById(R.id.VUETROMBI_switchDesc);
         chipGroup = findViewById(R.id.VUETROMBI_chipsGroup);
+        expandBS = findViewById(R.id.VUETROMBI_expandBS);
         tvNbCols = findViewById(R.id.VUETROMBI_nbCols);
         seekBar = findViewById(R.id.VUETROMBI_seekBar);
         toolbar = findViewById(R.id.VUETROMBI_toolbar);
@@ -233,6 +237,14 @@ public class ActivityVueTrombi extends AppCompatActivity {
                 withDesc = switchDesc.isChecked();
 
                 showHTML();
+            }
+        });
+
+        expandBS.setOnClickListener(view -> {
+            Logger.logV("svd", "Le bandeau est soulevé");
+
+            if(bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED){
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
             }
         });
     }
