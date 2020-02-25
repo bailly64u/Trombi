@@ -219,6 +219,7 @@ public class ActivityListEleve extends AppCompatActivity {
                 Intent intent = new Intent(ActivityListEleve.this, ActivityCapture.class);
                 intent.putExtra(EXTRA_ID_E, eleve.getIdEleve());
                 intent.putExtra(EXTRA_ID, idTrombi);
+                intent.putExtra(EXTRA_NOM, nomTrombi);
                 intent.putExtra(EXTRA_MODE, TAKE_PHOTO_MODE); //A changer: takephotomode
 
                 startActivity(intent);
@@ -253,17 +254,9 @@ public class ActivityListEleve extends AppCompatActivity {
             case R.id.LISTe_modeClassePhoto:
                 Intent intent1 = new Intent(ActivityListEleve.this, ActivityCapture.class);
                 intent1.putExtra(EXTRA_ID, idTrombi);
+                intent1.putExtra(EXTRA_NOM, nomTrombi);
                 intent1.putExtra(EXTRA_MODE, TAKE_ALL_PHOTO_MODE);
                 startActivity(intent1);
-
-                return true;
-
-            case R.id.LISTe_vueTrombi:
-                Intent intent2 = new Intent(ActivityListEleve.this, ActivityVueTrombi.class);
-                intent2.putExtra(EXTRA_ID, idTrombi);
-                intent2.putExtra(EXTRA_NOM, nomTrombi);
-                intent2.putExtra(EXTRA_DESC, descTrombi);
-                startActivity(intent2);
 
                 return true;
 

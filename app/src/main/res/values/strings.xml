@@ -57,6 +57,7 @@
     <string name="VUETROMBI_fichierExiste">Le fichier existe déjà, remplacer ?</string>
     <string name="VUETROMBI_imageExported">L\'image a été exportée</string>
     <string name="VUETROMBI_expandBS">Dérouler la BottomSheet</string>
+    <string name="VUETROMBI_noAppPDF">Vous ne diposez pas d\'application d\'impression de PDF</string>
 
     <string name="CAPT_requestDenied">L\'application doit disposer de ces dorits pour fonctionner.</string>
     <string name="CAPT_photoTaken">Photo capturée !</string>

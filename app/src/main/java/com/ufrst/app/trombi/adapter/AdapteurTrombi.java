@@ -81,7 +81,6 @@ public class AdapteurTrombi extends ListAdapter<Trombinoscope, AdapteurTrombi.Tr
     class TrombiHolder extends RecyclerView.ViewHolder{
         private TextView textViewNom;           // Nom du trombi
         private TextView textViewDesc;          // Description du trombi
-        private ImageButton ibNombre;           // Nb d'élèves dans le trombi
 
         TrombiHolder(View itemView){
             super(itemView);
@@ -89,42 +88,24 @@ public class AdapteurTrombi extends ListAdapter<Trombinoscope, AdapteurTrombi.Tr
             // Gestion des vues
             textViewNom = itemView.findViewById(R.id.TROMBIITEM_nom);
             textViewDesc = itemView.findViewById(R.id.TROMBIITEM_description);
-            ibNombre = itemView.findViewById(R.id.TROMBIITEM_action);
 
             // Gestion des listeners
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v){
-                    int pos = getAdapterPosition();             // Récupération position item cliqué
+            itemView.setOnClickListener(v -> {
+                int pos = getAdapterPosition();             // Récupération position item cliqué
 
-                    if(listener != null && pos != RecyclerView.NO_POSITION){
-                        listener.onItemClick(getItem(pos));     // Récupération objet dans la liste
-                    }
+                if(listener != null && pos != RecyclerView.NO_POSITION){
+                    listener.onItemClick(getItem(pos));     // Récupération objet dans la liste
                 }
             });
 
-            itemView.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v){
-                    int pos = getAdapterPosition();
+            itemView.setOnLongClickListener(v -> {
+                int pos = getAdapterPosition();
 
-                    if(listener != null && pos != RecyclerView.NO_POSITION){
-                        listener.onItemLongClick(getItem(pos));
-                    }
-
-                    return true;
+                if(listener != null && pos != RecyclerView.NO_POSITION){
+                    listener.onItemLongClick(getItem(pos));
                 }
-            });
 
-            ibNombre.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view){
-                    int pos = getAdapterPosition();             // Récupération position item cliqué
-
-                    if(listener != null && pos != RecyclerView.NO_POSITION){
-                        listener.onEditClick(getItem(pos));     // Récupération objet dans la liste
-                    }
-                }
+                return true;
             });
         }
     }
@@ -138,7 +119,6 @@ public class AdapteurTrombi extends ListAdapter<Trombinoscope, AdapteurTrombi.Tr
     public interface OnItemClickListener{
         void onItemClick(Trombinoscope trombi);
         void onItemLongClick(Trombinoscope trombi);
-        void onEditClick(Trombinoscope trombi);
     }
 
     public void setOnItemClickListener(OnItemClickListener listener){

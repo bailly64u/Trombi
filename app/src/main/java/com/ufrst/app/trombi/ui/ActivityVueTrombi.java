@@ -1,6 +1,7 @@
 package com.ufrst.app.trombi.ui;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -19,6 +20,7 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -317,7 +319,7 @@ public class ActivityVueTrombi extends AppCompatActivity {
     // Demande à l'utilisateur si la liste doit être exportée
     // Un fichier correspondant à cette liste peut déjà exister
     private void checkWriteExportedList(List<Eleve> eleves){
-        FileUtil fileUtil = new FileUtil(getExternalFilesDir(null).getPath());
+        FileUtil fileUtil = new FileUtil(this, nomTrombi);
         File list = new File(fileUtil.getPathForExportedList(nomTrombi));
 
         if(list.exists()){
@@ -337,7 +339,7 @@ public class ActivityVueTrombi extends AppCompatActivity {
     // Demande à l'utilisateur si le trombi doit être exportée
     // Un fichier correspondant à cette liste peut déjà exister
     private void checkWriteExportedTrombi(List<EleveWithGroups> eleves){
-        FileUtil fileUtil = new FileUtil(getExternalFilesDir(null).getPath());
+        FileUtil fileUtil = new FileUtil(this, nomTrombi);
         File list = new File(fileUtil.getPathForExportedTrombi(nomTrombi));
 
         if(list.exists()){
@@ -395,26 +397,28 @@ public class ActivityVueTrombi extends AppCompatActivity {
 
     // Lance un Intent pour le PrintManager qui permet d'exporter en PDF
     private void createWebPrintJob(WebView webView) {
-
         if(getPackageManager().hasSystemFeature(PackageManager.FEATURE_PRINTING)){
-            Logger.logV("PDF", "printing disponible sur cet appareil");
+            Toast.makeText(this, R.string.VUETROMBI_noAppPDF, Toast.LENGTH_LONG).show();
+            return;
         }
 
         PrintManager printManager = (PrintManager) getSystemService(Context.PRINT_SERVICE);
-
-        Logger.logV("PDF", "Contenu printManager" + printManager.toString());
-
         String filename = nomTrombi;
+        PrintDocumentAdapter printAdapter = webView.createPrintDocumentAdapter(filename);
+
         /*StringBuilder filename = new StringBuilder(nomTrombi);
 
         if(observingGroups && trombiViewModel.groupesWithEleves.getValue() != null){
             filename.append(" - ").append(trombiViewModel.groupesWithEleves.getValue().getGroupe().getNomGroupe());
         }*/
 
-        PrintDocumentAdapter printAdapter = webView.createPrintDocumentAdapter(filename);
-        Logger.logV("PDF", "Contenu printAdapter" + printAdapter.toString());
-
-        printManager.print(filename.toString(), printAdapter, new PrintAttributes.Builder().build());
+        try{
+            if(printManager != null)
+                printManager.print(filename, printAdapter, new PrintAttributes.Builder().build());
+        } catch(ActivityNotFoundException e){
+            Logger.handleException(e);
+            Toast.makeText(this, R.string.VUETROMBI_noAppPDF, Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
@@ -451,7 +455,7 @@ public class ActivityVueTrombi extends AppCompatActivity {
                 return true;
 
             case R.id.VUETROMBI_exporterImg:
-                FileUtil fileUtil = new FileUtil(getExternalFilesDir(null).getPath());
+                FileUtil fileUtil = new FileUtil(this, nomTrombi);
 
                 CompletableFuture
                         .supplyAsync(() -> fileUtil.saveImageFromWebview(webView, nomTrombi))

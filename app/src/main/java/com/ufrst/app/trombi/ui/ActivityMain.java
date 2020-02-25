@@ -244,16 +244,6 @@ public class ActivityMain extends AppCompatActivity {
 
                 startActivityForResult(intent, REQUETE_EDITE_TROMBI);
             }
-
-            @Override
-            public void onEditClick(Trombinoscope trombi){
-                Intent intent = new Intent(ActivityMain.this, ActivityListEleve.class);
-                intent.putExtra(EXTRA_ID, trombi.getIdTrombi());
-                intent.putExtra(EXTRA_NOM, trombi.getNomTrombi());
-                intent.putExtra(EXTRA_DESC, trombi.getDescription());
-
-                startActivity(intent);
-            }
         });
     }
 

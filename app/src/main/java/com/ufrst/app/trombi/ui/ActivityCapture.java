@@ -49,6 +49,7 @@ import java.util.concurrent.Executors;
 
 import static com.ufrst.app.trombi.ui.ActivityMain.EXTRA_ID;
 import static com.ufrst.app.trombi.ui.ActivityMain.EXTRA_ID_E;
+import static com.ufrst.app.trombi.ui.ActivityMain.EXTRA_NOM;
 import static com.ufrst.app.trombi.ui.ActivityMain.PREFS_FIXED_RATIO;
 import static com.ufrst.app.trombi.ui.ActivityMain.PREFS_QUALITY_OR_LATENCY;
 
@@ -77,11 +78,11 @@ public class ActivityCapture extends AppCompatActivity {
     private CardView banner;
 
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
-    private SharedPreferences prefs;
     private List<Eleve> listEleves;
     private int qualityOrLatency;       // Paramètre définit par l'utilisateur pour choisir une meilleure qualité de photo ou le moins de latence
     private boolean isFixedRatio;
     private Eleve currentEleve;
+    private String nomTrombi;
     private long idTrombi;              // Utile seulement si on est en mode TAKE_ALL_PHOTO
     private long idEleve;
     private int index = 0;              // Détermine l'élève à modifier si le mode est TAKE_ALL_PHOTO
@@ -134,10 +135,11 @@ public class ActivityCapture extends AppCompatActivity {
         idEleve = intent.getLongExtra(EXTRA_ID_E, -1);
         idTrombi = intent.getLongExtra(EXTRA_ID, -1);
         mode = intent.getIntExtra(EXTRA_MODE, TAKE_PHOTO_MODE);
+        nomTrombi = intent.getStringExtra(EXTRA_NOM);
     }
 
     private void retrieveSharedPreferences(){
-        prefs = getSharedPreferences("com.ufrst.app.trombi", Context.MODE_PRIVATE);
+        SharedPreferences prefs = getSharedPreferences("com.ufrst.app.trombi", Context.MODE_PRIVATE);
         isFixedRatio = prefs.getBoolean(PREFS_FIXED_RATIO, true);
         boolean isLowLatency = prefs.getBoolean(PREFS_QUALITY_OR_LATENCY, false);
 
@@ -312,7 +314,7 @@ public class ActivityCapture extends AppCompatActivity {
     private void saveImage(ImageCapture imageCapture){
         Logger.logV("Current eleve", currentEleve.getNomPrenom());
 
-        FileUtil fileUtil = new FileUtil(getExternalFilesDir(null).getPath());
+        FileUtil fileUtil = new FileUtil(this, nomTrombi);
 
         String path = fileUtil.getPathNameForEleve(currentEleve);
 
@@ -356,7 +358,7 @@ public class ActivityCapture extends AppCompatActivity {
 
     private void saveEditedImage(){
         Bitmap bitmap = editImage.getCroppedImage();
-        FileUtil fileUtil = new FileUtil(getExternalFilesDir(null).getPath());
+        FileUtil fileUtil = new FileUtil(this, nomTrombi);
 
         CompletableFuture.supplyAsync(() ->
                 fileUtil.savePhotoForEleve(bitmap, currentEleve))

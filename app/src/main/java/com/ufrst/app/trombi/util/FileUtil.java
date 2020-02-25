@@ -1,6 +1,7 @@
 package com.ufrst.app.trombi.util;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Picture;
@@ -38,9 +39,11 @@ public class FileUtil {
     private static final String JPEG = ".jpeg";
 
     private String externalDirPath;
+    private String nomTrombi;
 
-    public FileUtil(String externalDirPath){
-        this.externalDirPath = externalDirPath;
+    public FileUtil(Context context, String nomTrombi){
+        this.externalDirPath = context.getExternalFilesDir(null).getPath();
+        this.nomTrombi = nomTrombi;
     }
 
     // Crée un répertoire s'il n'exite pas
@@ -54,7 +57,7 @@ public class FileUtil {
 
     // Donne le chemin pour un fichier de photo selon un élève
     public String getPathNameForEleve(Eleve eleve){
-        String directory = externalDirPath + PHOTO_DIRECTORY;
+        String directory = externalDirPath + PHOTO_DIRECTORY + File.separator + nomTrombi;
         String filename = eleve.getNomPrenom() + "-"
                 + eleve.getIdEleve() + System.currentTimeMillis() + JPEG;
 
