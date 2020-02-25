@@ -9,7 +9,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 // Classe contenant un bitmap contenu dans les assets, convertit en base64, utlisé pour le HTML
-public class Base64Placeholder {
+class Base64Placeholder {
 
     private static final String PLACEHOLDER_FILENAME = "placeholder.png";
 
@@ -31,7 +31,7 @@ public class Base64Placeholder {
         }
     }
 
-    public static synchronized Base64Placeholder getInstance(Context context){
+    static synchronized Base64Placeholder getInstance(Context context){
         if(placeholder == null){
             placeholder = new Base64Placeholder(context);
         }
@@ -39,7 +39,7 @@ public class Base64Placeholder {
         return placeholder;
     }
 
-    public String getBase64Placeholder(){
+    String getBase64Placeholder(){
         return base64Placeholder;
     }
 }
