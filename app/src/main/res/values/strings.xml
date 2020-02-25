@@ -110,6 +110,8 @@
     <string name="PARA_fixedRatio">Fixer un ratio 1:1 pour le recadrage des photos, afin qu\'elles soient toujours carrées.</string>
     <string name="PARA_titleQuality">Mode latence minimale</string>
     <string name="PARA_quality">Active le mode latence minimale pour la prise de photo. La qualité de la photo sera amoindrie.</string>
+    <string name="PARA_titlePara">Parallèlisation chargement images</string>
+    <string name="PARA_para">Accélère le chargement de la vue du trombinoscope en utilisant au mieux les ressources du téléphone. Désactivez cette option si l\'affichage des trombinoscopes de fonctionne pas comme voulu.</string>
     <string name="PARA_titleNightMode">Mode sombre</string>
     <string name="PARA_nightMode">Un thème sombre pour préserver votre batterie (et vos beaux yeux).</string>
 

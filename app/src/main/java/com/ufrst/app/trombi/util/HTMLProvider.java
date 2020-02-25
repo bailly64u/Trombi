@@ -1,6 +1,7 @@
 package com.ufrst.app.trombi.util;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -14,15 +15,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
+
+import static com.ufrst.app.trombi.ui.ActivityMain.PREFS_MULTI_THREADING;
 
 // Classe utilitaire pour générer le HTML et charger les images en parallèle. Builder Pattern
 public class HTMLProvider {
-
-    // Nombre recommandé de Thread pour le calcul des images.
-    // Chaque Thread va contenir un bitmap en mémoire, donc ne pas abuser dessus.
-    private final static int NUMBER_OF_THREADS = 3;
 
     private final List<Eleve> listeEleves;
     private final boolean withDescription;
@@ -49,102 +48,14 @@ public class HTMLProvider {
         }
 
         StringBuilder sb = new StringBuilder();
-
-        // Style et métadonnées
-        sb.append("<html>")
-                .append("<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">")
-                .append("<style>")
-                .append("@page {size:A4; margin:1cm;}")
-                .append("html, body{width: 210mm;}")
-                .append("img{width: 100%; margin-right: auto; margin-left: auto;}")
-                .append("h1{font-size: 3em; text-align: center;}")
-                .append("h2{font-size: 2.8em; text-align: center;}")
-                .append("table{width: 100%; margin-bottom:100px; table-layout:fixed;}")
-                .append("td{padding-bottom: 10px; vertical-align: top; word-wrap:break-word;}")
-                .append(".name{padding-bottom: 40px;}")
-                .append("td > *{display: block;}")
-                .append("#table td{text-align: center; font-size: 2em}")
-                .append("</style></head>")
-                .append("<body><h1>").append(nomTrombi).append("</h1>");
+        appendHTMLStyle(sb);
 
         if(withDescription)
             sb.append("<h2>").append(descTrombi).append("</h2>");
 
         sb.append("<table id=\"table\">");
 
-        final int nbRows = computeRowsNumber(listeEleves.size(), nbCols);
-
-        // Lignes
-        for(int i = 0; i < nbRows; i++){
-            // Entier final pour les streams
-            final int rowIndex = i;
-            Logger.logV("indx", String.valueOf(rowIndex));
-
-            // Nouvelle ligne pour les photos
-            sb.append("<tr>");
-
-            /*for(int j = 0; j < nbCols; j++){
-                Eleve eleve;
-
-                try{
-                    eleve = listeEleves.get(j + (i * nbCols));
-                } catch(IndexOutOfBoundsException e){
-                    // On est sur la dernière ligne, et il reste moins d'élèves que de colonnes
-                    break;
-                }
-
-                if(eleve != null){
-                    String base64image = convertToBase64(eleve);
-
-                    // L'image est vide ou null, on met le placeholder
-                    if(base64image == null || base64image.trim().equals("")){
-                        Base64Placeholder placeholder = Base64Placeholder.getInstance(context);
-                        sb.append(addElevePhoto(placeholder.getBase64Placeholder()));
-                    } else{
-                        sb.append(addElevePhoto(base64image));
-                    }
-                }
-            }*/
-
-            // Boucle 1: Aligner les images
-            //noinspection ConstantConditions, non null confirmé par filter()
-            IntStream.range(0, nbCols)
-                    .parallel() // Mauvaise idée
-                    .mapToObj(colIndex -> mapToEleve(rowIndex, colIndex))
-                    .filter(Objects::nonNull)
-                    .forEachOrdered(eleve -> sb.append(addElevePhoto(eleve)));
-
-            // Nouvelle ligne pour les noms
-            sb.append("</tr><tr>");
-
-            // Boucle 2: Aligner les noms
-            //noinspection ConstantConditions, non null confirmé par filter()
-            IntStream.range(0, nbCols)
-                    .mapToObj(colIndex -> mapToEleve(rowIndex, colIndex))
-                    .filter(Objects::nonNull)
-                    .forEach(eleve -> sb.append("<td class=\"name\">")
-                            .append(eleve.getNomPrenom())
-                            .append("</td>"));
-
-            /*for(int k = 0; k < nbCols; k++){
-                Eleve eleve;
-
-                try{
-                    eleve = listeEleves.get(k + (i * nbCols));
-                } catch(IndexOutOfBoundsException e){
-                    // On est sur la dernière ligne, et il reste moins d'élèves que de colonnes
-                    break;
-                }
-
-                if(eleve != null){
-                    sb.append("<td class=\"name\">")
-                            .append(eleve.getNomPrenom())
-                            .append("</td>");
-                }
-            }*/
-
-            sb.append("</tr>");
-        }
+        appendHTMLEleves(sb);
 
         sb.append("</table>");
         sb.append("</body></html>");
@@ -153,7 +64,7 @@ public class HTMLProvider {
     }
 
     // Crée une balise <td> avec la photo d'un élève ou un placeholder
-    private String addElevePhoto(Eleve eleve){
+    private String addElevePhoto(@NonNull Eleve eleve){
         String beginning = "<td><img src=\"data:image/jpg;base64,";
         String end = "\" /></td>";
 
@@ -176,33 +87,16 @@ public class HTMLProvider {
         }
     }
 
-    // Charge les images sous forme base64 et retourne une liste ordonnée des images
-    /*private List<EleveImage> loadHTLMImages(){
-        // Stream parallélisé pour générer les images des élèves
-        return listeEleves.stream()
-                //.parallel()
-                .map(eleve -> new EleveImage(convertToBase64(eleve), eleve.getNomPrenom()))
-                .collect(Collectors.toList());
-
-        //return processStream(stream);
-    }*/
-
-    // Execute la méthode terminale du stream dans une FJP défini pour éviter d'utiliser trop de threads
-    /*private List<EleveImage> processStream(Stream<EleveImage> stream){
-        // Contrôle du nombre de threads dans lesquels le stream va opérer
-        ForkJoinPool pool = new ForkJoinPool(NUMBER_OF_THREADS);
-
-        // Opération du stream dans la pool
-        try{
-            return pool.submit(() -> stream.collect(Collectors.toList())).get();
-        } catch(ExecutionException | InterruptedException e){
-            Logger.handleException(e);
-            return Collections.emptyList();
-        }
-    }*/
+    // Retourne un stream d'élèves
+    private Stream<Eleve> processEleves(int rowIndex){
+        //noinspection ConstantConditions, non null confirmé par filter()
+        return IntStream.range(0, nbCols)
+                .mapToObj(colIndex -> mapToEleve(rowIndex, colIndex))
+                .filter(Objects::nonNull);
+    }
 
     // Convertit l'image d'un élève en image Base64, pour l'afficher dans le HTML
-    private String convertToBase64(Eleve eleve){
+    private String convertToBase64(@NonNull Eleve eleve){
         if(!eleve.getPhoto().trim().isEmpty()){
             // Récupération de l'URI sous une autre forme
             String filePath = Uri.parse(eleve.getPhoto()).getPath();
@@ -223,6 +117,60 @@ public class HTMLProvider {
 
         // Image vide
         return "";
+    }
+
+    private boolean isMultiThreading(){
+        SharedPreferences prefs =
+                context.getSharedPreferences("com.ufrst.app.trombi", Context.MODE_PRIVATE);
+
+        return prefs.getBoolean(PREFS_MULTI_THREADING, true);
+    }
+
+    // Ajoute le style de la page et les balises de début de document
+    private void appendHTMLStyle(StringBuilder sb){
+        sb.append("<html>")
+            .append("<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">")
+            .append("<style>")
+            .append("@page {size:A4; margin:1cm;}")
+            .append("html, body{width: 210mm;}")
+            .append("img{width: 100%; margin-right: auto; margin-left: auto;}")
+            .append("h1{font-size: 3em; text-align: center;}")
+            .append("h2{font-size: 2.8em; text-align: center;}")
+            .append("table{width: 100%; margin-bottom:100px; table-layout:fixed;}")
+            .append("td{padding-bottom: 10px; vertical-align: top; word-wrap:break-word;}")
+            .append(".name{padding-bottom: 40px;}")
+            .append("td > *{display: block;}")
+            .append("#table td{text-align: center; font-size: 2em}")
+            .append("</style></head>")
+            .append("<body><h1>").append(nomTrombi).append("</h1>");
+    }
+
+    private void appendHTMLEleves(StringBuilder sb){
+        final int nbRows = computeRowsNumber(listeEleves.size(), nbCols);
+
+        for(int i = 0; i < nbRows; i++){
+            // Nouvelle ligne pour les photos
+            sb.append("<tr>");
+
+            // Stream 1: Aligner les images
+            Stream<Eleve> eleves = processEleves(i);
+
+            if(isMultiThreading())
+                eleves = eleves.parallel();
+
+            eleves.forEachOrdered(eleve -> sb.append(addElevePhoto(eleve)));
+
+            // Nouvelle ligne pour les noms
+            sb.append("</tr><tr>");
+
+            // Stream 2: Aligner les noms
+            eleves = processEleves(i);
+            eleves.forEach(eleve -> sb.append("<td class=\"name\">")
+                    .append(eleve.getNomPrenom())
+                    .append("</td>"));
+
+            sb.append("</tr>");
+        }
     }
 
     public static class Builder {

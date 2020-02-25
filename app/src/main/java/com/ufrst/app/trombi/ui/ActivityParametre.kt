@@ -21,17 +21,20 @@ class ActivityParametre : AppCompatActivity() {
     private val switchNightModeLayout : RelativeLayout by bind(R.id.PARA_switchNightModeLayout)
     private val switchQualityLayout : RelativeLayout by bind(R.id.PARA_switchQualityLayout)
     private val switchRatioLayout : RelativeLayout by bind(R.id.PARA_switchNbColLayout)
+    private val switchParaLayout : RelativeLayout by bind(R.id.PARA_switchParaLayout)
     private val switchFixedRatio : Switch by bind(R.id.PARA_switchFixedRatio)
     private val switchNightMode : Switch by bind(R.id.PARA_switchNightMode)
     private val switchQuality : Switch by bind(R.id.PARA_switchQuality)
     private val numberPicker : NumberPicker by bind(R.id.PARA_npCol)
+    private val switchPara : Switch by bind(R.id.PARA_switchPara)
     private val toolbar : Toolbar by bind(R.id.PARA_toolbar)
     private lateinit var prefs : SharedPreferences
 
-    private var nbCols = -1
-    private var isNightMode = false
-    private var isFixedRatio = true
     private var qualityOrLatency = false
+    private var isMultiThreading = true
+    private var isFixedRatio = true
+    private var isNightMode = false
+    private var nbCols = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         if(AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES){
@@ -61,6 +64,7 @@ class ActivityParametre : AppCompatActivity() {
             nbCols = getInt(PREFS_NBCOLS, 4)
             isFixedRatio = getBoolean(PREFS_FIXED_RATIO, true)
             qualityOrLatency = getBoolean(PREFS_QUALITY_OR_LATENCY, false)
+            isMultiThreading = getBoolean(PREFS_MULTI_THREADING, true)
             isNightMode = getBoolean(PREFS_NIGHT_MODE, false)
         }
     }
@@ -73,9 +77,10 @@ class ActivityParametre : AppCompatActivity() {
             value = nbCols
         }
 
-        switchFixedRatio.isChecked = isFixedRatio
         switchQuality.isChecked = qualityOrLatency
+        switchFixedRatio.isChecked = isFixedRatio
         switchNightMode.isChecked = isNightMode
+        switchPara.isChecked = isMultiThreading
     }
 
     private fun setListeners(){
@@ -90,6 +95,10 @@ class ActivityParametre : AppCompatActivity() {
         switchNightModeLayout.setOnClickListener {
             switchNightMode.isChecked = !switchNightMode.isChecked
         }
+
+        switchParaLayout.setOnClickListener {
+            switchPara.isChecked = !switchPara.isChecked
+        }
     }
 
     // Fonction d'extention simplifiant les findViewById et permet de rendre les composants lazy-evaluated
@@ -99,11 +108,11 @@ class ActivityParametre : AppCompatActivity() {
 
     override fun onPause() {
         prefs.edit().apply{
-            putInt(PREFS_NBCOLS, numberPicker.value)
-            putBoolean(PREFS_FIXED_RATIO, switchFixedRatio.isChecked)
             putBoolean(PREFS_QUALITY_OR_LATENCY, switchQuality.isChecked)
-            Logger.logV("wtf", "NightMode: $isNightMode")
+            putBoolean(PREFS_FIXED_RATIO, switchFixedRatio.isChecked)
+            putBoolean(PREFS_MULTI_THREADING, switchPara.isChecked)
             putBoolean(PREFS_NIGHT_MODE, switchNightMode.isChecked)
+            putInt(PREFS_NBCOLS, numberPicker.value)
             apply()
         }
 
