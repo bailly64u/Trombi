@@ -166,7 +166,7 @@ public class ActivityCapture extends AppCompatActivity {
 
                 trombiViewModel.setIdEleve(listEleves.get(index).getIdEleve());
             });
-        } else if(mode == TAKE_PHOTO_MODE){ // || mode == EDIT_MODE ?
+        } else if(mode == TAKE_PHOTO_MODE){
             trombiViewModel.setIdEleve(idEleve);
             buttonNext.setVisibility(View.GONE);
             buttonPrevious.setVisibility(View.GONE);
@@ -187,20 +187,7 @@ public class ActivityCapture extends AppCompatActivity {
 
     // Listener du fab dans ActivityCapture#bindPreview
     private void setListeners(){
-        buttonNext.setOnClickListener(view -> {
-            if(mode != TAKE_ALL_PHOTO_MODE)
-                switchMode(TAKE_ALL_PHOTO_MODE);
-
-            index++;
-
-            // Changement de l'id de l'élève à observer, donc changement de la valeur currentEleve
-            if(index < listEleves.size()){
-                trombiViewModel.setIdEleve(listEleves.get(index).getIdEleve());
-            } else{
-                showToast(getResources().getText(R.string.CAPT_lastEleve));
-                index--;
-            }
-        });
+        buttonNext.setOnClickListener(view -> nextEleve());
 
         buttonPrevious.setOnClickListener(view -> {
             if(mode != TAKE_ALL_PHOTO_MODE)
@@ -375,7 +362,8 @@ public class ActivityCapture extends AppCompatActivity {
                 fileUtil.savePhotoForEleve(bitmap, currentEleve))
                 .exceptionally(throwable -> null)
                 .thenApply(this::changeElevePhoto)
-                .thenAccept(this::alertImageSaved);
+                .thenAccept(this::alertImageSaved)
+                .thenRun(this::nextEleveOrFinish);
     }
 
     // Avertit l'utilisateur lors de la sauvegarde d'une image modifiée
@@ -396,6 +384,30 @@ public class ActivityCapture extends AppCompatActivity {
         }
 
         return false;
+    }
+
+    // Passe à l'élève suivant ou termine l'activité si on est pas en mode TAKE_ALL_PHOTO
+    private void nextEleveOrFinish(){
+        if(listEleves == null)
+            finish();
+        else
+            nextEleve();
+    }
+
+    // Passe à l'élève suivant
+    private void nextEleve(){
+        if(mode != TAKE_ALL_PHOTO_MODE)
+            switchMode(TAKE_ALL_PHOTO_MODE);
+
+        index++;
+
+        // Changement de l'id de l'élève à observer, donc changement de la valeur currentEleve
+        if(index < listEleves.size()){
+            trombiViewModel.setIdEleve(listEleves.get(index).getIdEleve());
+        } else{
+            showToast(getResources().getText(R.string.CAPT_lastEleve));
+            index--;
+        }
     }
 
     // Attribue les bonnes valeures aux champs de l'UI et déclenche une animation
