@@ -34,9 +34,11 @@ public class FileUtil {
     private static final String EXPORT_DIRECTORY = "/export/";
     private static final String PHOTO_DIRECTORY = "/photos/";
     private static final String IMG_DIRECTORY = "/images/";
+    private static final String PDF_DIRECTORY = "/pdfs/";
     static final String LIST_DIRECTORY = "/listes/";
-    private static final String TXT = ".txt";
     private static final String JPEG = ".jpeg";
+    private static final String TXT = ".txt";
+    private static final String PDF = ".pdf";
 
     private String externalDirPath;
     private String nomTrombi;
@@ -70,7 +72,7 @@ public class FileUtil {
     }
 
     // Donne le chemin pour un fichier d'export de liste de noms
-    public String getPathForExportedList(String nomTrombi){
+    public String getPathForExportedList(){
         @SuppressLint("SimpleDateFormat")
         DateFormat df = new SimpleDateFormat("dd-MM-yyyy");
         Calendar calendar = Calendar.getInstance();
@@ -86,9 +88,21 @@ public class FileUtil {
         return directory + File.separator + filename;
     }
 
-    public String getPathForExportedTrombi(String nomTrombi){
+    public String getPathForExportedTrombi(){
         String directory = externalDirPath + EXPORT_DIRECTORY;
         String filename = nomTrombi + TXT;
+
+        // En cas de problèmes de création de répertoire, la liste est stockée directement
+        // dans le stockage externe
+        if(checkDirectory(new File(directory)))
+            return externalDirPath + File.separator + filename;
+
+        return directory + File.separator + filename;
+    }
+
+    public String getPathForExportedPDF(){
+        String directory = externalDirPath + EXPORT_DIRECTORY;
+        String filename = nomTrombi + PDF;
 
         // En cas de problèmes de création de répertoire, la liste est stockée directement
         // dans le stockage externe
@@ -146,10 +160,10 @@ public class FileUtil {
     // Ecrit une liste d'élèves avec leurs groupes
     // dans un fichier situé dans le stockage externe de l'app
     // Retourne true si le fichier existe déjà
-    public boolean writeExportedTrombi(String nomTrombi, List<EleveWithGroups> eleves,
+    public boolean writeExportedTrombi(List<EleveWithGroups> eleves,
                                        boolean doErase){
         // Récupération du nom du fichier
-        String path = getPathForExportedTrombi(nomTrombi);
+        String path = getPathForExportedTrombi();
 
         // Le fichier est réécrit, on doit supprimer son contenu actuel
         if(doErase){
@@ -187,9 +201,9 @@ public class FileUtil {
     }
 
     // Exporte une liste de noms, sans les groupes
-    public boolean writeExportedList(String nomTrombi, List<Eleve> eleves){
+    public boolean writeExportedList(List<Eleve> eleves){
         // Récupération du nom du fichier
-        String path = getPathForExportedList(nomTrombi);
+        String path = getPathForExportedList();
 
         // Ecriture du fichier
         try(BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(

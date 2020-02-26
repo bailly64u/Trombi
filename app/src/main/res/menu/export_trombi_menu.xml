@@ -26,6 +26,11 @@
                 android:title="@string/VUETROMBI_exporterPdf" />
 
             <item
+                android:id="@+id/VUETROMBI_partagerPdf"
+                android:icon="@drawable/ic_pdf"
+                android:title="@string/VUETROMBI_partagerPdf" />
+
+            <item
                 android:id="@+id/VUETROMBI_exporterListe"
                 android:icon="@drawable/ic_list"
                 android:title="@string/VUETROMBI_exporterListe" />

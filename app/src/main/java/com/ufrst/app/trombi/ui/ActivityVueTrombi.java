@@ -1,14 +1,17 @@
 package com.ufrst.app.trombi.ui;
 
-import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.CancellationSignal;
+import android.print.PDFPrinter;
+import android.print.PageRange;
 import android.print.PrintAttributes;
 import android.print.PrintDocumentAdapter;
+import android.print.PrintDocumentInfo;
 import android.print.PrintManager;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -320,7 +323,7 @@ public class ActivityVueTrombi extends AppCompatActivity {
     // Un fichier correspondant à cette liste peut déjà exister
     private void checkWriteExportedList(List<Eleve> eleves){
         FileUtil fileUtil = new FileUtil(this, nomTrombi);
-        File list = new File(fileUtil.getPathForExportedList(nomTrombi));
+        File list = new File(fileUtil.getPathForExportedList());
 
         if(list.exists()){
             // Snackbar avec action
@@ -340,7 +343,7 @@ public class ActivityVueTrombi extends AppCompatActivity {
     // Un fichier correspondant à cette liste peut déjà exister
     private void checkWriteExportedTrombi(List<EleveWithGroups> eleves){
         FileUtil fileUtil = new FileUtil(this, nomTrombi);
-        File list = new File(fileUtil.getPathForExportedTrombi(nomTrombi));
+        File list = new File(fileUtil.getPathForExportedTrombi());
 
         if(list.exists()){
             // Snackbar avec action
@@ -360,7 +363,7 @@ public class ActivityVueTrombi extends AppCompatActivity {
 
     // Lance l'écriture du fichier de manière asynchrone
     private void triggerListExport(FileUtil fileUtil, List<Eleve> eleves){
-        CompletableFuture.supplyAsync(() -> fileUtil.writeExportedList(nomTrombi, eleves))
+        CompletableFuture.supplyAsync(() -> fileUtil.writeExportedList(eleves))
                 .exceptionally(throwable -> false)
                 .thenAccept(this::alertFileExported);
     }
@@ -368,7 +371,7 @@ public class ActivityVueTrombi extends AppCompatActivity {
     // Lance l'écriture du fichier de manière asynchrone
     private void triggerTrombiExport(FileUtil fileUtil, List<EleveWithGroups> eleves,
                                      boolean doErase){
-        CompletableFuture.supplyAsync(() -> fileUtil.writeExportedTrombi(nomTrombi, eleves, doErase))
+        CompletableFuture.supplyAsync(() -> fileUtil.writeExportedTrombi(eleves, doErase))
                 .exceptionally(throwable -> false)
                 .thenAccept(this::alertFileExported);
     }
@@ -406,12 +409,6 @@ public class ActivityVueTrombi extends AppCompatActivity {
         String filename = nomTrombi;
         PrintDocumentAdapter printAdapter = webView.createPrintDocumentAdapter(filename);
 
-        /*StringBuilder filename = new StringBuilder(nomTrombi);
-
-        if(observingGroups && trombiViewModel.groupesWithEleves.getValue() != null){
-            filename.append(" - ").append(trombiViewModel.groupesWithEleves.getValue().getGroupe().getNomGroupe());
-        }*/
-
         try{
             if(printManager != null)
                 printManager.print(filename, printAdapter, new PrintAttributes.Builder().build());
@@ -419,6 +416,20 @@ public class ActivityVueTrombi extends AppCompatActivity {
             Logger.handleException(e);
             Toast.makeText(this, R.string.VUETROMBI_noAppPDF, Toast.LENGTH_LONG).show();
         }
+    }
+
+    // Crée un PDF et lance un Intent pour partager un PDF.
+    private void createAndSharePDF(WebView webView){
+        // Récupération du fichier
+        FileUtil fileUtil = new FileUtil(this, nomTrombi);
+        String filepath = fileUtil.getPathForExportedPDF();
+
+        // Récupération de l'instance du printer et génération du PDF
+        PDFPrinter printer = PDFPrinter.getInstance();
+        printer.print(webView.createPrintDocumentAdapter(nomTrombi), filepath);
+
+        // Déclenche l'intent responsable du partage du PDF généré
+        startActivity(Intent.createChooser(printer.makeIntent(), "Partager le PDF"));
     }
 
     @Override
@@ -452,6 +463,10 @@ public class ActivityVueTrombi extends AppCompatActivity {
 
             case R.id.VUETROMBI_exporterPdf:
                 createWebPrintJob(webView);
+                return true;
+
+            case R.id.VUETROMBI_partagerPdf:
+                createAndSharePDF(webView);
                 return true;
 
             case R.id.VUETROMBI_exporterImg:
