@@ -221,4 +221,9 @@ public class FileUtil {
 
         return true;
     }
+
+    public boolean deleteFile(String filepath){
+        File f = new File(filepath);
+        return f.delete();
+    }
 }

@@ -400,7 +400,7 @@ public class ActivityVueTrombi extends AppCompatActivity {
 
     // Lance un Intent pour le PrintManager qui permet d'exporter en PDF
     private void createWebPrintJob(WebView webView) {
-        if(getPackageManager().hasSystemFeature(PackageManager.FEATURE_PRINTING)){
+        if(!getPackageManager().hasSystemFeature(PackageManager.FEATURE_PRINTING)){
             Toast.makeText(this, R.string.VUETROMBI_noAppPDF, Toast.LENGTH_LONG).show();
             return;
         }
@@ -429,7 +429,8 @@ public class ActivityVueTrombi extends AppCompatActivity {
         printer.print(webView.createPrintDocumentAdapter(nomTrombi), filepath);
 
         // Déclenche l'intent responsable du partage du PDF généré
-        startActivity(Intent.createChooser(printer.makeIntent(), "Partager le PDF"));
+        startActivity(Intent.createChooser(printer.makeIntent(),
+                getResources().getString(R.string.VUETROMBI_partagerPdf)));
     }
 
     @Override

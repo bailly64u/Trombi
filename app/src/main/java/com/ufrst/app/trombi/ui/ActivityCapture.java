@@ -81,6 +81,7 @@ public class ActivityCapture extends AppCompatActivity {
     private List<Eleve> listEleves;
     private int qualityOrLatency;       // Paramètre définit par l'utilisateur pour choisir une meilleure qualité de photo ou le moins de latence
     private boolean isFixedRatio;
+    private File imageToDelete;         // Image enregistrée en attendant le recadrage
     private Eleve currentEleve;
     private String nomTrombi;
     private long idTrombi;              // Utile seulement si on est en mode TAKE_ALL_PHOTO
@@ -325,9 +326,7 @@ public class ActivityCapture extends AppCompatActivity {
                 new ImageCapture.OnImageSavedCallback() {
                     @Override
                     public void onImageSaved(@NonNull File file){
-                        //showToast(getResources().getText(R.string.CAPT_photoTaken));
-
-                        //changeElevePhoto(f);
+                        imageToDelete = file;
                         loadImageEditor(file);
                     }
 
@@ -365,7 +364,8 @@ public class ActivityCapture extends AppCompatActivity {
                 .exceptionally(throwable -> null)
                 .thenApply(this::changeElevePhoto)
                 .thenAccept(this::alertImageSaved)
-                .thenRun(this::nextEleveOrFinish);
+                .thenRun(this::nextEleveOrFinish)
+                .thenRunAsync(() -> imageToDelete.delete());
     }
 
     // Avertit l'utilisateur lors de la sauvegarde d'une image modifiée
