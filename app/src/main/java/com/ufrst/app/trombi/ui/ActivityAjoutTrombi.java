@@ -3,6 +3,7 @@ package com.ufrst.app.trombi.ui;
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -35,20 +36,12 @@ import com.ufrst.app.trombi.database.Trombinoscope;
 import com.ufrst.app.trombi.model.EleveWithGroupsImport;
 import com.ufrst.app.trombi.util.FileUtil;
 import com.ufrst.app.trombi.util.ImportUtil;
-import com.ufrst.app.trombi.util.Logger;
+import com.ufrst.app.trombi.util.ZipUtil;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
 
 import static com.ufrst.app.trombi.ui.ActivityMain.EXTRA_DESC;
 import static com.ufrst.app.trombi.ui.ActivityMain.EXTRA_ID;
@@ -57,6 +50,7 @@ import static com.ufrst.app.trombi.ui.ActivityMain.EXTRA_NOM;
 public class ActivityAjoutTrombi extends AppCompatActivity implements ImportAlertDialog.ImportDialogListener {
 
     public final int PICKFILE_RESULT_CODE = 0;
+    public final int PICKZIP_RESULT_CODE = 1;
 
     private ExtendedFloatingActionButton valider;
     private CoordinatorLayout coordinatorLayout;
@@ -220,13 +214,28 @@ public class ActivityAjoutTrombi extends AppCompatActivity implements ImportAler
         finish();
     }
 
-    // TEntative deplacement de logique
-    // Insère un trombinoscopes, ses élèves, ses groupes et les liens entre ces derniers dans la BD
-//    private void importTrombiFile(List<String> eleves, Set<String> groupes, long idTrombi){
-//        eleves.stream()
-//                .mapToLong(s -> trombiViewModel.insertAndRetrieveId(new Eleve(s, idTrombi, "")))
-//                .forEach(id -> );
-//    }
+    // Importe un trombinoscope depuis un fichier zip
+    // TODO: Changer le nom des dossiers quand le nom du trombi change dans l'application
+    private void importTrombiFromZip(){
+        Intent fileintent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        fileintent.addCategory(Intent.CATEGORY_OPENABLE);
+        fileintent.setType("application/zip");
+
+        try{
+            startActivityForResult(fileintent, PICKZIP_RESULT_CODE);
+        } catch(ActivityNotFoundException e){
+            Snackbar.make(coordinatorLayout,
+                    R.string.AJOUTTROMBI_fichierImporteErr,
+                    Snackbar.LENGTH_LONG).show();
+        }
+    }
+
+    private void triggerTrombiFromZipImport(String trombiName){
+        ZipUtil zipUtil = new ZipUtil(this, trombiName);
+        FileUtil fileUtil = new FileUtil(this, trombiName);
+
+        zipUtil.unzip(fileUtil.getPathForExportedTrombi());
+    }
 
     // Crée des Toast
     private void showToast(CharSequence text){
@@ -253,8 +262,8 @@ public class ActivityAjoutTrombi extends AppCompatActivity implements ImportAler
                 return true;
 
             case R.id.AJOUTTROMBI_importerTexte:
-                Toast.makeText(this, "bruh2", Toast.LENGTH_SHORT).show();
                 importTrombiFile();
+                //importTrombiFromZip(); Non fonctionnel pour le moment
                 return true;
 
             case R.id.AJOUTTROMBI_importerFichier:
@@ -308,6 +317,7 @@ public class ActivityAjoutTrombi extends AppCompatActivity implements ImportAler
         if(requestCode == PICKFILE_RESULT_CODE){
             if(resultCode == RESULT_OK && data.getData() != null &&
                     data.getData().getLastPathSegment() != null){
+
                 Executors.newSingleThreadExecutor().execute(() -> {
 
                     // Récupération du nom du fichier
@@ -361,6 +371,13 @@ public class ActivityAjoutTrombi extends AppCompatActivity implements ImportAler
                 });
 
                 finish();
+            }
+        }
+
+        if(requestCode == PICKZIP_RESULT_CODE){
+            if(resultCode == RESULT_OK && data.getData() != null){
+                Executors.newSingleThreadExecutor().execute(() ->
+                        triggerTrombiFromZipImport(data.getData().toString()));
             }
         }
     }

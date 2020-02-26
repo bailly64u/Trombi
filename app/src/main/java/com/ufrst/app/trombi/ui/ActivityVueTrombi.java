@@ -46,6 +46,7 @@ import com.ufrst.app.trombi.database.TrombiViewModel;
 import com.ufrst.app.trombi.util.HTMLProvider;
 import com.ufrst.app.trombi.util.FileUtil;
 import com.ufrst.app.trombi.util.Logger;
+import com.ufrst.app.trombi.util.ZipUtil;
 
 import java.io.File;
 import java.util.Collections;
@@ -481,11 +482,18 @@ public class ActivityVueTrombi extends AppCompatActivity {
                 return true;
 
             case R.id.VUETROMBI_exporterTrombiF:
+//                CompletableFuture.supplyAsync(() ->
+//                        trombiViewModel.getEleveWithGroupsByTrombiNotLive(idTrombi))
+//                        .exceptionally(throwable -> Collections.emptyList())
+//                        .thenAccept(this::checkWriteExportedTrombi);
+
+                ZipUtil zipUtil = new ZipUtil(this, nomTrombi);
                 CompletableFuture.supplyAsync(() ->
                         trombiViewModel.getEleveWithGroupsByTrombiNotLive(idTrombi))
                         .exceptionally(throwable -> Collections.emptyList())
-                        .thenAccept(this::checkWriteExportedTrombi);
+                        .thenAccept(zipUtil::exportToZip);
 
+//                fileUtil1.exportToZip(fileUtil1.getPathForExportedTrombi());
                 return true;
 
             case R.id.VUETROMBI_exporterListe:

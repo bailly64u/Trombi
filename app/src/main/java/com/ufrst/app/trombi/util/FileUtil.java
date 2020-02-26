@@ -4,18 +4,17 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Picture;
 import android.webkit.WebView;
-
-import androidx.annotation.WorkerThread;
 
 import com.ufrst.app.trombi.database.Eleve;
 import com.ufrst.app.trombi.database.EleveWithGroups;
 import com.ufrst.app.trombi.database.Groupe;
-import com.ufrst.app.trombi.database.Trombinoscope;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -26,18 +25,23 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Objects;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 // Classe qui abstrait le traitement des images et aide à la création des dossier pour trier les frichiers
 // générés par l'application
 public class FileUtil {
 
     private static final String EXPORT_DIRECTORY = "/export/";
+    private static final String IMPORT_DIRECTORY = "/import/";
     private static final String PHOTO_DIRECTORY = "/photos/";
     private static final String IMG_DIRECTORY = "/images/";
     private static final String PDF_DIRECTORY = "/pdfs/";
     static final String LIST_DIRECTORY = "/listes/";
     private static final String JPEG = ".jpeg";
     private static final String TXT = ".txt";
+    private static final String ZIP = ".zip";
     private static final String PDF = ".pdf";
 
     private String externalDirPath;
@@ -71,6 +75,24 @@ public class FileUtil {
         return directory + File.separator + filename;
     }
 
+    // Donne le chemin pour un fichier de photo selon un élève
+    private String getPathNameForExistingEleve(Eleve eleve){
+        String directory = externalDirPath + PHOTO_DIRECTORY + File.separator + nomTrombi;
+        String filename =
+                eleve.getPhoto().substring(eleve.getPhoto().lastIndexOf(File.separator) + 1);
+
+        // En cas de problèmes de création de répertoire, la photo est stockée directement
+        // dans le stockage externe
+        if(checkDirectory(new File(directory)))
+            return externalDirPath + File.separator + filename;
+
+        return directory + File.separator + filename;
+    }
+
+    String getDirectoryForTrombiPhoto(){
+        return externalDirPath + PHOTO_DIRECTORY + File.separator + nomTrombi;
+    }
+
     // Donne le chemin pour un fichier d'export de liste de noms
     public String getPathForExportedList(){
         @SuppressLint("SimpleDateFormat")
@@ -90,7 +112,7 @@ public class FileUtil {
 
     public String getPathForExportedTrombi(){
         String directory = externalDirPath + EXPORT_DIRECTORY;
-        String filename = nomTrombi + TXT;
+        String filename = nomTrombi + ZIP; //txt
 
         // En cas de problèmes de création de répertoire, la liste est stockée directement
         // dans le stockage externe
@@ -101,7 +123,7 @@ public class FileUtil {
     }
 
     public String getPathForExportedPDF(){
-        String directory = externalDirPath + EXPORT_DIRECTORY;
+        String directory = externalDirPath + PDF_DIRECTORY;
         String filename = nomTrombi + PDF;
 
         // En cas de problèmes de création de répertoire, la liste est stockée directement
@@ -110,6 +132,17 @@ public class FileUtil {
             return externalDirPath + File.separator + filename;
 
         return directory + File.separator + filename;
+    }
+
+    String getPathForImportedTrombi(){
+        File d = new File(externalDirPath + IMPORT_DIRECTORY + nomTrombi);
+
+        if(!d.exists()){
+            d.mkdir();
+            Logger.logV("IO", "Le dossier est créé");
+        }
+
+        return d.getPath();
     }
 
     // Sauvegarde une image de la webview. Ne pas exécuter sur l'UI
@@ -128,7 +161,7 @@ public class FileUtil {
             if(checkDirectory(new File(directory)))
                 return false;
 
-            FileOutputStream fos = new FileOutputStream(directory  + nomTrombi + JPEG);
+            FileOutputStream fos = new FileOutputStream(directory + nomTrombi + JPEG);
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
             fos.close();
 
@@ -179,8 +212,8 @@ public class FileUtil {
 
         // Ecriture du fichier
         try(BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
-                                    new FileOutputStream(path, true),
-                                    StandardCharsets.UTF_8))){
+                new FileOutputStream(path, true),
+                StandardCharsets.UTF_8))){
             // Pour chaque élève on écrit le nom prénom
             for(EleveWithGroups eleve : eleves){
                 writer.write(eleve.getEleves().getNomPrenom());
@@ -207,8 +240,8 @@ public class FileUtil {
 
         // Ecriture du fichier
         try(BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
-                                    new FileOutputStream(path, true),
-                                    StandardCharsets.UTF_8))){
+                new FileOutputStream(path, true),
+                StandardCharsets.UTF_8))){
             // Pour chaque élève on écrit le nom prénom
             for(Eleve eleve : eleves){
                 writer.write(eleve.getNomPrenom());
@@ -222,8 +255,12 @@ public class FileUtil {
         return true;
     }
 
-    public boolean deleteFile(String filepath){
-        File f = new File(filepath);
-        return f.delete();
+    public void deletePhotoForEleve(Eleve eleve){
+        File f = new File(getPathNameForExistingEleve(eleve));
+
+        if(f.delete())
+            Logger.logV("IO", "Sucessfully deleted photo");
+        else
+            Logger.logV("IO", "None existing photo, delete skipped");
     }
 }

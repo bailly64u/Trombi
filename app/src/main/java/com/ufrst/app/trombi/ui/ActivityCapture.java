@@ -83,6 +83,7 @@ public class ActivityCapture extends AppCompatActivity {
     private boolean isFixedRatio;
     private File imageToDelete;         // Image enregistrée en attendant le recadrage
     private Eleve currentEleve;
+    private FileUtil fileUtil;
     private String nomTrombi;
     private long idTrombi;              // Utile seulement si on est en mode TAKE_ALL_PHOTO
     private long idEleve;
@@ -105,6 +106,9 @@ public class ActivityCapture extends AppCompatActivity {
         retrieveSharedPreferences();
         observeEleve();
         setListeners();
+
+        // Instancie un objet gérant les fichiers qui pourraient être créer depuis cette activité
+        fileUtil = new FileUtil(this, nomTrombi);
 
         // Vérification des permissions accordées
         if(allPermissionsGranted()){
@@ -313,12 +317,12 @@ public class ActivityCapture extends AppCompatActivity {
 
     // Enregistre l'image prise depuis la caméra
     private void saveImage(ImageCapture imageCapture){
-        Logger.logV("Current eleve", currentEleve.getNomPrenom());
-
-        FileUtil fileUtil = new FileUtil(this, nomTrombi);
+        if(fileUtil == null){
+            Logger.logV("NPE", "fileUtil is null");
+            return;
+        }
 
         String path = fileUtil.getPathNameForEleve(currentEleve);
-
         File f = new File(path);
 
         imageCapture.takePicture(f,
@@ -357,15 +361,17 @@ public class ActivityCapture extends AppCompatActivity {
 
     private void saveEditedImage(){
         Bitmap bitmap = editImage.getCroppedImage();
-        FileUtil fileUtil = new FileUtil(this, nomTrombi);
+
+        if(fileUtil == null)
+            return;
 
         CompletableFuture.supplyAsync(() ->
                 fileUtil.savePhotoForEleve(bitmap, currentEleve))
                 .exceptionally(throwable -> null)
                 .thenApply(this::changeElevePhoto)
                 .thenAccept(this::alertImageSaved)
-                .thenRun(this::nextEleveOrFinish)
-                .thenRunAsync(() -> imageToDelete.delete());
+                .thenRun(() -> imageToDelete.delete())
+                .thenRun(this::nextEleveOrFinish);
     }
 
     // Avertit l'utilisateur lors de la sauvegarde d'une image modifiée
@@ -379,7 +385,10 @@ public class ActivityCapture extends AppCompatActivity {
     }
 
     private boolean changeElevePhoto(File photo){
-        if(photo != null){
+        if(photo != null && fileUtil != null){
+            // Supprime la photo actuelle de l'élève du système de fichier
+            fileUtil.deletePhotoForEleve(currentEleve);
+
             currentEleve.setPhoto(Uri.fromFile(photo).toString());
             trombiViewModel.update(currentEleve);
             return true;
