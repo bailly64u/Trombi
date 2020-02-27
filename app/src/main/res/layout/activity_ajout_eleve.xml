@@ -71,6 +71,7 @@
                     android:layout_marginBottom="16dp"
                     android:layout_toEndOf="@+id/AJOUTELEVE_ivIcon1"
                     android:hint="@string/AJOUTELEVE_hint1"
+                    android:textColorHint="?attr/textHighEmphasis"
                     app:boxStrokeColor="?attr/colorAccent"
                     app:hintTextColor="?attr/colorAccent"
                     app:boxBackgroundColor="?attr/boxBackground">
