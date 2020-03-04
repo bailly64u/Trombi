@@ -21,6 +21,7 @@ public class TrombiViewModel extends AndroidViewModel {
     // d'un seul observeur au lieu d'en créer un dynamiquement avec chacun des groupes selon le choix
     // de l'utilisateur. Pour plus d'informations: https://developer.android.com/topic/libraries/architecture/livedata#transform_livedata
     private final MutableLiveData<Long> requestedIdGroupe = new MutableLiveData<>();
+
     public final LiveData<GroupeWithEleves> groupesWithEleves =
             Transformations.switchMap(requestedIdGroupe, this::getGroupeByIdWithEleves);
 
