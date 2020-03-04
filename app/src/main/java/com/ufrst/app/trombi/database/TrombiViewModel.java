@@ -48,7 +48,6 @@ public class TrombiViewModel extends AndroidViewModel {
     public void delete(Trombinoscope trombi){repository.delete(trombi);}
 
     public LiveData<List<Trombinoscope>> getAllTrombis(){return repository.getAllTrombis();}
-    public LiveData<Trombinoscope> getTrombiById(long idTrombi){return repository.getTrombiById(idTrombi);}
     public void softDeleteTrombi(long idTrombi){repository.softDeleteTrombi(idTrombi);}
     public void deleteSoftDeletedTrombis(){repository.deleteSoftDeletedTrombis();}
 
@@ -62,7 +61,6 @@ public class TrombiViewModel extends AndroidViewModel {
 
     public LiveData<List<Groupe>> getAllGroupes(){return repository.getAllGroupes();}
     public LiveData<List<Groupe>> getGroupesByTrombi(long idTrombi){return repository.getGroupesByTrombi(idTrombi);}
-    public void deleteGroupesForTrombi(long idTrombi){repository.deleteGroupesForTrombi(idTrombi);}
     public void softDeleteGroupe(long idGroupe){repository.softDeleteGroupe(idGroupe);}
     public void deleteSoftDeletedGroupes(){repository.deleteSoftDeletedGroupes();}
     public void softDeleteGroupesForTrombi(long idTrombi, int isDeleted){repository.softDeleteGroupesForTrombi(idTrombi, isDeleted);}
@@ -78,14 +76,11 @@ public class TrombiViewModel extends AndroidViewModel {
 
     public LiveData<List<Eleve>> getAllEleves(){return repository.getAllEleves();}
     public LiveData<List<Eleve>> getElevesByTrombi(long idTrombi){return repository.getElevesByTrombi(idTrombi);}
-    public LiveData<Eleve> getEleveById(long idEleve){return repository.getEleveById(idEleve);}
-    public void deleteElevesForTrombi(long idTrombi){repository.deleteElevesForTrombi(idTrombi);}
     public void softDeleteEleve(long idEleve){repository.softDeleteEleve(idEleve);}
     public void softDeleteElevesForTrombi(long idTrombi, int isDeleted){repository.softDeleteElevesForTrombi(idTrombi, isDeleted);}
     public void deleteSoftDeletedEleves(){repository.deleteSoftDeletedEleves();}
     public void softDeleteXRefsByEleve(long idEleve, int isDeleted){repository.softDeleteXRefsByEleve(idEleve, isDeleted);}
 
-    public int getElevesNumberByTrombi(long idTrombi){return repository.getElevesNumberByTrombi(idTrombi);}
     public long insertAndRetrieveId(Eleve eleve){return repository.insertAndRetrieveId(eleve);}
 
 
@@ -94,7 +89,6 @@ public class TrombiViewModel extends AndroidViewModel {
     public void update(EleveGroupeJoin eleveGroupeJoin){repository.update(eleveGroupeJoin);}
     public void delete(EleveGroupeJoin eleveGroupeJoin){repository.delete(eleveGroupeJoin);}
 
-    public LiveData<EleveWithGroups> getEleveByIdWithGroups(long idEleve){return repository.getEleveByIdWithGroups(idEleve);}
     public LiveData<List<GroupeWithEleves>> getGroupesWithEleves(){return repository.getGroupesWithEleves(); }
 
     public EleveWithGroups getEleveByIdWithGroupsNotLive(long idEleve){return repository.getEleveByIdWithGroupsNotLive(idEleve);}
@@ -105,7 +99,7 @@ public class TrombiViewModel extends AndroidViewModel {
 
     // Cette méthode va modifier le contenu des LiveData avant de propager aux observeurs
     // pour retirer les élèves qui ont étés soft delete
-    public LiveData<GroupeWithEleves> getGroupeByIdWithEleves(long idGroupe) {
+    private LiveData<GroupeWithEleves> getGroupeByIdWithEleves(long idGroupe) {
         LiveData<GroupeWithEleves> liveGroup = repository.getGroupeByIdWithEleves(idGroupe);
 
         return Transformations.map(liveGroup, group -> {

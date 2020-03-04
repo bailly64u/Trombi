@@ -66,18 +66,6 @@ public class TrombiRepository {
     // Mais il est ignoré dans la méthode insert de cette classe (pour des raisons de performances)
     // Cette méthode permet de récupérer l'ID de l'élément inséré sur le champ.
     long insertAndRetrieveId(Trombinoscope trombi){
-        /*Callable<Long> callable = () -> trombiDao.insert(trombi);
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        Future<Long> future = executor.submit(callable);
-        long id = 0;
-
-        try {
-            id = future.get();
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
-        return id;*/
-
         return trombiDao.insert(trombi);
     }
 
@@ -175,18 +163,6 @@ public class TrombiRepository {
 
     // Voir TrombiRepository#insertAndRetrieveId(Trombinoscope trombi)
     long insertAndRetrieveId(Eleve eleve){
-        /*Callable<Long> callable = () -> eleveDao.insert(eleve);
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        Future<Long> future = executor.submit(callable);
-        long id = 0;
-
-        try {
-            id = future.get();
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
-        return id;*/
-
         return eleveDao.insert(eleve);
     }
 

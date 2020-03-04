@@ -12,14 +12,7 @@ import java.util.List;
 import static androidx.room.ForeignKey.CASCADE;
 
 // POJO
-@Entity(tableName = "table_eleve"
-        /*foreignKeys = @ForeignKey(
-                entity = Trombinoscope.class,
-                parentColumns = "id_trombi",
-                childColumns = "id_eleve",
-                onDelete = CASCADE
-        )*/
-)
+@Entity(tableName = "table_eleve")
 public class Eleve {
 
     // Champs présents dans la BD

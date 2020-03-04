@@ -25,21 +25,21 @@ public abstract class TrombiDatabase extends RoomDatabase {
         if(instance == null){
             instance = Room.databaseBuilder(context.getApplicationContext(),
                     TrombiDatabase.class, "trombi_database.db")
-                    .addCallback(roomCallback)                              // Pour ajouter un mock
+                    //.addCallback(roomCallback)                              // Pour ajouter un mock
                     .fallbackToDestructiveMigration()                       // A enlever. Si le schema de la BD change, la BD est détruite :'(
                     .build();
         }
         return instance;
     }
 
-    private static RoomDatabase.Callback roomCallback = new RoomDatabase.Callback(){
+    /*private static RoomDatabase.Callback roomCallback = new RoomDatabase.Callback(){
         @Override
         public void onCreate(@NonNull SupportSQLiteDatabase db){
             super.onCreate(db);
 
             new PopulateDBAsyncTask(instance).execute();
         }
-    };
+    };*/
 
     // Génère des données factices
     private static class PopulateDBAsyncTask extends AsyncTask<Void, Void, Void> {

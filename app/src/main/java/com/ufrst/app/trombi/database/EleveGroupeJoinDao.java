@@ -36,15 +36,10 @@ public interface EleveGroupeJoinDao {
     LiveData<List<GroupeWithEleves>> getGroupesWithEleves();
 
     // Retourne un objet GroupeWithEleve avec un groupe d'un certain id
+    // Comme Room utilisera deux requêtes pour nous dans les coulisses, on annote une Transaction pour s'assurer que cela se passe atomiquement
     @Transaction
     @Query("SELECT * FROM table_groupe WHERE id_groupe=:idGroupe")
     LiveData<GroupeWithEleves> getGroupeByIdWithEleves(long idGroupe);
-
-    // Retourne une liste d'objet contenant un Eleve avec sa liste de groupes
-    // Comme Room utilisera deux requêtes pour nous dans les coulisses, on annote une Transaction pour s'assurer que cela se passe atomiquement
-    @Transaction
-    @Query("SELECT * FROM table_eleve ORDER BY nom_prenom")
-    LiveData<List<EleveWithGroups>> getElevesWithGroups();
 
     // Retourne un objet EleveWithGroups avec un eleve d'un certain id
     @Transaction
