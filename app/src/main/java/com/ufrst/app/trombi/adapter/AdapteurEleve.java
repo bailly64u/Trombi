@@ -17,7 +17,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.RequestManager;
 import com.ufrst.app.trombi.R;
 import com.ufrst.app.trombi.database.Eleve;
-import com.ufrst.app.trombi.util.Logger;
 
 import java.util.List;
 
@@ -98,38 +97,29 @@ public class AdapteurEleve extends ListAdapter<Eleve, AdapteurEleve.EleveHolder>
             bPhoto = itemView.findViewById(R.id.ELEVEITEM_prendrePhoto);
 
             // Listeners
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v){
-                    int pos = getAdapterPosition();             // Récupération position item cliqué
+            itemView.setOnClickListener(v -> {
+                int pos = getAdapterPosition();             // Récupération position item cliqué
 
-                    if(listener != null && pos != RecyclerView.NO_POSITION){
-                        listener.onItemClick(getItem(pos));     // Récupération objet dans la liste
-                    }
+                if(listener != null && pos != RecyclerView.NO_POSITION){
+                    listener.onItemClick(getItem(pos));     // Récupération objet dans la liste
                 }
             });
 
-            itemView.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v){
-                    int pos = getAdapterPosition();
+            itemView.setOnLongClickListener(v -> {
+                int pos = getAdapterPosition();
 
-                    if(listener != null && pos != RecyclerView.NO_POSITION){
-                        listener.onItemLongClick(getItem(pos));
-                    }
-
-                    return true;
+                if(listener != null && pos != RecyclerView.NO_POSITION){
+                    listener.onItemLongClick(getItem(pos));
                 }
+
+                return true;
             });
 
-            bPhoto.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view){
-                    int pos = getAdapterPosition();                 // Récupération position item cliqué
+            bPhoto.setOnClickListener(view -> {
+                int pos = getAdapterPosition();                 // Récupération position item cliqué
 
-                    if(listener != null && pos != RecyclerView.NO_POSITION){
-                        listener.onPhotoClick(getItem(pos));        // Récupération objet dans la liste
-                    }
+                if(listener != null && pos != RecyclerView.NO_POSITION){
+                    listener.onPhotoClick(getItem(pos));        // Récupération objet dans la liste
                 }
             });
         }
