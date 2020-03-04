@@ -66,14 +66,12 @@ public class ActivityCapture extends AppCompatActivity {
 
     private MaterialButton buttonDismiss, buttonNextIfPhoto;
     private ImageButton buttonPrevious, buttonNext;
-    private CoordinatorLayout coordinatorLayout;
     private TrombiViewModel trombiViewModel;
     private LinearLayout linearLayout;
     private FloatingActionButton fab;
     private PreviewView previewView;
-    private ImageView helperFrame;
-    private BottomAppBar toolbar;
     private CropImageView editImage;
+    private ImageView helperFrame;
     private TextView tvName;
     private CardView banner;
 
@@ -121,7 +119,6 @@ public class ActivityCapture extends AppCompatActivity {
 
     private void findViews(){
         buttonNextIfPhoto = findViewById(R.id.CAPT_buttonNextIfPhoto);
-        coordinatorLayout = findViewById(R.id.CAPT_coordinator);
         buttonDismiss = findViewById(R.id.CAPT_buttonDismiss);
         linearLayout = findViewById(R.id.CAPT_linearLayout);
         buttonPrevious = findViewById(R.id.CAPT_previous);
@@ -129,7 +126,6 @@ public class ActivityCapture extends AppCompatActivity {
         editImage = findViewById(R.id.CAPT_resultImage);
         helperFrame = findViewById(R.id.CAPT_imgView);
         buttonNext = findViewById(R.id.CAPT_next);
-        toolbar = findViewById(R.id.CAPT_toolbar);
         tvName = findViewById(R.id.CAPT_tvName);
         banner = findViewById(R.id.CAPT_banner);
         fab = findViewById(R.id.CAPT_takePic);
@@ -266,13 +262,6 @@ public class ActivityCapture extends AppCompatActivity {
                 .requireLensFacing(CameraSelector.LENS_FACING_BACK)
                 .build();
 
-        //-------------Prise de photos, experimental
-
-        // CameraX est en alpha, la documentation est actuellement pas en accord avec la librairie
-        /*ImageCaptureConfig config = new ImageCaptureConfig.Builder()
-                .setTargetRotation(getWindowManager().getDefaultDisplay().getRotation())
-                .build();*/
-
         ImageCapture imageCapture = new ImageCapture.Builder()
                 .setTargetRotation(getWindowManager().getDefaultDisplay().getRotation())
                 .setCaptureMode(qualityOrLatency)
@@ -289,27 +278,6 @@ public class ActivityCapture extends AppCompatActivity {
             else
                 throw new IllegalStateException("Mode inconnu");
         });
-
-        // Tentative de récupération de l'image prise sans la stocker dans le stockage interne
-        // du téléphone
-        /*ImageAnalysisConfig config =
-                new ImageAnalysisConfig.Builder()
-                        .setTargetResolution(new Size(1280, 720))
-                        .setImageReaderMode(ImageAnalysis.ImageReaderMode.ACQUIRE_LATEST_IMAGE)
-                        .build();*/
-
-        /*ImageAnalysis imageAnalysis = new ImageAnalysis.Builder()
-                .setTargetResolution(new Size(1280, 720))
-                .build();
-
-        imageAnalysis.setAnalyzer(Executors.newSingleThreadExecutor(), new ImageAnalysis.Analyzer(){
-            @Override
-            public void analyze(@NonNull ImageProxy image) {
-
-            }
-        });*/
-
-        //-----------------------------------------
 
         // Le paramètre imageCapture correspond à un useCase qui envisage la prise d'une photo
         cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageCapture);
@@ -507,33 +475,6 @@ public class ActivityCapture extends AppCompatActivity {
             throw new IllegalStateException("Mode inconnu");
         }
     }
-
-    // Retourne le Bitmap correspondant à l'image capturée
-    /*private Bitmap getBitmap(ImageProxy imageProxy){
-        Image i = imageProxy.getImage();
-
-        Image.Plane[] planes = i.getPlanes();
-        ByteBuffer yBuffer = planes[0].getBuffer();
-        ByteBuffer uBuffer = planes[1].getBuffer();
-        ByteBuffer vBuffer = planes[2].getBuffer();
-
-        int ySize = yBuffer.remaining();
-        int uSize = uBuffer.remaining();
-        int vSize = vBuffer.remaining();
-
-        byte[] nv21 = new byte[ySize + uSize + vSize];
-        //U and V are swapped
-        yBuffer.get(nv21, 0, ySize);
-        vBuffer.get(nv21, ySize, vSize);
-        uBuffer.get(nv21, ySize + vSize, uSize);
-
-        YuvImage yuvImage = new YuvImage(nv21, ImageFormat.NV21, i.getWidth(), i.getHeight(), null);
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        yuvImage.compressToJpeg(new Rect(49, 7, 273, 231), 75, out);
-
-        byte[] imageBytes = out.toByteArray();
-        return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
-    }*/
 
     // Crée des Toast
     private void showToast(CharSequence text){

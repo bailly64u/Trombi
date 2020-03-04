@@ -156,12 +156,12 @@ public class ActivityListGroupe extends AppCompatActivity {
         // ScrollListener, pour cacher ou révéler le fab en temps voulu
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                if(dy > 0  && fab.isShown()){
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy){
+                if(dy > 0 && fab.isShown()){
                     fab.hide();
                 }
 
-                if(dy < 0  && !fab.isShown()){
+                if(dy < 0 && !fab.isShown()){
                     fab.show();
                 }
             }

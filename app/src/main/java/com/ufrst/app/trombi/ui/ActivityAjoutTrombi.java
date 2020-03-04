@@ -127,28 +127,13 @@ public class ActivityAjoutTrombi extends AppCompatActivity implements ImportAler
                     tvNbGroupe.setText(String.valueOf(groupes.size()));
                 }
             });
-
-            // Permet de ne pas observer la valeur, mais performances réduites
-            /*Executors.newSingleThreadExecutor().execute(new Runnable() {
-                @Override
-                public void run(){
-                    int i = trombiViewModel.getElevesNumberByTrombi(idTrombi);
-                    tvNbEleve.post(() -> tvNbEleve.setText(String.valueOf(i)));
-                }
-            });*/
-
         } else{
             setTitle(R.string.AJOUTTROMBI_title);
         }
     }
 
     private void setListeners(){
-        valider.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v){
-                saveTrombi();
-            }
-        });
+        valider.setOnClickListener(v -> saveTrombi());
     }
 
     // Prépare la sauvegarde du trombi qui sera finalisée dans ActivityMain
@@ -181,9 +166,6 @@ public class ActivityAjoutTrombi extends AppCompatActivity implements ImportAler
     }
 
     private void importTrombiFile(){
-        /*Intent intent = new Intent(ActivityAjoutTrombi.this, ActivityBDTest.class);
-        startActivity(intent);*/
-
         Intent fileintent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
         fileintent.addCategory(Intent.CATEGORY_OPENABLE);
         fileintent.setType("text/plain");
@@ -263,7 +245,6 @@ public class ActivityAjoutTrombi extends AppCompatActivity implements ImportAler
 
             case R.id.AJOUTTROMBI_importerTexte:
                 importTrombiFile();
-                //importTrombiFromZip(); Non fonctionnel pour le moment
                 return true;
 
             case R.id.AJOUTTROMBI_importerFichier:

@@ -116,7 +116,7 @@ public class ActivityAjoutEleve extends AppCompatActivity {
         CompletableFuture.supplyAsync(() -> trombiViewModel.getEleveByIdWithGroupsNotLive(idEleve))
                 .thenApply(EleveWithGroups::getGroupes)                                         // Récupérer les groupes de l'objet EleveWithGroupes
                 .exceptionally(throwable -> null)                                               // Si erreur (cas de l'ajout, l'id -1 n'existe pas) alors on continue avec null en tant que liste de groupes
-                .thenAccept(groups -> runOnUiThread( () -> observeGroupesForTrombi(groups)));   // Déclencher l'observation des groupes du trombi en passant la liste des groupes
+                .thenAccept(groups -> runOnUiThread(() -> observeGroupesForTrombi(groups)));   // Déclencher l'observation des groupes du trombi en passant la liste des groupes
     }
 
     // GetGroupesForEleve appelle cette fonction, et lui passe la liste des groupes
@@ -158,7 +158,7 @@ public class ActivityAjoutEleve extends AppCompatActivity {
 
             // Check la chips si l'élève appartient au groupe
             if(groupsToCheck != null && groupsToCheck.contains(g)){
-                c.post( () -> c.setChecked(true));  // View#post permet de donner un executable dans le thread UI
+                c.post(() -> c.setChecked(true));  // View#post permet de donner un executable dans le thread UI
             }
 
             // Texte de la chips
@@ -196,7 +196,7 @@ public class ActivityAjoutEleve extends AppCompatActivity {
                 // Insertion d'un élève et récupération de son ID dans la BD
                 long idEleve = trombiViewModel.insertAndRetrieveId(eleve);
                 setGroupForEleve(idEleve);
-            } else {
+            } else{
                 eleve.setIdEleve(idEleve);
                 eleve.setPhoto(photoPath);
                 trombiViewModel.update(eleve);
@@ -214,7 +214,7 @@ public class ActivityAjoutEleve extends AppCompatActivity {
     // Alimente la cross ref entre groupe et élèves
     private void setGroupForEleve(long idEleve){
         // On récupère les groupes associés aux chips sélectionnées et insère des XRef dans la BD
-        for(int i=0; i < chipGroup.getChildCount(); i++){
+        for(int i = 0; i < chipGroup.getChildCount(); i++){
             Chip chip = (Chip) chipGroup.getChildAt(i);
             Groupe g = (Groupe) chip.getTag(R.string.TAG_CHIPS_ID);
 
@@ -225,7 +225,7 @@ public class ActivityAjoutEleve extends AppCompatActivity {
                 // si Room ne trouve pas d'item à supprimer, il ne fait rien
                 if(chip.isChecked()){
                     trombiViewModel.insert(new EleveGroupeJoin(idEleve, g.getIdGroupe(), idTrombi));
-                } else {
+                } else{
                     trombiViewModel.delete(new EleveGroupeJoin(idEleve, g.getIdGroupe(), idTrombi));
                 }
             }

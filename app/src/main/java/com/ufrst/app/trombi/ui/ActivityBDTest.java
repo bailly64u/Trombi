@@ -21,7 +21,7 @@ import java.util.List;
 public class ActivityBDTest extends AppCompatActivity {
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bdtest);
 
@@ -29,7 +29,7 @@ public class ActivityBDTest extends AppCompatActivity {
         mTrombiViewModel.getAllTrombis().observe(this, trombis -> {
             StringBuilder sb = new StringBuilder();
 
-            for(Trombinoscope trombi :trombis){
+            for(Trombinoscope trombi : trombis){
                 sb.append(trombi.getNomTrombi() + " | ");
             }
 
@@ -72,7 +72,7 @@ public class ActivityBDTest extends AppCompatActivity {
 
         mTrombiViewModel.getGroupesWithEleves().observe(this, new Observer<List<GroupeWithEleves>>() {
             @Override
-            public void onChanged(List<GroupeWithEleves> groupeWithEleves) {
+            public void onChanged(List<GroupeWithEleves> groupeWithEleves){
                 StringBuilder sb = new StringBuilder();
 
                 for(GroupeWithEleves o : groupeWithEleves){

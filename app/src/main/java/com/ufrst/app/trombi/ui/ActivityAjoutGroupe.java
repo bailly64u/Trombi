@@ -7,7 +7,6 @@ import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
@@ -100,7 +99,7 @@ public class ActivityAjoutGroupe extends AppCompatActivity {
         if(!isEditMode){
             // Insertion d'un groupe
             trombiViewModel.insert(groupe);
-        } else {
+        } else{
             groupe.setIdGroupe(idGroupe);
             trombiViewModel.update(groupe);
         }

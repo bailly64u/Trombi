@@ -18,7 +18,6 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.ContextCompat;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -30,9 +29,6 @@ import com.ufrst.app.trombi.adapter.AdapteurTrombi;
 import com.ufrst.app.trombi.R;
 import com.ufrst.app.trombi.database.TrombiViewModel;
 import com.ufrst.app.trombi.database.Trombinoscope;
-import com.ufrst.app.trombi.util.Logger;
-
-import java.util.List;
 
 public class ActivityMain extends AppCompatActivity {
 
@@ -107,34 +103,10 @@ public class ActivityMain extends AppCompatActivity {
 
     // Applique des listeners sur certains éléments
     private void setListeners(){
-        // Menu hamburger latéral
-        /*mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item){
-                switch(item.getItemId()){
-                    case R.id.NAV_item1:
-                        Toast.makeText(ActivityMain.this, "Salut1", Toast.LENGTH_SHORT).show();
-                        break;
-
-                    case R.id.NAV_item2:
-                        Toast.makeText(ActivityMain.this, "Salut2", Toast.LENGTH_SHORT).show();
-                        break;
-
-                    case R.id.NAV_item3:
-                        Toast.makeText(ActivityMain.this, "Salut3", Toast.LENGTH_SHORT).show();
-                        break;
-                }
-
-                return false;
-            }
-        });*/
-
         fab.setOnClickListener(view -> {
             // Démarre une activité. Au retour, onActivityResult() sera déclenchée
             Intent intent = new Intent(ActivityMain.this, ActivityAjoutTrombi.class);
             startActivityForResult(intent, REQUETE_AJOUT_TROMBI);
-            //Intent intent = new Intent(ActivityMain.this, ActivityBDTest.class);
-            //startActivity(intent);
         });
     }
 
@@ -206,12 +178,12 @@ public class ActivityMain extends AppCompatActivity {
         // ScrollListener, pour cacher ou révéler le fab en temps voulu
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                if(dy > 0  && fab.isShown()){
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy){
+                if(dy > 0 && fab.isShown()){
                     fab.hide();
                 }
 
-                if(dy < 0  && !fab.isShown()){
+                if(dy < 0 && !fab.isShown()){
                     fab.show();
                 }
             }
@@ -256,7 +228,7 @@ public class ActivityMain extends AppCompatActivity {
     }
 
     @Override
-    protected void onDestroy() {
+    protected void onDestroy(){
         trombiViewModel.deleteSoftDeletedGroupes();
         trombiViewModel.deleteSoftDeletedTrombis();
         trombiViewModel.deleteSoftDeletedEleves();

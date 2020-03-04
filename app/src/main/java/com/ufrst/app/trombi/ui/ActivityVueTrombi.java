@@ -6,12 +6,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.CancellationSignal;
 import android.print.PDFPrinter;
-import android.print.PageRange;
 import android.print.PrintAttributes;
 import android.print.PrintDocumentAdapter;
-import android.print.PrintDocumentInfo;
 import android.print.PrintManager;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -76,7 +73,6 @@ public class ActivityVueTrombi extends AppCompatActivity {
 
     private Observer<List<Eleve>> observerEleve;
     private TrombiViewModel trombiViewModel;
-    private boolean observingGroups = false;            // Sert à savoir si on met le groupe pour le titre du PDF
     private boolean isLoading = false;                  // Le chargement d'une webview est en cours
     private List<Eleve> listeEleves;
     private boolean withDesc = true;
@@ -129,7 +125,7 @@ public class ActivityVueTrombi extends AppCompatActivity {
     // Récupération des valeures prédéfinies par l'utilisateur
     private void retrieveSharedPrefs(){
         SharedPreferences prefs = getSharedPreferences("com.ufrst.app.trombi", Context.MODE_PRIVATE);
-        nbCols = prefs.getInt(PREFS_NBCOLS, 4) -1;
+        nbCols = prefs.getInt(PREFS_NBCOLS, 4) - 1;
     }
 
     // Désérialise les vues dont on aura besoin depuis le XML
@@ -206,15 +202,6 @@ public class ActivityVueTrombi extends AppCompatActivity {
 
         // Groupe de chips
         chipGroup.setOnCheckedChangeListener((chipGroup, i) -> {
-            //
-            // SOLUTION TEMPORAIRE au problème du changement d'id des chips lors de la reprise de l'activité
-            //
-            /*int pos = i - 1;    // Représente la position du groupe dans la liste listeGroupe
-
-            while(pos > chipGroup.getChildCount() - 1){
-                pos -= chipGroup.getChildCount();
-            }*/
-
             // Une chips est sélectionnée
             if(i != ChipGroup.NO_ID){
                 // Récupération du groupe associé à la chips: cf setChips()
@@ -223,13 +210,9 @@ public class ActivityVueTrombi extends AppCompatActivity {
                 // Récupération du groupe associé à la chip
                 Groupe currentGroupe = (Groupe) c.getTag(R.string.TAG_CHIPS_ID);
 
-                observingGroups = true;
-
                 // Changement de l'ID voulu pour la récupération de la méthode TrombiViewModel#getGroupByIdWithEleves
                 trombiViewModel.setIdGroup(currentGroupe.getIdGroupe());
             } else{
-                observingGroups = false;
-
                 // On observe la liste de tous les élèves du trombi à nouveau
                 trombiViewModel.getElevesByTrombi(idTrombi)
                         .observe(ActivityVueTrombi.this, observerEleve);
@@ -400,7 +383,7 @@ public class ActivityVueTrombi extends AppCompatActivity {
     }
 
     // Lance un Intent pour le PrintManager qui permet d'exporter en PDF
-    private void createWebPrintJob(WebView webView) {
+    private void createWebPrintJob(WebView webView){
         if(!getPackageManager().hasSystemFeature(PackageManager.FEATURE_PRINTING)){
             Toast.makeText(this, R.string.VUETROMBI_noAppPDF, Toast.LENGTH_LONG).show();
             return;
@@ -482,18 +465,17 @@ public class ActivityVueTrombi extends AppCompatActivity {
                 return true;
 
             case R.id.VUETROMBI_exporterTrombiF:
-//                CompletableFuture.supplyAsync(() ->
-//                        trombiViewModel.getEleveWithGroupsByTrombiNotLive(idTrombi))
-//                        .exceptionally(throwable -> Collections.emptyList())
-//                        .thenAccept(this::checkWriteExportedTrombi);
-
-                ZipUtil zipUtil = new ZipUtil(this, nomTrombi);
                 CompletableFuture.supplyAsync(() ->
                         trombiViewModel.getEleveWithGroupsByTrombiNotLive(idTrombi))
                         .exceptionally(throwable -> Collections.emptyList())
-                        .thenAccept(zipUtil::exportToZip);
+                        .thenAccept(this::checkWriteExportedTrombi);
 
-//                fileUtil1.exportToZip(fileUtil1.getPathForExportedTrombi());
+//                ZipUtil zipUtil = new ZipUtil(this, nomTrombi);
+//                CompletableFuture.supplyAsync(() ->
+//                        trombiViewModel.getEleveWithGroupsByTrombiNotLive(idTrombi))
+//                        .exceptionally(throwable -> Collections.emptyList())
+//                        .thenAccept(zipUtil::exportToZip);
+
                 return true;
 
             case R.id.VUETROMBI_exporterListe:

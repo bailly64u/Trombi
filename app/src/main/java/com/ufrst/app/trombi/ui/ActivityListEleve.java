@@ -16,7 +16,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -37,7 +36,6 @@ import java.util.List;
 import static com.ufrst.app.trombi.ui.ActivityCapture.EXTRA_MODE;
 import static com.ufrst.app.trombi.ui.ActivityCapture.TAKE_ALL_PHOTO_MODE;
 import static com.ufrst.app.trombi.ui.ActivityCapture.TAKE_PHOTO_MODE;
-import static com.ufrst.app.trombi.ui.ActivityMain.EXTRA_DESC;
 import static com.ufrst.app.trombi.ui.ActivityMain.EXTRA_ID;
 import static com.ufrst.app.trombi.ui.ActivityMain.EXTRA_ID_E;
 import static com.ufrst.app.trombi.ui.ActivityMain.EXTRA_NOM;
@@ -59,7 +57,6 @@ public class ActivityListEleve extends AppCompatActivity {
     private TextView tvEmpty;
     private Toolbar toolbar;
 
-    private String descTrombi;
     private String nomTrombi;
     private long idTrombi;
 
@@ -96,7 +93,6 @@ public class ActivityListEleve extends AppCompatActivity {
         }
 
         nomTrombi = intent.getStringExtra(EXTRA_NOM);
-        descTrombi = intent.getStringExtra(EXTRA_DESC);
     }
 
     private void findViews(){
