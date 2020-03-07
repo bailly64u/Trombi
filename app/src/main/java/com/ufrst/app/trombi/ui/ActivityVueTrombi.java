@@ -413,7 +413,7 @@ public class ActivityVueTrombi extends AppCompatActivity {
         printer.print(webView.createPrintDocumentAdapter(nomTrombi), filepath);
 
         // Déclenche l'intent responsable du partage du PDF généré
-        startActivity(Intent.createChooser(printer.makeIntent(),
+        startActivity(Intent.createChooser(printer.makeIntent(this),
                 getResources().getString(R.string.VUETROMBI_partagerPdf)));
     }
 

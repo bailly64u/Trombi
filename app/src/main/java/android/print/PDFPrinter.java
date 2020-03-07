@@ -1,9 +1,12 @@
 package android.print;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.CancellationSignal;
 import android.os.ParcelFileDescriptor;
+
+import androidx.core.content.FileProvider;
 
 import com.ufrst.app.trombi.util.Logger;
 
@@ -76,11 +79,12 @@ public class PDFPrinter {
     }
 
     // Retourne un Intent pour visionner / envoyer le PDF qui peut être déclenché depuis une activité
-    public Intent makeIntent(){
+    public Intent makeIntent(Context context){
+        String authority = context.getApplicationContext().getPackageName() + ".provider";
+        Uri pdfUri = FileProvider.getUriForFile(context, authority, pdf);
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("application/pdf");
-        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(pdf));
+        intent.putExtra(Intent.EXTRA_STREAM, pdfUri);
 
         return intent;
     }
