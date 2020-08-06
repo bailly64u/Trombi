@@ -6,7 +6,6 @@
         android:id="@+id/MAIN_settings"
         android:icon="@drawable/ic_settings"
         android:title="@string/MAIN_parametres"
-        android:iconTint="?attr/onPrimary"
         app:showAsAction="ifRoom" />
 
 </menu>

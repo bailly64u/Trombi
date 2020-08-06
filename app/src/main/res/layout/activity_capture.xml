@@ -104,7 +104,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
                 android:gravity="center_horizontal"
-                android:textColor="?attr/onPrimary"
+                android:textColor="?attr/colorOnPrimary"
                 android:textSize="22sp" />
 
         </LinearLayout>
@@ -129,7 +129,7 @@
                 android:background="?android:attr/selectableItemBackground"
                 android:contentDescription="@string/CAPT_contentDesc2"
                 android:src="@drawable/ic_arrow_left"
-                android:tint="?attr/onPrimary" />
+                android:tint="?attr/colorOnPrimary" />
 
             <ImageButton
                 android:id="@+id/CAPT_next"
@@ -140,7 +140,7 @@
                 android:background="?android:attr/selectableItemBackground"
                 android:contentDescription="@string/CAPT_contentDesc3"
                 android:src="@drawable/ic_arrow_right"
-                android:tint="?attr/onPrimary" />
+                android:tint="?attr/colorOnPrimary" />
 
         </RelativeLayout>
     </com.google.android.material.bottomappbar.BottomAppBar>
@@ -150,7 +150,7 @@
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:src="@drawable/ic_photo"
-        android:tint="?attr/onSecondary"
+        android:tint="?attr/colorOnPrimary"
         app:layout_anchor="@id/CAPT_toolbar" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

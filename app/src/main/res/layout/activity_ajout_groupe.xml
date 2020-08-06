@@ -5,7 +5,6 @@
     android:id="@+id/AJOUTGROUPE_coordinator"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/backgroundApp"
     tools:context=".ui.ActivityAjoutTrombi">
 
     <com.google.android.material.appbar.AppBarLayout
@@ -29,10 +28,8 @@
         android:layout_gravity="bottom|center"
         android:layout_margin="8dp"
         android:text="@string/U_valider"
-        android:textColor="?attr/onSecondary"
         style="Widget.MaterialComponents.ExtendedFloatingActionButton.Icon"
-        app:icon="@drawable/ic_valid"
-        app:iconTint="?attr/onSecondary" />
+        app:icon="@drawable/ic_valid" />
 
     <ScrollView
         android:id="@+id/AJOUTGROUPE_scrollView"
@@ -70,11 +67,7 @@
                     android:layout_alignParentEnd="true"
                     android:layout_marginBottom="16dp"
                     android:layout_toEndOf="@+id/AJOUTGROUPE_ivIcon1"
-                    android:hint="@string/AJOUTGROUPE_hint1"
-                    android:textColorHint="?attr/textHighEmphasis"
-                    app:boxStrokeColor="?attr/colorAccent"
-                    app:hintTextColor="?attr/colorAccent"
-                    app:boxBackgroundColor="?attr/boxBackground">
+                    android:hint="@string/AJOUTGROUPE_hint1">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/AJOUTGROUPE_entrerNom"
@@ -82,7 +75,6 @@
                         android:layout_height="wrap_content"
                         android:imeOptions="actionNext"
                         android:inputType="textCapSentences"
-                        android:textColor="?attr/onBackground"
                         android:maxLines="1" />
 
                 </com.google.android.material.textfield.TextInputLayout>

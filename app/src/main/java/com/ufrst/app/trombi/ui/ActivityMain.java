@@ -72,13 +72,6 @@ public class ActivityMain extends AppCompatActivity {
                 getSharedPreferences("com.ufrst.app.trombi", Context.MODE_PRIVATE);
         boolean night = prefs.getBoolean(PREFS_NIGHT_MODE, false);
 
-        if(AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES || night){
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-            setTheme(R.style.AppThemeDark);
-        } else{
-            setTheme(R.style.AppTheme);
-        }
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -169,7 +162,7 @@ public class ActivityMain extends AppCompatActivity {
                         coordinatorLayout, R.string.MAIN_trombiSuppr, Snackbar.LENGTH_INDEFINITE)
                         .setAction(R.string.U_annuler, v -> setTrombiState(idTrombiSuppr, STATE_NOT_DELETED))
                         .setActionTextColor(ContextCompat.getColor(
-                                ActivityMain.this, R.color.colorAccent))
+                                ActivityMain.this, R.color.trombi_blue))
                         .setDuration(8000)
                         .show();
             }

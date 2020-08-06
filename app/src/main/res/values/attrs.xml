@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Fichier permettant de déclarer des attributs stylisable, pratique pour un thème sombre -->
 <resources>
-    <declare-styleable name="TrombiAppTheme">
-        <attr name="backgroundApp" format="color"/>
-        <attr name="onBackground" format="color"/>
-        <attr name="backgroundL1" format="color"/>
-        <attr name="backgroundL2" format="color"/>
-        <attr name="colorPrimaryLighter" format="color"/>
-        <attr name="onPrimary" format="color"/>
-        <attr name="onSecondary" format="color"/>
-        <attr name="textHighEmphasis" format="color"/>
-        <attr name="textMediumEmphasis" format="color"/>
-        <attr name="textDisabled" format="color"/>
-        <attr name="boxBackground" format="color"/>
-        <attr name="dividerColor" format="color"/>
-        <attr name="chipsBackground" format="color"/>
-    </declare-styleable>
+<!--    <declare-styleable name="TrombiAppTheme">-->
+<!--        <attr name="backgroundApp" format="color"/>-->
+<!--        <attr name="onBackground" format="color"/>-->
+<!--        <attr name="backgroundL1" format="color"/>-->
+<!--        <attr name="backgroundL2" format="color"/>-->
+<!--        <attr name="colorPrimaryLighter" format="color"/>-->
+<!--        <attr name="onPrimary" format="color"/>-->
+<!--        <attr name="onSecondary" format="color"/>-->
+<!--        <attr name="textHighEmphasis" format="color"/>-->
+<!--        <attr name="textMediumEmphasis" format="color"/>-->
+<!--        <attr name="textDisabled" format="color"/>-->
+<!--        <attr name="boxBackground" format="color"/>-->
+<!--        <attr name="dividerColor" format="color"/>-->
+<!--        <attr name="chipsBackground" format="color"/>-->
+<!--    </declare-styleable>-->
 </resources>

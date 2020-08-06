@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="trombi_gray">#263238</color>
+    <color name="trombi_gray_lighter">#4F5b62</color>
+    <color name="trombi_blue">#80cbc4</color>
+    <color name="trombi_background">#121212</color>
+    <color name="almost_white">#fefefe</color>
+    <color name="trombi_on_background">#ffffff</color>
+    <color name="trombi_surface">#121212</color>
+    <color name="black">#000000</color>
+    <color name="red">#b00020</color>
+
+    <color name="text_high_emphasis">#87ffffff</color>
+    <color name="text_medium_emphasis">#60ffffff</color>
+    <color name="text_disabled">#38ffffff</color>
+
+    <color name="trombi_divider">#15ffffff</color>
+</resources>

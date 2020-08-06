@@ -1,70 +1,22 @@
 <resources>
 
-    <!-- Theme clair -->
-    <!-- <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar"> -->
-    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
-        <item name="colorControlHighlight">@color/textDisabled</item>
+    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:navigationBarColor">@color/trombi_gray_lighter</item>
+        <item name="android:statusBarColor">@color/trombi_gray_lighter</item>
 
-        <item name="android:navigationBarColor">@color/colorPrimaryDarker</item>
-        <item name="android:statusBarColor">@color/colorPrimaryDarker</item>
+        <item name="colorPrimary">@color/trombi_gray</item>
+        <item name="colorPrimaryVariant">@color/trombi_gray_lighter</item>
+        <item name="colorOnPrimary">@color/trombi_on_primary</item>
+        <item name="colorSecondary">@color/trombi_blue</item>
+        <item name="colorOnSecondary">@color/trombi_on_secondary</item>
 
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
-
-        <item name="colorPrimaryLighter">@color/colorPrimaryLighter</item>
-
-        <item name="backgroundApp">@color/background</item>
-        <item name="onBackground">@color/onBackground</item>
-
-        <item name="backgroundL1">@color/backgroundL1</item>
-        <item name="backgroundL2">@color/backgroundL2</item>
-
-        <item name="onPrimary">@color/onPrimary</item>
-        <item name="onSecondary">@color/onSecondary</item>
-
-        <item name="textHighEmphasis">@color/textHighEmphasis</item>
-        <item name="textMediumEmphasis">@color/textMediumEmphasis</item>
-        <item name="textDisabled">@color/textDisabled</item>
-
-        <item name="boxBackground">@color/boxBackground</item>
-        <item name="dividerColor">@color/divider</item>
-
-        <item name="chipsBackground">@color/divider</item>
+        <item name="android:colorBackground">@color/trombi_background</item>
+        <item name="colorOnBackground">@color/black</item>
+        <item name="colorSurface">@color/trombi_surface</item>
+        <item name="colorOnSurface">@color/trombi_on_surface</item>
+        <item name="colorError">@color/red</item>
+        <item name="colorOnError">@color/trombi_on_error</item>
     </style>
-
-    <!-- Theme sombre -->
-    <style name="AppThemeDark" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
-        <item name="colorControlHighlight">@color/textDisabledDark</item>
-
-        <item name="android:navigationBarColor">@color/colorPrimaryDarkDark</item>
-        <item name="android:statusBarColor">@color/colorPrimaryDarkDark</item>
-
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
-
-        <item name="colorPrimaryLighter">@color/colorPrimaryLightDark</item>
-
-        <item name="backgroundApp">@color/backgroundDark</item>
-        <item name="onBackground">@color/onBackgroundDark</item>
-
-        <item name="backgroundL1">@color/backgroundDarkL1</item>
-        <item name="backgroundL2">@color/backgroundDarkL2</item>
-
-        <item name="onPrimary">@color/onPrimaryDark</item>
-        <item name="onSecondary">@color/onSecondaryDark</item>
-
-        <item name="textHighEmphasis">@color/textHighEmphasisDark</item>
-        <item name="textMediumEmphasis">@color/textMediumEmphasisDark</item>
-        <item name="textDisabled">@color/textDisabledDark</item>
-
-        <item name="boxBackground">@color/boxBackgroundDark</item>
-        <item name="dividerColor">@color/dividerDark</item>
-
-        <item name="chipsBackground">@color/backgroundDarkL2</item>
-    </style>
-
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 

@@ -5,7 +5,6 @@
     android:id="@+id/AJOUTELEVE_coordinator"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/backgroundApp"
     tools:context=".ui.ActivityAjoutTrombi">
 
     <com.google.android.material.appbar.AppBarLayout
@@ -29,10 +28,8 @@
         android:layout_gravity="bottom|center"
         android:layout_margin="8dp"
         android:text="@string/U_enregistrer"
-        android:textColor="?attr/onSecondary"
         style="Widget.MaterialComponents.ExtendedFloatingActionButton.Icon"
-        app:icon="@drawable/ic_valid"
-        app:iconTint="?attr/onSecondary" />
+        app:icon="@drawable/ic_valid" />
 
     <ScrollView
         android:id="@+id/AJOUTELEVE_scrollView"
@@ -70,11 +67,7 @@
                     android:layout_alignParentEnd="true"
                     android:layout_marginBottom="16dp"
                     android:layout_toEndOf="@+id/AJOUTELEVE_ivIcon1"
-                    android:hint="@string/AJOUTELEVE_hint1"
-                    android:textColorHint="?attr/textHighEmphasis"
-                    app:boxStrokeColor="?attr/colorAccent"
-                    app:hintTextColor="?attr/colorAccent"
-                    app:boxBackgroundColor="?attr/boxBackground">
+                    android:hint="@string/AJOUTELEVE_hint1">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/AJOUTELEVE_entrerNom"
@@ -82,7 +75,6 @@
                         android:layout_height="wrap_content"
                         android:imeOptions="actionDone"
                         android:inputType="textCapSentences"
-                        android:textColor="?attr/onBackground"
                         android:maxLines="1" />
 
                 </com.google.android.material.textfield.TextInputLayout>
@@ -126,7 +118,6 @@
                             android:layout_height="match_parent"
                             android:layout_margin="8dp"
                             android:gravity="bottom"
-                            android:textColor="?attr/textHighEmphasis"
                             android:text="@string/AJOUTELEVE_emptyGroup"
                             android:visibility="gone" />
 

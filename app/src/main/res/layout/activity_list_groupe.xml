@@ -4,8 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/LISTg_coordinator"
     android:layout_height="match_parent"
-    android:layout_width="match_parent"
-    android:background="?attr/backgroundApp">
+    android:layout_width="match_parent">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
@@ -26,7 +25,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:textColor="?attr/onBackground"
         android:text="@string/LISTg_emptyRecyclerView" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -35,7 +33,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
-        android:tint="?attr/onSecondary"
         android:src="@drawable/ic_group_add" />
 
     <androidx.recyclerview.widget.RecyclerView

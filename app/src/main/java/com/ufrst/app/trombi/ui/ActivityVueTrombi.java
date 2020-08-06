@@ -83,12 +83,6 @@ public class ActivityVueTrombi extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
-        if(AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES){
-            setTheme(R.style.AppThemeDark);
-        } else{
-            setTheme(R.style.AppTheme);
-        }
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_vue_trombi);
 
@@ -248,7 +242,7 @@ public class ActivityVueTrombi extends AppCompatActivity {
         c.setTag(R.string.TAG_CHIPS_ID, g);
 
         // Texte de la chips
-        c.setText(g.getNomGroupe()); //A changer: enlever + idGroupe
+        c.setText(g.getNomGroupe());
 
         // Ajout de la chips dans le groupe de chips
         chipGroup.post(() -> chipGroup.addView(c));
@@ -315,7 +309,7 @@ public class ActivityVueTrombi extends AppCompatActivity {
                     R.string.VUETROMBI_fichierExiste, Snackbar.LENGTH_INDEFINITE)
                     .setAction(R.string.U_remplacer, v -> triggerListExport(fileUtil, eleves))
                     .setActionTextColor(ContextCompat.getColor(ActivityVueTrombi.this,
-                            R.color.colorAccent))
+                            R.color.trombi_blue))
                     .setDuration(8000)
                     .show();
         } else{
@@ -336,7 +330,7 @@ public class ActivityVueTrombi extends AppCompatActivity {
                     .setAction(R.string.U_remplacer, v ->
                             triggerTrombiExport(fileUtil, eleves, true))
                     .setActionTextColor(ContextCompat.getColor(ActivityVueTrombi.this,
-                            R.color.colorAccent))
+                            R.color.trombi_blue))
                     .setDuration(8000)
                     .show();
         } else{

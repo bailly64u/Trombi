@@ -5,10 +5,8 @@
     android:padding="4dp"
     android:focusable="true"
     android:clickable="true"
-    android:background="?attr/backgroundApp"
     android:foreground="?android:attr/selectableItemBackground" >
 
-    <!--android:theme="@style/ThemeOverlay.MaterialComponents.Dark"-->
     <TextView
         android:id="@+id/TROMBIITEM_nom"
         android:layout_width="wrap_content"
@@ -19,7 +17,6 @@
         android:layout_marginStart="8dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
-        android:textColor="?attr/onBackground"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:textSize="17sp"
         android:ellipsize="end"
@@ -35,7 +32,6 @@
         android:layout_below="@id/TROMBIITEM_nom"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
-        android:textColor="?attr/textMediumEmphasis"
         android:textSize="15sp"
         android:ellipsize="end"
         android:maxLines="1" />

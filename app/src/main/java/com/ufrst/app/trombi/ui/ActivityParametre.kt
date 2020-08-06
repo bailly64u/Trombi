@@ -18,12 +18,10 @@ import com.ufrst.app.trombi.util.Logger
 
 class ActivityParametre : AppCompatActivity() {
 
-    private val switchNightModeLayout : RelativeLayout by bind(R.id.PARA_switchNightModeLayout)
     private val switchQualityLayout : RelativeLayout by bind(R.id.PARA_switchQualityLayout)
     private val switchRatioLayout : RelativeLayout by bind(R.id.PARA_switchNbColLayout)
     private val switchParaLayout : RelativeLayout by bind(R.id.PARA_switchParaLayout)
     private val switchFixedRatio : Switch by bind(R.id.PARA_switchFixedRatio)
-    private val switchNightMode : Switch by bind(R.id.PARA_switchNightMode)
     private val switchQuality : Switch by bind(R.id.PARA_switchQuality)
     private val numberPicker : NumberPicker by bind(R.id.PARA_npCol)
     private val switchPara : Switch by bind(R.id.PARA_switchPara)
@@ -37,12 +35,6 @@ class ActivityParametre : AppCompatActivity() {
     private var nbCols = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        if(AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES){
-            setTheme(R.style.AppThemeDark)
-        } else{
-            setTheme(R.style.AppTheme)
-        }
-
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_parametre)
 
@@ -79,7 +71,6 @@ class ActivityParametre : AppCompatActivity() {
 
         switchQuality.isChecked = qualityOrLatency
         switchFixedRatio.isChecked = isFixedRatio
-        switchNightMode.isChecked = isNightMode
         switchPara.isChecked = isMultiThreading
     }
 
@@ -90,10 +81,6 @@ class ActivityParametre : AppCompatActivity() {
 
         switchQualityLayout.setOnClickListener {
             switchQuality.isChecked = !switchQuality.isChecked
-        }
-
-        switchNightModeLayout.setOnClickListener {
-            switchNightMode.isChecked = !switchNightMode.isChecked
         }
 
         switchParaLayout.setOnClickListener {
@@ -111,15 +98,8 @@ class ActivityParametre : AppCompatActivity() {
             putBoolean(PREFS_QUALITY_OR_LATENCY, switchQuality.isChecked)
             putBoolean(PREFS_FIXED_RATIO, switchFixedRatio.isChecked)
             putBoolean(PREFS_MULTI_THREADING, switchPara.isChecked)
-            putBoolean(PREFS_NIGHT_MODE, switchNightMode.isChecked)
             putInt(PREFS_NBCOLS, numberPicker.value)
             apply()
-        }
-
-        if(switchNightMode.isChecked){
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-        } else{
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         }
 
         super.onPause()

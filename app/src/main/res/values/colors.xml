@@ -1,46 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Couleurs respactant les conventions du Material Design, voire https://material.io/design/color/dark-theme.html#anatomy -->
+    <color name="trombi_gray">#263238</color>
+    <color name="trombi_gray_lighter">#4F5b62</color>
+    <color name="trombi_blue">#26a69a</color>
+    <color name="trombi_background">#fefefe</color>
+    <color name="trombi_surface">#fefefe</color>
+    <color name="trombi_on_background">#000000</color>
+    <color name="trombi_on_primary">#ffffff</color>
+    <color name="trombi_on_secondary">#ffffff</color>
+    <color name="trombi_on_surface">#000000</color>
+    <color name="trombi_on_error">#000000</color>
+    <color name="almost_white">#fefefe</color>
+    <color name="black">#000000</color>
+    <color name="red">#b00020</color>
 
-    <!-- Thème clair -->
-    <color name="colorPrimary">#263238</color>
-    <color name="colorPrimaryDarker">#000A12</color>
-    <color name="colorPrimaryLighter">#4F5B62</color>
-    <color name="colorAccent">#26A69A</color>
-    <color name="background">#FEFEFE</color>
-    <color name="backgroundL1">#FEFEFE</color>
-    <color name="backgroundL2">#FEFEFE</color>
-    <color name="onBackground">#000000</color>
-    <color name="onPrimary">#FFFFFF</color>
-    <color name="onSecondary">#FFFFFF</color>
-    <color name="onError">#B00020</color>
-    <color name="lightWhite">#FCFCFC</color>
+    <color name="text_high_emphasis">#87000000</color>
+    <color name="text_medium_emphasis">#60000000</color>
+    <color name="text_disabled">#38000000</color>
 
-    <color name="textHighEmphasis">#87000000</color>
-    <color name="textMediumEmphasis">#60000000</color>
-    <color name="textDisabled">#38000000</color>
-
-    <color name="boxBackground">#15000000</color>
-    <color name="divider">#15000000</color>
-
-    <!-- Thème sombre -->
-    <color name="colorPrimaryDark">#353535</color>
-    <color name="colorPrimaryDarkDark">#000000</color>
-    <color name="colorPrimaryLightDark">#505050</color>
-    <color name="colorAccentDark">#80CBC4</color>
-    <color name="backgroundDark">#121212</color>
-    <color name="backgroundDarkL1">#252525</color>
-    <color name="backgroundDarkL2">#404040</color>
-    <color name="onBackgroundDark">#FFFFFF</color>
-    <!--<color name="onSurface"></color>-->
-    <color name="onPrimaryDark">#FFFFFF</color>
-    <color name="onSecondaryDark">#FFFFFF</color>
-    <color name="onErrorDark">#CF6679</color>
-
-    <color name="textHighEmphasisDark">#87FFFFFF</color>
-    <color name="textMediumEmphasisDark">#60FFFFFF</color>
-    <color name="textDisabledDark">#38FFFFFF</color>
-
-    <color name="boxBackgroundDark">#252525</color>
-    <color name="dividerDark">#15FFFFFF</color>
+    <color name="trombi_divider">#15000000</color>
 </resources>
